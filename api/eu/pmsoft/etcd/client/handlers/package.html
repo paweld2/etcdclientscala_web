@@ -1,0 +1,576 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>handlers - eu.pmsoft.etcd.client.handlers</title>
+          <meta name="description" content="handlers - eu.pmsoft.etcd.client.handlers" />
+          <meta name="keywords" content="handlers eu.pmsoft.etcd.client.handlers" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../../index.html';
+            var hash = 'eu.pmsoft.etcd.client.handlers.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img alt="Package" src="../../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../../package.html" class="extype" name="eu">eu</a>.<a href="../../../package.html" class="extype" name="eu.pmsoft">pmsoft</a>.<a href="../../package.html" class="extype" name="eu.pmsoft.etcd">etcd</a>.<a href="../package.html" class="extype" name="eu.pmsoft.etcd.client">client</a></p>
+        <h1>handlers</h1><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">handlers</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><h4>Handlers</h4><p><a href="https://github.com/AsyncHttpClient/async-http-client/" target="_blank">AsyncHttpClient</a> handlers used to handle requests and return etcd responses asynchronously.</p><p>For a given HTTP request, etcd most often returns a response containing a JSON array in its body (although, sometimes it may return an empty body).
+A response may also contain HTTP headers with the HTTP status code for the response and some information of the etcd cluster (mostly indexes captured as instances of <a href="../model/EtcdIndex.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdIndex">EtcdIndex</a>).
+<a href="https://github.com/AsyncHttpClient/async-http-client/" target="_blank">AsyncHttpClient</a> offers support for handling HTTP requests with customized handlers.
+Each handler formats a type of response returned by etcd by parsing the JSON array returned in the response and retrieving the pertinent information in the response's headers.
+The parsing is done using <a href="https://github.com/json4s/json4s#extracting-values" target="_blank">JSON4S extract method</a> and case classes defined in package <a href="../model/package.html" class="extype" name="eu.pmsoft.etcd.client.model">model</a>.
+The information retrieved from the response's headers is passed along with the body to appropriate case classes in the same package.</p><p>Http requests to etcd may return and error response or a success response.
+Error responses usually contain useful information on what went wrong, while success responses return the status of etcd after the request is performed.
+Handlers appropriately adapted to deal with both situations.</p></div><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        <div id="order">
+              <span class="filtertype">Ordering</span>
+              <ol>
+                
+                <li class="alpha in"><span>Alphabetic</span></li>
+                <li class="inherit out"><span>By inheritance</span></li>
+              </ol>
+            </div>
+        <div id="ancestors">
+                <span class="filtertype">Inherited<br />
+                </span>
+                <ol id="linearization">
+                  <li class="in" name="eu.pmsoft.etcd.client.handlers"><span>handlers</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                </ol>
+              </div><div id="ancestors">
+            <span class="filtertype"></span>
+            <ol>
+              <li class="hideall out"><span>Hide All</span></li>
+              <li class="showall in"><span>Show all</span></li>
+            </ol>
+          </div>
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandler" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="AbstractEtcdHandler[T]extendsAsyncHandler[Unit]"></a>
+      <a id="AbstractEtcdHandler[T]:AbstractEtcdHandler[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="AbstractEtcdHandler.html"><span class="name">AbstractEtcdHandler</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <span class="extype" name="org.asynchttpclient.AsyncHandler">AsyncHandler</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@AbstractEtcdHandler[T]extendsAsyncHandler[Unit]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithCompleteEtcdHeader" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="AbstractEtcdHandlerWithCompleteEtcdHeader[T&gt;:eu.pmsoft.etcd.client.model.EtcdRequestError]extendsAbstractEtcdHandler[T]"></a>
+      <a id="AbstractEtcdHandlerWithCompleteEtcdHeader[T&gt;:EtcdRequestError]:AbstractEtcdHandlerWithCompleteEtcdHeader[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="AbstractEtcdHandlerWithCompleteEtcdHeader.html"><span class="name">AbstractEtcdHandlerWithCompleteEtcdHeader</span></a><span class="tparams">[<span name="T">T &gt;: <a href="../model/EtcdRequestError.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdRequestError">EtcdRequestError</a></span>]</span><span class="result"> extends <a href="AbstractEtcdHandler.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandler">AbstractEtcdHandler</a>[<span class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithCompleteEtcdHeader.T">T</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@AbstractEtcdHandlerWithCompleteEtcdHeader[T&gt;:eu.pmsoft.etcd.client.model.EtcdRequestError]extendsAbstractEtcdHandler[T]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithSimpleClusterIdHeader" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="AbstractEtcdHandlerWithSimpleClusterIdHeader[T&gt;:eu.pmsoft.etcd.client.model.EtcdStandardError]extendsAbstractEtcdHandler[T]"></a>
+      <a id="AbstractEtcdHandlerWithSimpleClusterIdHeader[T&gt;:EtcdStandardError]:AbstractEtcdHandlerWithSimpleClusterIdHeader[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="AbstractEtcdHandlerWithSimpleClusterIdHeader.html"><span class="name">AbstractEtcdHandlerWithSimpleClusterIdHeader</span></a><span class="tparams">[<span name="T">T &gt;: <a href="../model/EtcdStandardError.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdStandardError">EtcdStandardError</a></span>]</span><span class="result"> extends <a href="AbstractEtcdHandler.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandler">AbstractEtcdHandler</a>[<span class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithSimpleClusterIdHeader.T">T</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@AbstractEtcdHandlerWithSimpleClusterIdHeader[T&gt;:eu.pmsoft.etcd.client.model.EtcdStandardError]extendsAbstractEtcdHandler[T]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithoutHeader" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="AbstractEtcdHandlerWithoutHeader[T&gt;:eu.pmsoft.etcd.client.model.EtcdStandardError]extendsAbstractEtcdHandler[T]"></a>
+      <a id="AbstractEtcdHandlerWithoutHeader[T&gt;:EtcdStandardError]:AbstractEtcdHandlerWithoutHeader[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="AbstractEtcdHandlerWithoutHeader.html"><span class="name">AbstractEtcdHandlerWithoutHeader</span></a><span class="tparams">[<span name="T">T &gt;: <a href="../model/EtcdStandardError.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdStandardError">EtcdStandardError</a></span>]</span><span class="result"> extends <a href="AbstractEtcdHandler.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandler">AbstractEtcdHandler</a>[<span class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithoutHeader.T">T</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@AbstractEtcdHandlerWithoutHeader[T&gt;:eu.pmsoft.etcd.client.model.EtcdStandardError]extendsAbstractEtcdHandler[T]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdAddMemberAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdAddMemberAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdAddMemberResult]"></a>
+      <a id="EtcdAddMemberAsyncHandler:EtcdAddMemberAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdAddMemberAsyncHandler.html"><span class="name">EtcdAddMemberAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithSimpleClusterIdHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithSimpleClusterIdHeader">AbstractEtcdHandlerWithSimpleClusterIdHeader</a>[<a href="../model/EtcdAddMemberResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdAddMemberResult">EtcdAddMemberResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdAddMemberAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdAddMemberResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdAddUserAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdAddUserAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdAddUpdateUserResult]"></a>
+      <a id="EtcdAddUserAsyncHandler:EtcdAddUserAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdAddUserAsyncHandler.html"><span class="name">EtcdAddUserAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithSimpleClusterIdHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithSimpleClusterIdHeader">AbstractEtcdHandlerWithSimpleClusterIdHeader</a>[<a href="../model/EtcdAddUpdateUserResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdAddUpdateUserResult">EtcdAddUpdateUserResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdAddUserAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdAddUpdateUserResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdCreateDirResponseAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdCreateDirResponseAsyncHandlerextendsAbstractEtcdHandlerWithCompleteEtcdHeader[eu.pmsoft.etcd.client.model.EtcdCreateDirResult]"></a>
+      <a id="EtcdCreateDirResponseAsyncHandler:EtcdCreateDirResponseAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdCreateDirResponseAsyncHandler.html"><span class="name">EtcdCreateDirResponseAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithCompleteEtcdHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithCompleteEtcdHeader">AbstractEtcdHandlerWithCompleteEtcdHeader</a>[<a href="../model/EtcdCreateDirResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdCreateDirResult">EtcdCreateDirResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdCreateDirResponseAsyncHandlerextendsAbstractEtcdHandlerWithCompleteEtcdHeader[eu.pmsoft.etcd.client.model.EtcdCreateDirResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdCreateRoleAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdCreateRoleAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdAddUpdateRoleResult]"></a>
+      <a id="EtcdCreateRoleAsyncHandler:EtcdCreateRoleAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdCreateRoleAsyncHandler.html"><span class="name">EtcdCreateRoleAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithSimpleClusterIdHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithSimpleClusterIdHeader">AbstractEtcdHandlerWithSimpleClusterIdHeader</a>[<a href="../model/EtcdAddUpdateRoleResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdAddUpdateRoleResult">EtcdAddUpdateRoleResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdCreateRoleAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdAddUpdateRoleResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdDefaultResponseAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdDefaultResponseAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdConfirmationResult]"></a>
+      <a id="EtcdDefaultResponseAsyncHandler:EtcdDefaultResponseAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdDefaultResponseAsyncHandler.html"><span class="name">EtcdDefaultResponseAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithSimpleClusterIdHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithSimpleClusterIdHeader">AbstractEtcdHandlerWithSimpleClusterIdHeader</a>[<a href="../model/EtcdConfirmationResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdConfirmationResult">EtcdConfirmationResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdDefaultResponseAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdConfirmationResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdDeleteResponseAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdDeleteResponseAsyncHandlerextendsAbstractEtcdHandlerWithCompleteEtcdHeader[eu.pmsoft.etcd.client.model.EtcdDeleteKeyResult]"></a>
+      <a id="EtcdDeleteResponseAsyncHandler:EtcdDeleteResponseAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdDeleteResponseAsyncHandler.html"><span class="name">EtcdDeleteResponseAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithCompleteEtcdHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithCompleteEtcdHeader">AbstractEtcdHandlerWithCompleteEtcdHeader</a>[<a href="../model/EtcdDeleteKeyResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdDeleteKeyResult">EtcdDeleteKeyResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdDeleteResponseAsyncHandlerextendsAbstractEtcdHandlerWithCompleteEtcdHeader[eu.pmsoft.etcd.client.model.EtcdDeleteKeyResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdGetAuthenticationStatusAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdGetAuthenticationStatusAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdGetAuthenticationStatusResult]"></a>
+      <a id="EtcdGetAuthenticationStatusAsyncHandler:EtcdGetAuthenticationStatusAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdGetAuthenticationStatusAsyncHandler.html"><span class="name">EtcdGetAuthenticationStatusAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithSimpleClusterIdHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithSimpleClusterIdHeader">AbstractEtcdHandlerWithSimpleClusterIdHeader</a>[<a href="../model/EtcdGetAuthenticationStatusResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdGetAuthenticationStatusResult">EtcdGetAuthenticationStatusResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdGetAuthenticationStatusAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdGetAuthenticationStatusResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdGetMembersAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdGetMembersAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdGetMembersResult]"></a>
+      <a id="EtcdGetMembersAsyncHandler:EtcdGetMembersAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdGetMembersAsyncHandler.html"><span class="name">EtcdGetMembersAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithSimpleClusterIdHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithSimpleClusterIdHeader">AbstractEtcdHandlerWithSimpleClusterIdHeader</a>[<a href="../model/EtcdGetMembersResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdGetMembersResult">EtcdGetMembersResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdGetMembersAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdGetMembersResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdGetResponseAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdGetResponseAsyncHandlerextendsAbstractEtcdHandlerWithCompleteEtcdHeader[eu.pmsoft.etcd.client.model.EtcdGetKeyResult]"></a>
+      <a id="EtcdGetResponseAsyncHandler:EtcdGetResponseAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdGetResponseAsyncHandler.html"><span class="name">EtcdGetResponseAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithCompleteEtcdHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithCompleteEtcdHeader">AbstractEtcdHandlerWithCompleteEtcdHeader</a>[<a href="../model/EtcdGetKeyResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdGetKeyResult">EtcdGetKeyResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdGetResponseAsyncHandlerextendsAbstractEtcdHandlerWithCompleteEtcdHeader[eu.pmsoft.etcd.client.model.EtcdGetKeyResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdGetRoleDetailsAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdGetRoleDetailsAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdGetRoleDetailsResult]"></a>
+      <a id="EtcdGetRoleDetailsAsyncHandler:EtcdGetRoleDetailsAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdGetRoleDetailsAsyncHandler.html"><span class="name">EtcdGetRoleDetailsAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithSimpleClusterIdHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithSimpleClusterIdHeader">AbstractEtcdHandlerWithSimpleClusterIdHeader</a>[<a href="../model/EtcdGetRoleDetailsResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdGetRoleDetailsResult">EtcdGetRoleDetailsResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdGetRoleDetailsAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdGetRoleDetailsResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdGetRolesAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdGetRolesAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdGetRolesResult]"></a>
+      <a id="EtcdGetRolesAsyncHandler:EtcdGetRolesAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdGetRolesAsyncHandler.html"><span class="name">EtcdGetRolesAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithSimpleClusterIdHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithSimpleClusterIdHeader">AbstractEtcdHandlerWithSimpleClusterIdHeader</a>[<a href="../model/EtcdGetRolesResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdGetRolesResult">EtcdGetRolesResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdGetRolesAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdGetRolesResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdGetUserDetailsAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdGetUserDetailsAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdGetUserDetailsResult]"></a>
+      <a id="EtcdGetUserDetailsAsyncHandler:EtcdGetUserDetailsAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdGetUserDetailsAsyncHandler.html"><span class="name">EtcdGetUserDetailsAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithSimpleClusterIdHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithSimpleClusterIdHeader">AbstractEtcdHandlerWithSimpleClusterIdHeader</a>[<a href="../model/EtcdGetUserDetailsResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdGetUserDetailsResult">EtcdGetUserDetailsResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdGetUserDetailsAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdGetUserDetailsResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdGetUsersAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdGetUsersAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdGetUsersResult]"></a>
+      <a id="EtcdGetUsersAsyncHandler:EtcdGetUsersAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdGetUsersAsyncHandler.html"><span class="name">EtcdGetUsersAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithSimpleClusterIdHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithSimpleClusterIdHeader">AbstractEtcdHandlerWithSimpleClusterIdHeader</a>[<a href="../model/EtcdGetUsersResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdGetUsersResult">EtcdGetUsersResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdGetUsersAsyncHandlerextendsAbstractEtcdHandlerWithSimpleClusterIdHeader[eu.pmsoft.etcd.client.model.EtcdGetUsersResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdHealthResponseAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdHealthResponseAsyncHandlerextendsAbstractEtcdHandlerWithoutHeader[eu.pmsoft.etcd.client.model.EtcdGetHealthResult]"></a>
+      <a id="EtcdHealthResponseAsyncHandler:EtcdHealthResponseAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdHealthResponseAsyncHandler.html"><span class="name">EtcdHealthResponseAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithoutHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithoutHeader">AbstractEtcdHandlerWithoutHeader</a>[<a href="../model/EtcdGetHealthResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdGetHealthResult">EtcdGetHealthResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdHealthResponseAsyncHandlerextendsAbstractEtcdHandlerWithoutHeader[eu.pmsoft.etcd.client.model.EtcdGetHealthResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdLeaderStatsResultAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdLeaderStatsResultAsyncHandlerextendsAbstractEtcdHandlerWithoutHeader[eu.pmsoft.etcd.client.model.EtcdGetLeaderStatsResult]"></a>
+      <a id="EtcdLeaderStatsResultAsyncHandler:EtcdLeaderStatsResultAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdLeaderStatsResultAsyncHandler.html"><span class="name">EtcdLeaderStatsResultAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithoutHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithoutHeader">AbstractEtcdHandlerWithoutHeader</a>[<a href="../model/EtcdGetLeaderStatsResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdGetLeaderStatsResult">EtcdGetLeaderStatsResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdLeaderStatsResultAsyncHandlerextendsAbstractEtcdHandlerWithoutHeader[eu.pmsoft.etcd.client.model.EtcdGetLeaderStatsResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdListDirAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdListDirAsyncHandlerextendsAbstractEtcdHandlerWithCompleteEtcdHeader[eu.pmsoft.etcd.client.model.EtcdListDirResult]"></a>
+      <a id="EtcdListDirAsyncHandler:EtcdListDirAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdListDirAsyncHandler.html"><span class="name">EtcdListDirAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithCompleteEtcdHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithCompleteEtcdHeader">AbstractEtcdHandlerWithCompleteEtcdHeader</a>[<a href="../model/EtcdListDirResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdListDirResult">EtcdListDirResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdListDirAsyncHandlerextendsAbstractEtcdHandlerWithCompleteEtcdHeader[eu.pmsoft.etcd.client.model.EtcdListDirResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdPutResponseAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdPutResponseAsyncHandlerextendsAbstractEtcdHandlerWithCompleteEtcdHeader[eu.pmsoft.etcd.client.model.EtcdSetKeyResult]"></a>
+      <a id="EtcdPutResponseAsyncHandler:EtcdPutResponseAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdPutResponseAsyncHandler.html"><span class="name">EtcdPutResponseAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithCompleteEtcdHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithCompleteEtcdHeader">AbstractEtcdHandlerWithCompleteEtcdHeader</a>[<a href="../model/EtcdSetKeyResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdSetKeyResult">EtcdSetKeyResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdPutResponseAsyncHandlerextendsAbstractEtcdHandlerWithCompleteEtcdHeader[eu.pmsoft.etcd.client.model.EtcdSetKeyResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdSelfStatsResponseAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdSelfStatsResponseAsyncHandlerextendsAbstractEtcdHandlerWithoutHeader[eu.pmsoft.etcd.client.model.EtcdGetSelfStatsResult]"></a>
+      <a id="EtcdSelfStatsResponseAsyncHandler:EtcdSelfStatsResponseAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdSelfStatsResponseAsyncHandler.html"><span class="name">EtcdSelfStatsResponseAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithoutHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithoutHeader">AbstractEtcdHandlerWithoutHeader</a>[<a href="../model/EtcdGetSelfStatsResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdGetSelfStatsResult">EtcdGetSelfStatsResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdSelfStatsResponseAsyncHandlerextendsAbstractEtcdHandlerWithoutHeader[eu.pmsoft.etcd.client.model.EtcdGetSelfStatsResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdStoreStatsResponseAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdStoreStatsResponseAsyncHandlerextendsAbstractEtcdHandlerWithoutHeader[eu.pmsoft.etcd.client.model.EtcdGetStoreStatsResult]"></a>
+      <a id="EtcdStoreStatsResponseAsyncHandler:EtcdStoreStatsResponseAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdStoreStatsResponseAsyncHandler.html"><span class="name">EtcdStoreStatsResponseAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithoutHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithoutHeader">AbstractEtcdHandlerWithoutHeader</a>[<a href="../model/EtcdGetStoreStatsResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdGetStoreStatsResult">EtcdGetStoreStatsResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdStoreStatsResponseAsyncHandlerextendsAbstractEtcdHandlerWithoutHeader[eu.pmsoft.etcd.client.model.EtcdGetStoreStatsResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdVersionResponseAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdVersionResponseAsyncHandlerextendsAbstractEtcdHandlerWithoutHeader[eu.pmsoft.etcd.client.model.EtcdGetVersionResult]"></a>
+      <a id="EtcdVersionResponseAsyncHandler:EtcdVersionResponseAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdVersionResponseAsyncHandler.html"><span class="name">EtcdVersionResponseAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithoutHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithoutHeader">AbstractEtcdHandlerWithoutHeader</a>[<a href="../model/EtcdGetVersionResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdGetVersionResult">EtcdGetVersionResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdVersionResponseAsyncHandlerextendsAbstractEtcdHandlerWithoutHeader[eu.pmsoft.etcd.client.model.EtcdGetVersionResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.EtcdWaitAcceptedAsyncHandler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EtcdWaitAcceptedAsyncHandlerextendsAbstractEtcdHandlerWithCompleteEtcdHeader[eu.pmsoft.etcd.client.model.EtcdWaitForKeyResult]"></a>
+      <a id="EtcdWaitAcceptedAsyncHandler:EtcdWaitAcceptedAsyncHandler"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="EtcdWaitAcceptedAsyncHandler.html"><span class="name">EtcdWaitAcceptedAsyncHandler</span></a><span class="result"> extends <a href="AbstractEtcdHandlerWithCompleteEtcdHeader.html" class="extype" name="eu.pmsoft.etcd.client.handlers.AbstractEtcdHandlerWithCompleteEtcdHeader">AbstractEtcdHandlerWithCompleteEtcdHeader</a>[<a href="../model/EtcdWaitForKeyResult.html" class="extype" name="eu.pmsoft.etcd.client.model.EtcdWaitForKeyResult">EtcdWaitForKeyResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@EtcdWaitAcceptedAsyncHandlerextendsAbstractEtcdHandlerWithCompleteEtcdHeader[eu.pmsoft.etcd.client.model.EtcdWaitForKeyResult]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="eu.pmsoft.etcd.client.handlers.FullHeaderHandlers" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="FullHeaderHandlersextendsAnyRef"></a>
+      <a id="FullHeaderHandlers:FullHeaderHandlers"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="FullHeaderHandlers.html"><span class="name">FullHeaderHandlers</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#eu.pmsoft.etcd.client.handlers.package@FullHeaderHandlersextendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        <div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>
