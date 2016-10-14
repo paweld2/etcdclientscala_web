@@ -1,0 +1,48 @@
+﻿.. EtcdClient documentation master file, created by
+   sphinx-quickstart on Thu Jun  9 13:28:05 2016.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to EtcdClient's documentation!
+======================================
+
+EtcdClient is an asynchronous etcd client library with key-value methods, support for authentication and methods for retrieving statistics and managing members of etcd clusters.
+EtcdClient is built on top of `Scala Futures and Promises <http://docs.scala-lang.org/overviews/core/futures.html>`_,
+`AsyncHttpClient <https://github.com/AsyncHttpClient/async-http-client/>`_, `Netty <http://netty.io/>`_  and `JSON4S <https://github.com/json4s/json4s>`_.
+
+Complete etcd server api information can be found on `etcd documentation <https://coreos.com/etcd/docs/latest/api.html>`_.
+
+The following is a tutorial explaining how to use EtcdClient, in order to get you started as quickly as possible.
+There is also a scaladoc with more information about the implementation.
+Both documents are supposed to complement each other.
+We recommend reading this tutorial first, and referring to the scaladoc for any doubts on implementation that are not covered here.
+In particular, the exact contents of the responses returned by etcd are not covered here.
+However, it is only a matter of searching in the scaladoc the selected case class representing the response of a particular operation.
+The implementation is straightforward.
+
+The first part of the tutorial briefly explains the model used in order to render responses to HTTP requests made to etcd servers.
+Then we proceed to list all methods implemented by EtcdClient and examples to illustrate possible use cases.
+We hope that a few examples will suffice to get most users started.
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
+
+   Model/Model
+   Client/EtcdClient
+   Client/Key-Value Methods
+   Client/Statistics
+   Client/Authentication Methods
+   Client/Member Methods
+
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+

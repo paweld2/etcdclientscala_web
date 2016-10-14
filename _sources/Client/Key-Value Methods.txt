@@ -1,0 +1,767 @@
+.. _Key-Value Methods:
+
+=================
+Key-Value Methods
+=================
+
+The implementation of key-value methods follows the specification given in the `etcd Api <https://coreos.com/etcd/docs/latest/api.html>`_.
+Their purpose is to set, retrieve, modify or delete keys, values and directories in etcd.
+It is also possible to set a watch (also known as wait) on etcd keys, so as to monitor changes in the server in real time and conditionally set operations depending on the response obtained once a change in the data is registered.
+
+Key-Value methods take as inputs case classes defined in package :ref:`model  <Model>`.
+The recommended way to get input data (for example, instances of :ref:`EtcdKey  <EtcdKey>`, :ref:`EtcdDirectory  <EtcdDirectory>`, or :ref:`EtcdValue  <EtcdValue>` case classes) for key-value methods is using the :ref:`EtcdModel <EtcdModel>` object.
+
+In what follows, we describe each of the key-value methods in package client.
+We also add some examples that illustrate how they may be used.
+They are sometimes interrelated.
+Mostly the order is lineal.
+However, when the order is different, we make sure to signal it.
+
+.. _EtcdClient.setKey:
+
+setKey
+------
+
+Sets or updates a key in a specific etcd node; also, sets and unsets TTL::
+
+ setKey(
+ key: EtcdKey,
+ value: EtcdValue,
+ ttlOp: Option[EtcdTTL] = None,
+ conditionOp: Option[CompareAndSwapCondition] = None
+ ): Future[EtcdSetKeyResult]
+
+Parameters:
+
+* **key:** :ref:`EtcdKey  <EtcdKey>` to be set or updated.
+
+* **value:** :ref:`EtcdValue  <EtcdValue>` to be associated to key.
+
+* **ttlOp:** Life span in seconds of key-value.
+  Defaults to None.
+
+* **conditionOp:** One of case classes :ref:`KeyMustExist <KeyMustExist>`, :ref:`KeyMustHaveIndex <KeyMustHaveIndex>` or :ref:`KeyMustHaveValue <KeyMustHaveValue>` extending :ref:`CompareAndSwapCondition <CompareAndSwapCondition>`.
+  Defaults to None.
+
+**Returns** a Future wrapped around either EtcdSetKeyResponse or EtcdRequestError extending EtcdSetKeyResult.
+
+Implemented according to etcd Client API: "`Setting the value of a key <https://coreos.com/etcd/docs/latest/api.html#setting-the-value-of-a-key>`_".
+See also "`Using key TTL <https://coreos.com/etcd/docs/latest/api.html#using-key-ttl>`_",
+"`Creating a hidden node <https://coreos.com/etcd/docs/latest/api.html#creating-a-hidden-node>`_"
+and "`Atomic Compare-and-Swap <https://coreos.com/etcd/docs/latest/api.html#atomic-compare-and-swap>`_".
+
+.. _first setKey example:
+
+In order to set a new key, specify a full path and a key name through the :ref:`EtcdKey  <EtcdKey>` case class.
+Also input a value through the :ref:`EtcdValue  <EtcdValue>` case class::
+
+    val key = EtcdModel.key("/foo")
+    val value = EtcdModel.value("bar")
+
+    val keySet: Future[EtcdSetKeyResult] = etcdcli.setKey(key, value)
+
+    keySet onSuccess {
+      case EtcdSetKeyResponse(headers, body) =>
+        // should be "set"
+        body.action
+        // should be value
+        body.node.value
+    }
+
+The value of a key can be updated by choosing the same key, but a different value.
+
+Optionally one can choose a TTL (time to live), which is a lifespan in seconds for the key-value.
+When it expires, the key is deleted::
+
+    val ttl = EtcdTTL(1200)
+    val setTTLResult: Future[EtcdSetKeyResult] = for {
+      set <- keySet
+      ttl <- etcdcli.setKey(key, value, Some(ttl))
+    } yield ttl
+
+    setTTLResult onSuccess {
+      case EtcdSetKeyResponse(headers, body) =>
+        // should be Some(ttl)
+        body.node.ttl
+    }
+
+It is also possible to update the TTL of a key by specifying a new value for the ttlOp field with the same key.
+A similar effect can be achieved using :ref:`EtcdClient.refreshTTL  <EtcdClient.refreshTTL>`, except that this last operation does not notify watchers.
+
+The TTL can be unset by updating the key with the field ttlOp set to None and with condition KeyMustExist set to true::
+
+    val unsetTTLResult: Future[EtcdSetKeyResult] = for {
+      ttl <- setTTLResult
+      unsetTTL <- etcdcli.setKey(key, value, None, Some(KeyMustExist(true)))
+    } yield unsetTTL
+
+    unsetTTLResult onSuccess {
+      case EtcdSetKeyResponse(headers, body) =>
+        // should be None
+        body.node.ttl
+    }
+
+Additionally, etcd allows to conditionally compare and swap values.
+This can be done by setting the conditionOp field to any of the case classes extending trait :ref:`CompareAndSwapCondition <CompareAndSwapCondition>`.
+
+.. _Compare and swap examples:
+
+The :ref:`KeyMustExist <KeyMustExist>` condition, when set to ``false``, requires that the key be a new key in the specified directory in etcd::
+
+    val randomKey =
+      EtcdModel.key("/docsExamples/k1/smxx84i5l6geviqwgkfjil8qR1anm/xgsisaevcObfu6j/bsjcmr")
+    val randomValue = EtcdModel.value("0000000001")
+    val newValue = EtcdModel.value("0000000002")
+    val thirdValue = EtcdModel.value("0000000003")
+    val fourthValue = EtcdModel.value("0000000004")
+
+    // given a non existing key with condition KeyMustExist set to false
+    val newKeySet: Future[EtcdSetKeyResult] =
+      etcdcli.setKey(randomKey, randomValue, None, Some(KeyMustExist(false)))
+
+    newKeySet onSuccess {
+      case EtcdSetKeyResponse(headers, body) =>
+        // should be randomValue
+        body.node.value
+    }
+
+The :ref:`KeyMustExist <KeyMustExist>` condition, when set to ``true``, requires the key to exist in the specified directory in etcd::
+
+    val keyUpdated: Future[EtcdSetKeyResult] = for {
+      newSet <- newKeySet
+      // given an existing key with condition KeyMustExist set to true
+      keySet <- etcdcli.setKey(randomKey, newValue, None, Some(KeyMustExist(true)))
+    } yield keySet
+
+    keyUpdated onSuccess {
+      case EtcdSetKeyResponse(headers, body) =>
+        // should be newValue
+        val storedValue = body.node.value
+    }
+
+The :ref:`KeyMustHaveIndex <KeyMustHaveIndex>` condition requires that the last index of the key be the specified modified index::
+
+    val conditionalSetModIndex: Future[EtcdSetKeyResult] = for {
+      EtcdSetKeyResponse(headers, body) <- keyUpdated
+      //given an existing key with condition MustHaveIndex()
+      // and the modified index of the previous put request
+      keySet <-
+      etcdcli.setKey(randomKey, thirdValue, None, Some(KeyMustHaveIndex(body.node.modifiedIndex)))
+    } yield keySet
+
+    conditionalSetModIndex onSuccess {
+      case EtcdSetKeyResponse(headers, body) =>
+        // should be thirdValue
+        body.node.value
+    }
+
+The :ref:`KeyMustHaveValue <KeyMustHaveValue>` condition requires that the value of the key at the time of the request be the specified value::
+
+    val mustHaveValSetKey: Future[EtcdSetKeyResult] = for {
+      indexSet <- conditionalSetModIndex
+      // given an existing key with condition MustHaveValue() and the current value of the key
+      mustHave <- etcdcli.setKey(randomKey, fourthValue, None, Some(KeyMustHaveValue(thirdValue)))
+    } yield mustHave
+
+    mustHaveValSetKey onSuccess {
+      case EtcdSetKeyResponse(headers, body) =>
+        // should be fourthValue
+        body.node.value
+    }
+
+However, if the conditions are not met, the outcome is an error::
+
+    val conditionalSetFailure: Future[EtcdSetKeyResult] = for {
+      mustHaveSet <- mustHaveValSetKey
+      // given a request with an already existing key and condition KeyMustExist set to false
+      failure <- etcdcli.setKey(randomKey, randomValue, None, Some(KeyMustExist(false)))
+    } yield failure
+
+    conditionalSetFailure onSuccess {
+      case EtcdRequestError(statusCode, headers, body) =>
+        // should be EtcdResponseCode(412)
+        statusCode
+        // should be
+        // should be "Key already exists"
+        body.message
+    }
+
+.. _EtcdClient.waitForKey:
+
+waitForKey
+----------
+
+Sets a watch, which returns a get response if there is a change in a key in etcd::
+
+ waitForKey(
+ key: EtcdKey,
+ callback: EtcdWaitCallback,
+ modifiedIndexForWait: Option[EtcdIndex] = None,
+ recursive: Boolean = false
+ ): Future[EtcdWaitAccepted]
+
+Parameters:
+
+* **key:** :ref:`EtcdKey  <EtcdKey>` on watch.
+
+* **callback:** :ref:`EtcdWaitCallback <EtcdWaitForKeyResult>` which will return a EtcdGetResonse or a throwable once it is called upon.
+
+* **modifiedIndexForWait:** :ref:`EtcdIndex  <EtcdIndex>` associated to an operation performed on a given key.
+
+* **recursive:** waits on changes of subnoded of the specified key, when it is set to true.
+  Defaults to false.
+
+**Returns** a Future wrapped around either :ref:`EtcdWaitAccepted  <EtcdWaitForKeyResult>` containing the headers of the response or EtcdRequestError extending EtcdWaitForKeyResult.
+
+Implemented according to etcd Client API: "`Waiting for a change <https://coreos.com/etcd/docs/latest/api.html#waiting-for-a-change>`_".
+
+The following code snippets illustrate a possible use case of this method.
+They are a continuation of the :ref:`first three examples of the EtcdClient.setKey method <first setKey example>`::
+
+    val waitCallback = new FutureBasedEtcdWaitCallback()
+    val waitCall: Future[EtcdWaitForKeyResult] = for {
+      unset <- unsetTTLResult
+      wait <- etcdcli.waitForKey(key, waitCallback)
+    } yield wait
+
+    waitCall onSuccess {
+      case EtcdWaitForKeyAccepted(headers: EtcdHeaders) =>
+        // should be a String
+        headers.xEtcdClusterId.id
+        // should be true
+        EtcdWaitForKeyAccepted(headers: EtcdHeaders).accepted
+        // should be false
+        waitCallback.isCompleted
+    }
+
+Now, suppose we want the result of the operation (for example, the body of a response) once there has been a change in the state of the key::
+
+    val updatedValue = EtcdModel.value("phoo")
+
+    val callbackAccepted: Future[EtcdGetKeyBody] = for {
+      // an update to key, so as to provoke a call to the wait
+      update <- etcdcli.setKey(key, updatedValue)
+      EtcdGetKeyResponse(headers: EtcdHeaders, body: EtcdGetKeyBody) <- waitCallback.future
+    } yield body
+
+    callbackAccepted onSuccess {
+      case EtcdGetKeyBody(action, node) =>
+        // should be true
+        // since there was an update before calling for the future
+        waitCallback.isCompleted
+    }
+
+Optionally, one can choose an etcd modified index for which the watch is being set.
+An etcd modified index is the integer associated to the operation modifying the state of a key in etcd.
+If an index `i` is chosen, such that there were subsequent changes in the state of the key after the operation associated to `i`, etcd returns an **EtcdGetKeyResponse** with the state of the key after the first change to that key registered after operation indexed by `i`.
+For an index `j` greater than the etcd index associated to the last operation, the watch will not return a response until a change with index greater than `j` is made.
+
+The following lines of code illustrate this.
+They are related to the :ref:`compare and swap examples  <Compare and swap examples>`::
+
+    val waitCallback2 = new FutureBasedEtcdWaitCallback()
+    // when a wait call with a second callback and the modified index
+    // of a previous operation plus 1 is executed
+    val waitCall2: Future[EtcdWaitForKeyResult] = for {
+      EtcdSetKeyResponse(headers, body) <- keyUpdated
+      mustHaveCondition <- mustHaveValSetKey
+      accepted <- etcdcli.
+        waitForKey(randomKey, waitCallback2, Some(EtcdIndex(body.node.modifiedIndex.index + 1)))
+    } yield accepted
+
+    // then the wait call must be accepted
+    waitCall2 onSuccess {
+      case EtcdWaitForKeyAccepted(headers) =>
+        // should be true,
+        // since a change in the value of the key has already been registered
+        EtcdWaitForKeyAccepted(headers).accepted
+    }
+
+    waitCallback2.future onSuccess {
+      case EtcdGetKeyResponse(headers, body) =>
+        // should be thirdValue
+        // since this was the update made to this key
+        // immediately after the keyUpdated
+        body.node.value
+    }
+
+Also, one can choose to wait for changes in any of the subnodes of a given node.
+This can be achieved by setting the field recursive to true::
+
+    val value1: EtcdValue = EtcdModel.value("firstValue")
+    val value2: EtcdValue = EtcdModel.value("secondValue")
+    val value3: EtcdValue = EtcdModel.value("thirdValue")
+
+    val listOfNodes: List[String] = List("path", "leading", "to", "node")
+    // and a key of a node being used as a directory
+    val dirKey: EtcdKey = EtcdModel.fromPath(listOfNodes)
+    // returns EtcdKey(/path/leading/to/node/subnode)
+    val keyInDir: EtcdKey = EtcdModel.fromPath(listOfNodes ::: List("subnode"))
+    // and a callback
+    val waitOneCallback = new FutureBasedEtcdWaitCallback()
+    // when set and wait operations are performed in order
+    val callReturned = for {
+      set <- etcdcli.setKey(keyInDir, value1)
+      setWatch <- etcdcli.waitForKey(dirKey, waitOneCallback, None, true)
+      modifyKey1 <- etcdcli.setKey(keyInDir, value2)
+      modifyKey2 <- etcdcli.setKey(keyInDir, value3)
+      returned <- waitOneCallback.future
+    } yield returned
+
+    // then the wait detects the nested change on value2 update
+    callReturned onSuccess {
+      case EtcdGetKeyResponse(headers, body) =>
+        // should be true
+        waitOneCallback.isCompleted
+        //should be value2
+        body.node.value
+    }
+
+The field recursive defaults to false.
+
+.. _EtcdClient.getKey:
+
+getKey
+------
+
+Gets the current state of a key in etcd::
+
+ getKey(
+ key: EtcdKey
+ ): Future[EtcdGetKeyResponse]
+
+Parameters:
+
+* **key:** :ref:`EtcdKey  <EtcdKey>` whose status is queried.
+
+**Returns** a Future wrapped around either an instance of EtcdGetKeyResponse containing the state of the key or an instance of EtcdRequestError extending EtcdSetKeyResult.
+
+Implemented according to etcd Client API: "`Get the value of a key <https://coreos.com/etcd/docs/latest/api.html#get-the-value-of-a-key>`_".
+
+.. _EtcdClient.getKey examples:
+
+In order to get the state of a key, specify a full path and a key name through the :ref:`EtcdKey  <EtcdKey>` case class::
+
+    val key = EtcdModel.key("/foo")
+    val value = EtcdModel.value("bar")
+
+    // setting a key and then a get request
+    val result = for {
+      keySet <- etcdcli.setKey(key, value)
+      getRequest <- etcdcli.getKey(key)
+    } yield getRequest
+
+    // Get ok
+    result onSuccess {
+      case EtcdGetKeyResponse(headers, body) =>
+        // should be value
+        body.node.value
+    }
+
+Note that there is no difference in a GET request for a key and a directory.
+An GET HTTP request made to a node used as a directory looks the same as a request to a node used as a key.
+However, there is a difference in terms of a response.
+The getKey method is intended to handle responses only for requests to nodes used as keys.
+If it is used to make a request to a directory, it will return an EtcdRequestError with the statusCode field set to ``200``.
+This means that etcd accepts the request and returns a response.
+However EtcdClient does not parse the response.
+In order to get a response which extracts the JSON returned in the response body into a case class, use :ref:`EtcdClient.listDir  <EtcdClient.listDir>`.
+
+.. _EtcdClient.deleteKey:
+
+deleteKey
+---------
+
+Deletes a key from etcd::
+
+ deleteKey(
+ key: EtcdKey,
+ deleteConditionOp: Option[ConditionalDeleteCondition] = None
+ ): Future[EtcdDeleteKeyResult]
+
+Parameters:
+
+* **key:** :ref:`EtcdKey  <EtcdKey>` to be deleted.
+
+* **deleteConditionOp:** One of case classes :ref:`KeyMustHaveIndex <KeyMustHaveIndex>` or :ref:`KeyMustHaveValue <KeyMustHaveValue>` extending :ref:`ConditionalDeleteCondition <ConditionalDeleteCondition>`.
+  Defaults to None.
+
+**Returns** a Future wrapped around either EtcdDeleteKeyResponse or EtcdRequestError extending EtcdDeleteKeyResult.
+
+Implemented according to etcd Client API: "`Deleting a key <https://coreos.com/etcd/docs/latest/api.html#deleting-a-key>`_".
+See also "`Atomic Compare-and-Delete <https://coreos.com/etcd/docs/latest/api.html#atomic-compare-and-delete>`_".
+
+To delete a key, just input the key to be deleted through an instance of :ref:`EtcdKey  <EtcdKey>`.
+Consider the code snippet from the :ref:`EtcdClient.getKey examples  <EtcdClient.getKey examples>`.
+The following lines of code are a continuation of them::
+
+    val deleteResult = for {
+      result <- result
+      delete <- etcdcli.deleteKey(key)
+    } yield delete
+
+    deleteResult onSuccess {
+      case EtcdDeleteKeyResponse(headers, body) =>
+        // should be "delete"
+        body.action
+    }
+
+    // Get 404 not found
+    val failedGet: Future[Int] = deleteResult flatMap { delete =>
+      etcdcli.getKey(key).map {
+        case EtcdRequestError(statusCode, headers, error) =>
+          //should be 404
+          statusCode.code
+      }
+    }
+
+Optionally etcd allows to conditionally delete a key.
+This can be done by setting the conditionOp field to any of the case classes extending trait :ref:`ConditionalDeleteCondition <ConditionalDeleteCondition>`::
+
+    val someKey = EtcdModel.key("/foo")
+    val someValue = EtcdModel.value("bar")
+
+    //given an existing key
+    val deletedF = for {
+      created <- etcdcli.setKey(someKey, someValue)
+      deleted <- etcdcli.deleteKey(key, Some(KeyMustHaveValue(someValue)))
+    } yield deleted
+
+    deletedF onSuccess {
+      case EtcdDeleteKeyResponse(headers, body) =>
+        // should be "compareAndDelete"
+        body.action
+    }
+
+    val mustHaveIdxDelete: Future[EtcdDeleteKeyResult] = for {
+      deleted <- deletedF
+      // key set again
+      EtcdSetKeyResponse(headers, body) <- etcdcli.setKey(someKey, someValue)
+      deletedAgain <-
+      etcdcli.deleteKey(someKey, Some(KeyMustHaveIndex(body.node.modifiedIndex)))
+    } yield deletedAgain
+
+    mustHaveIdxDelete onSuccess {
+      case EtcdDeleteKeyResponse(headers, body) =>
+        // should be "compareAndDelete"
+        body.action
+    }
+
+.. _EtcdClient.createDir:
+
+createDir
+---------
+
+Creates an empty directory in the specified path::
+
+ createDir(
+ dir: EtcdDirectory,
+ ttlOp: Option[EtcdTTL] = None
+ ): Future[EtcdCreateDirResult]
+
+Parameters:
+
+* **dir:** :ref:`EtcdDirectory  <EtcdDirectory>` to be created.
+
+* **ttlOp:** Life span in seconds of the directory.
+  Defaults to None.
+
+**Returns** a Future wrapped around either EtcdCreateDirResponse or EtcdRequestError extending EtcdCreateDirResult.
+
+Implemented according to etcd Client API: "`Creating Directories <https://coreos.com/etcd/docs/latest/api.html#creating-directories>`_".
+See also "`Using a directory TTL <https://coreos.com/etcd/docs/latest/api.html#using-a-directory-ttl>`_".
+
+.. _first EtcdClient.createDir example:
+
+In order to set a new empty dir, specify a full path through the :ref:`EtcdDirectory  <EtcdDirectory>` case class::
+
+    val dir = EtcdModel.directory("/path/leading/to/some/node/")
+
+    val dirCreated: Future[EtcdCreateDirResult] = etcdcli.createDir(dir)
+
+    dirCreated onSuccess {
+      case EtcdCreateDirResponse(headers, body) =>
+        // should be "set"
+        body.action
+        // should be true
+        body.node.dir
+    }
+
+One can also choose to create a directory by setting a key in it using :ref:`EtcdClient.setKey <EtcdClient.setKey>`.
+
+.. _second EtcdClient.createDir example:
+
+Optionally one can choose a TTL (time to live), which is a lifespan in seconds for the key-value.
+When it expires, the key is deleted::
+
+    val dirTTL = EtcdModel.directory("/path/leading/to/other/node/")
+    // and a time to leave
+    val ttl = EtcdTTL(2400)
+
+    val dirTTLCreated: Future[EtcdCreateDirResult] = etcdcli.createDir(dirTTL, Some(ttl))
+
+    dirTTLCreated onSuccess {
+      case EtcdCreateDirResponse(headers, body) =>
+        // should be "set"
+        body.action
+        //  should be true
+        body.node.dir
+        // should be <= ttl.ttl
+        body.node.ttl.get.ttl
+    }
+
+To update the TTL, use method :ref:`EtcdClient.refreshDirTTL  <EtcdClient.refreshDirTTL>`.
+
+.. _EtcdClient.deleteDir:
+
+deleteDir
+---------
+
+Deletes a directory from etcd::
+
+ deleteDir(
+ dir: EtcdDirectory,
+ recursive: Boolean = false
+ ): Future[EtcdCreateDirResult]
+
+Parameters:
+
+* **dir:** :ref:`EtcdDirectory  <EtcdDirectory>` to be deleted.
+
+* **recursive:** enables deletion of non-empty directories when set to true.
+  Defaults to false.
+
+**Returns** a Future wrapped around either EtcdCreateDirResponse or EtcdRequestError extending EtcdCreateDirResult.
+
+Implemented according to etcd Client API: "`Deleting a Directory <https://coreos.com/etcd/docs/latest/api.html#deleting-a-directory>`_".
+
+An empty directory can be deleted form etcd by simply specifying :ref:`EtcdDirectory  <EtcdDirectory>` leading to the directory in etcd.
+
+The following lines of code are a continuation of the :ref:`first EtcdClient.createDir example <first EtcdClient.createDir example>`::
+
+    val dirDeleted: Future[EtcdCreateDirResult] = for {
+      created <- dirCreated
+      deleted <- etcdcli.deleteDir(dir)
+    } yield deleted
+
+    dirDeleted onSuccess {
+      case EtcdCreateDirResponse(headers, body) =>
+        // should be "delete"
+        body.action
+    }
+
+However, for a non-empty directory one must also set the recursive parameter (which defaults to false) to true.
+
+.. _EtcdClient.listDir:
+
+listDir
+-------
+
+Lists the elements of a directory::
+
+ listDir(
+ dir: EtcdDirectory,
+ recursive: Boolean = false
+ ): Future[EtcdListDirResult]
+
+Parameters:
+
+* **dir:** :ref:`EtcdDirectory  <EtcdDirectory>` to be listed.
+
+* **recursive:** recursively gets all subnodes of a directory when set to true.
+
+* **sorted:** sorts listed key when set to true in combination with the recursive parameter.
+
+**Returns** a Future wrapped around either EtcdListDirResponse or EtcdRequestError extending EtcdListDirResult.
+
+Implemented according to etcd Client API: "`Listing a directory <https://coreos.com/etcd/docs/latest/api.html#listing-a-directory>`_".
+See also "`Atomically Creating In-Order Keys <https://coreos.com/etcd/docs/latest/api.html#atomically-creating-in-order-keys>`_" for information on the sorted parameter.
+
+When the field recursive is set to false (as it is by default), it lists the immediate children of the given node.
+When it is set to true, it also recursively lists subnodes of the directory.
+
+When both parameters recursive and sorted are set to true, the list returned is ordered.
+
+.. _EtcdClient.refreshTTL:
+
+refreshTTL
+----------
+
+Updates the TTL of a key without notifying watchers::
+
+ refreshTTL(
+ key: EtcdKey,
+ ttlOp: EtcdTTL,
+ conditionOp: Option[CompareAndSwapCondition] = None
+ ): Future[EtcdSetKeyResult]
+
+Parameters:
+
+* **key:** :ref:`EtcdKey  <EtcdKey>` that is to be updated.
+
+* **ttlOp:** Life span in seconds of key-value .
+  Defaults to None.
+
+* **conditionOp:** One of case classes :ref:`KeyMustExist <KeyMustExist>`, :ref:`KeyMustHaveIndex <KeyMustHaveIndex>` or :ref:`KeyMustHaveValue <KeyMustHaveValue>` extending :ref:`CompareAndSwapCondition <CompareAndSwapCondition>`.
+  Defaults to None.
+
+**Returns** a Future wrapped around either EtcdSetKeyResponse or EtcdRequestError extending EtcdSetKeyResult.
+
+Implemented according to etcd Client API: "`Refreshing key TTL <https://coreos.com/etcd/docs/latest/api.html#refreshing-key-ttl>`_".
+
+When a watch is set, and a key is updated using :ref:`EtcdClient.setKey <EtcdClient.setKey>`, watchers are notified, triggering any operation conditionally set to follow given a particular response.
+This includes updates to its TTL.
+etcd allows updating TTL without notifying watches set on a key, thus not causing such side effects.
+EtcdClient implements this feature in the refreshTTL method::
+
+    val key = EtcdModel.key("/Hello!")
+    val value = EtcdModel.value("¡Hola!")
+    val ttl = EtcdTTL(1200)
+    val newTtl = EtcdTTL(2400)
+    val callback = new FutureBasedEtcdWaitCallback()
+
+    val refreshTTLRequest = for {
+      keySet <- etcdcli.setKey(key, value, Some(ttl))
+      watchReady <- etcdcli.waitForKey(key, callback)
+      ttlRefreshed <- etcdcli.refreshTTL(key, newTtl)
+    } yield ttlRefreshed
+
+    refreshTTLRequest onSuccess {
+      case EtcdSetKeyResponse(headers, body) =>
+        // should be "set"
+        body.action
+        // should be Some(newTtl)
+        body.node.ttl
+        // should be false
+        // because the watch was never notified of an update operation
+        callback.isCompleted
+    }
+
+When a TTL is refreshed, its value cannot be updated.
+
+.. _EtcdClient.refreshDirTTL:
+
+refreshDirTTL
+-------------
+
+Refreshes or unsets the TTL of an existing directory::
+
+ refreshDirTTL(
+ dir: EtcdDirectory,
+ ttlOp: Option[EtcdTTL]
+ ): Future[EtcdCreateDirResult]
+
+Parameters:
+
+* **dir:** :ref:`EtcdDirectory  <EtcdDirectory>` whose TTL is to be updated.
+
+* **ttlOp:** Life span in seconds of the directory.
+  Defaults to None.
+
+**Returns** a Future wrapped around either EtcdCreateDirResponse or EtcdRequestError extending EtcdCreateDirResult.
+
+Implemented according to etcd Client API: "`Using a directory TTL <https://coreos.com/etcd/docs/latest/api.html#using-a-directory-ttl>`_".
+
+Sets a lifespan in seconds for an existing directory.
+Once it expires, the directory is deleted.
+The following code snippets complement the :ref:`second EtcdClient.createDir example <second EtcdClient.createDir example>`::
+
+    // and a different time to live
+    val newTTL = EtcdTTL(6000)
+
+    val ttlRefreshed: Future[EtcdCreateDirResult] = for {
+      dirTTLC <- dirTTLCreated
+      refreshed <- etcdcli.refreshDirTTL(dirTTL, Some(newTTL))
+    } yield refreshed
+
+    ttlRefreshed onSuccess {
+      case EtcdCreateDirResponse(headers, body) =>
+        // should be "update"
+        body.action
+        // should be true
+        body.node.dir
+        // should should be <= newTTL.ttl
+        body.node.ttl.get.ttl
+    }
+
+Setting ttlOp field to None allows to unset TTL::
+
+    val ttlUnset: Future[EtcdCreateDirResult] = for {
+      refreshed <- ttlRefreshed
+      unset <- etcdcli.refreshDirTTL(dirTTL, None)
+    } yield unset
+
+    ttlUnset onSuccess {
+      case EtcdCreateDirResponse(headers, body) =>
+        // should be None
+        body.node.ttl
+    }
+
+.. _EtcdClient.createKeyFromCurrentEtcdIndex:
+
+createKeyFromCurrentEtcdIndex
+-----------------------------
+
+Creates a key in a specified directory whose name is the current etcd index preceded with leading zeros::
+
+ createKeyFromCurrentEtcdIndex(
+ dir: EtcdDirectory,
+ value: EtcdValue
+ ): Future[EtcdSetKeyResult]
+
+Parameters:
+
+* **dir:** :ref:`EtcdDirectory  <EtcdDirectory>` where the new key will be placed.
+
+* **value:** :ref:`EtcdValue  <EtcdValue>` to be associated to key.
+
+**Returns** a Future wrapped around either EtcdSetKeyResponse or EtcdRequestError extending EtcdSetKeyResult.
+
+Implemented according to etcd Client API: "`Atomically Creating In-Order Keys <https://coreos.com/etcd/docs/latest/api.html#atomically-creating-in-order-keys>`_".
+
+etcd keeps a counter for every operation performed.
+The etcd index keeps track of this counter, that is, it is the integer associated to the last opeartion performed in etcd.
+Given a specified directory :ref:`EtcdDirectory  <EtcdDirectory>`, createKeyFromCurrentEtcdIndex creates a key in that directory named after the etcd index and associates the value inputed through field value to it.
+This allows to create keys which are strictly ordered by those indexes, since etcd indexes increment monotonously::
+
+    val value1: EtcdValue = EtcdModel.value("firstValue")
+    val value2: EtcdValue = EtcdModel.value("secondValue")
+    // and a existing directory
+    val dir: EtcdDirectory = EtcdModel.directory("/path/to/node/")
+
+    // createDir and createKeyFromCurrentEtcdIndex operations performed successively
+    val createUniqueKeyReq = for {
+      newDirReq <- etcdcli.createDir(dir)
+      newKeyFromIndex <- etcdcli.createKeyFromCurrentEtcdIndex(dir, value1)
+      secondKeyFromIndex <- etcdcli.createKeyFromCurrentEtcdIndex(dir, value2)
+    } yield List(newKeyFromIndex, secondKeyFromIndex)
+
+    createUniqueKeyReq onSuccess {
+      case list =>
+        val firstResponseBody = list.head match {
+          case EtcdSetKeyResponse(headers, body) =>
+            body
+        }
+        val secondResponseBody = list.tail.head match {
+          case EtcdSetKeyResponse(headers, body) =>
+            body
+        }
+        // sample key: EtcdKey(/path/to/node/00000000000000000118)
+        val key1 = firstResponseBody.node.key
+        // sample index: EtcdIndex(118)
+        val modIdx1 = firstResponseBody.node.modifiedIndex
+        //The created key name is 000000${modIdx1.index.toString}, thus
+        // this example's integer value is 118
+        val lastNodeName1 = EtcdModel.toPath(key1).takeRight(1).head.toInt
+        //  sample key: EtcdKey(/path/to/node/00000000000000000119)
+        val key2 = secondResponseBody.node.key
+        // sample index: EtcdIndex(119)
+        val modIdx2 = secondResponseBody.node.modifiedIndex
+        //The created key name is 000000${modIdx1.index.toString}, thus
+        // this example's integer value is 119
+        val lastNodeName2 = EtcdModel.toPath(key2).takeRight(1).head.toInt
+        // should be true
+        modIdx1.index < modIdx2.index
+        // should be true, i.e. the names of the last nodes are ordered
+        lastNodeName1 < lastNodeName2
+    }

@@ -1,0 +1,814 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Key-Value Methods &mdash; EtcdClient 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/agogo.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="EtcdClient 1.0 documentation" href="../index.html" />
+    <link rel="next" title="Statistics Methods" href="Statistics.html" />
+    <link rel="prev" title="EtcdClient" href="EtcdClient.html" /> 
+  </head>
+  <body role="document">
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="../index.html">EtcdClient 1.0 documentation</a></div>
+        <div class="rel" role="navigation" aria-label="related navigation">
+          <a href="EtcdClient.html" title="EtcdClient"
+             accesskey="P">previous</a> |
+          <a href="Statistics.html" title="Statistics Methods"
+             accesskey="N">next</a> |
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="key-value-methods">
+<span id="id1"></span><h1>Key-Value Methods<a class="headerlink" href="#key-value-methods" title="Permalink to this headline">¶</a></h1>
+<p>The implementation of key-value methods follows the specification given in the <a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html">etcd Api</a>.
+Their purpose is to set, retrieve, modify or delete keys, values and directories in etcd.
+It is also possible to set a watch (also known as wait) on etcd keys, so as to monitor changes in the server in real time and conditionally set operations depending on the response obtained once a change in the data is registered.</p>
+<p>Key-Value methods take as inputs case classes defined in package <a class="reference internal" href="../Model/Model.html#model"><span>model</span></a>.
+The recommended way to get input data (for example, instances of <a class="reference internal" href="../Model/Model.html#etcdkey"><span>EtcdKey</span></a>, <a class="reference internal" href="../Model/Model.html#etcddirectory"><span>EtcdDirectory</span></a>, or <a class="reference internal" href="../Model/Model.html#etcdvalue"><span>EtcdValue</span></a> case classes) for key-value methods is using the <a class="reference internal" href="../Model/Model.html#etcdmodel"><span>EtcdModel</span></a> object.</p>
+<p>In what follows, we describe each of the key-value methods in package client.
+We also add some examples that illustrate how they may be used.
+They are sometimes interrelated.
+Mostly the order is lineal.
+However, when the order is different, we make sure to signal it.</p>
+<div class="section" id="setkey">
+<span id="etcdclient-setkey"></span><h2>setKey<a class="headerlink" href="#setkey" title="Permalink to this headline">¶</a></h2>
+<p>Sets or updates a key in a specific etcd node; also, sets and unsets TTL:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">setKey</span><span class="o">(</span>
+<span class="n">key</span><span class="k">:</span> <span class="kt">EtcdKey</span><span class="o">,</span>
+<span class="n">value</span><span class="k">:</span> <span class="kt">EtcdValue</span><span class="o">,</span>
+<span class="n">ttlOp</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">EtcdTTL</span><span class="o">]</span> <span class="k">=</span> <span class="nc">None</span><span class="o">,</span>
+<span class="n">conditionOp</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">CompareAndSwapCondition</span><span class="o">]</span> <span class="k">=</span> <span class="nc">None</span>
+<span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdSetKeyResult</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>key:</strong> <a class="reference internal" href="../Model/Model.html#etcdkey"><span>EtcdKey</span></a> to be set or updated.</li>
+<li><strong>value:</strong> <a class="reference internal" href="../Model/Model.html#etcdvalue"><span>EtcdValue</span></a> to be associated to key.</li>
+<li><strong>ttlOp:</strong> Life span in seconds of key-value.
+Defaults to None.</li>
+<li><strong>conditionOp:</strong> One of case classes <a class="reference internal" href="../Model/Model.html#keymustexist"><span>KeyMustExist</span></a>, <a class="reference internal" href="../Model/Model.html#keymusthaveindex"><span>KeyMustHaveIndex</span></a> or <a class="reference internal" href="../Model/Model.html#keymusthavevalue"><span>KeyMustHaveValue</span></a> extending <a class="reference internal" href="../Model/Model.html#compareandswapcondition"><span>CompareAndSwapCondition</span></a>.
+Defaults to None.</li>
+</ul>
+<p><strong>Returns</strong> a Future wrapped around either EtcdSetKeyResponse or EtcdRequestError extending EtcdSetKeyResult.</p>
+<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#setting-the-value-of-a-key">Setting the value of a key</a>&#8221;.
+See also &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#using-key-ttl">Using key TTL</a>&#8221;,
+&#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#creating-a-hidden-node">Creating a hidden node</a>&#8221;
+and &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#atomic-compare-and-swap">Atomic Compare-and-Swap</a>&#8221;.</p>
+<p id="first-setkey-example">In order to set a new key, specify a full path and a key name through the <a class="reference internal" href="../Model/Model.html#etcdkey"><span>EtcdKey</span></a> case class.
+Also input a value through the <a class="reference internal" href="../Model/Model.html#etcdvalue"><span>EtcdValue</span></a> case class:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">key</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">key</span><span class="o">(</span><span class="s">&quot;/foo&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">value</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="s">&quot;bar&quot;</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">keySet</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdSetKeyResult</span><span class="o">]</span> <span class="k">=</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">setKey</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">)</span>
+
+<span class="n">keySet</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdSetKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be &quot;set&quot;</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">action</span>
+    <span class="c1">// should be value</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">value</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>The value of a key can be updated by choosing the same key, but a different value.</p>
+<p>Optionally one can choose a TTL (time to live), which is a lifespan in seconds for the key-value.
+When it expires, the key is deleted:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">ttl</span> <span class="k">=</span> <span class="nc">EtcdTTL</span><span class="o">(</span><span class="mi">1200</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">setTTLResult</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdSetKeyResult</span><span class="o">]</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">set</span> <span class="k">&lt;-</span> <span class="n">keySet</span>
+  <span class="n">ttl</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">setKey</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="n">ttl</span><span class="o">))</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">ttl</span>
+
+<span class="n">setTTLResult</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdSetKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be Some(ttl)</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">ttl</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>It is also possible to update the TTL of a key by specifying a new value for the ttlOp field with the same key.
+A similar effect can be achieved using <a class="reference internal" href="#etcdclient-refreshttl"><span>EtcdClient.refreshTTL</span></a>, except that this last operation does not notify watchers.</p>
+<p>The TTL can be unset by updating the key with the field ttlOp set to None and with condition KeyMustExist set to true:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">unsetTTLResult</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdSetKeyResult</span><span class="o">]</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">ttl</span> <span class="k">&lt;-</span> <span class="n">setTTLResult</span>
+  <span class="n">unsetTTL</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">setKey</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">,</span> <span class="nc">None</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">KeyMustExist</span><span class="o">(</span><span class="kc">true</span><span class="o">)))</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">unsetTTL</span>
+
+<span class="n">unsetTTLResult</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdSetKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be None</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">ttl</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Additionally, etcd allows to conditionally compare and swap values.
+This can be done by setting the conditionOp field to any of the case classes extending trait <a class="reference internal" href="../Model/Model.html#compareandswapcondition"><span>CompareAndSwapCondition</span></a>.</p>
+<p id="compare-and-swap-examples">The <a class="reference internal" href="../Model/Model.html#keymustexist"><span>KeyMustExist</span></a> condition, when set to <code class="docutils literal"><span class="pre">false</span></code>, requires that the key be a new key in the specified directory in etcd:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">randomKey</span> <span class="k">=</span>
+  <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">key</span><span class="o">(</span><span class="s">&quot;/docsExamples/k1/smxx84i5l6geviqwgkfjil8qR1anm/xgsisaevcObfu6j/bsjcmr&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">randomValue</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="s">&quot;0000000001&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">newValue</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="s">&quot;0000000002&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">thirdValue</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="s">&quot;0000000003&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">fourthValue</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="s">&quot;0000000004&quot;</span><span class="o">)</span>
+
+<span class="c1">// given a non existing key with condition KeyMustExist set to false</span>
+<span class="k">val</span> <span class="n">newKeySet</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdSetKeyResult</span><span class="o">]</span> <span class="k">=</span>
+  <span class="n">etcdcli</span><span class="o">.</span><span class="n">setKey</span><span class="o">(</span><span class="n">randomKey</span><span class="o">,</span> <span class="n">randomValue</span><span class="o">,</span> <span class="nc">None</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">KeyMustExist</span><span class="o">(</span><span class="kc">false</span><span class="o">)))</span>
+
+<span class="n">newKeySet</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdSetKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be randomValue</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">value</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="../Model/Model.html#keymustexist"><span>KeyMustExist</span></a> condition, when set to <code class="docutils literal"><span class="pre">true</span></code>, requires the key to exist in the specified directory in etcd:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">keyUpdated</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdSetKeyResult</span><span class="o">]</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">newSet</span> <span class="k">&lt;-</span> <span class="n">newKeySet</span>
+  <span class="c1">// given an existing key with condition KeyMustExist set to true</span>
+  <span class="n">keySet</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">setKey</span><span class="o">(</span><span class="n">randomKey</span><span class="o">,</span> <span class="n">newValue</span><span class="o">,</span> <span class="nc">None</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">KeyMustExist</span><span class="o">(</span><span class="kc">true</span><span class="o">)))</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">keySet</span>
+
+<span class="n">keyUpdated</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdSetKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be newValue</span>
+    <span class="k">val</span> <span class="n">storedValue</span> <span class="k">=</span> <span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">value</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="../Model/Model.html#keymusthaveindex"><span>KeyMustHaveIndex</span></a> condition requires that the last index of the key be the specified modified index:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">conditionalSetModIndex</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdSetKeyResult</span><span class="o">]</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="nc">EtcdSetKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">&lt;-</span> <span class="n">keyUpdated</span>
+  <span class="c1">//given an existing key with condition MustHaveIndex()</span>
+  <span class="c1">// and the modified index of the previous put request</span>
+  <span class="n">keySet</span> <span class="k">&lt;-</span>
+  <span class="n">etcdcli</span><span class="o">.</span><span class="n">setKey</span><span class="o">(</span><span class="n">randomKey</span><span class="o">,</span> <span class="n">thirdValue</span><span class="o">,</span> <span class="nc">None</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">KeyMustHaveIndex</span><span class="o">(</span><span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">modifiedIndex</span><span class="o">)))</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">keySet</span>
+
+<span class="n">conditionalSetModIndex</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdSetKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be thirdValue</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">value</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="../Model/Model.html#keymusthavevalue"><span>KeyMustHaveValue</span></a> condition requires that the value of the key at the time of the request be the specified value:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">mustHaveValSetKey</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdSetKeyResult</span><span class="o">]</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">indexSet</span> <span class="k">&lt;-</span> <span class="n">conditionalSetModIndex</span>
+  <span class="c1">// given an existing key with condition MustHaveValue() and the current value of the key</span>
+  <span class="n">mustHave</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">setKey</span><span class="o">(</span><span class="n">randomKey</span><span class="o">,</span> <span class="n">fourthValue</span><span class="o">,</span> <span class="nc">None</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">KeyMustHaveValue</span><span class="o">(</span><span class="n">thirdValue</span><span class="o">)))</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">mustHave</span>
+
+<span class="n">mustHaveValSetKey</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdSetKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be fourthValue</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">value</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>However, if the conditions are not met, the outcome is an error:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">conditionalSetFailure</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdSetKeyResult</span><span class="o">]</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">mustHaveSet</span> <span class="k">&lt;-</span> <span class="n">mustHaveValSetKey</span>
+  <span class="c1">// given a request with an already existing key and condition KeyMustExist set to false</span>
+  <span class="n">failure</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">setKey</span><span class="o">(</span><span class="n">randomKey</span><span class="o">,</span> <span class="n">randomValue</span><span class="o">,</span> <span class="nc">None</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">KeyMustExist</span><span class="o">(</span><span class="kc">false</span><span class="o">)))</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">failure</span>
+
+<span class="n">conditionalSetFailure</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdRequestError</span><span class="o">(</span><span class="n">statusCode</span><span class="o">,</span> <span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be EtcdResponseCode(412)</span>
+    <span class="n">statusCode</span>
+    <span class="c1">// should be</span>
+    <span class="c1">// should be &quot;Key already exists&quot;</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">message</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="waitforkey">
+<span id="etcdclient-waitforkey"></span><h2>waitForKey<a class="headerlink" href="#waitforkey" title="Permalink to this headline">¶</a></h2>
+<p>Sets a watch, which returns a get response if there is a change in a key in etcd:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">waitForKey</span><span class="o">(</span>
+<span class="n">key</span><span class="k">:</span> <span class="kt">EtcdKey</span><span class="o">,</span>
+<span class="n">callback</span><span class="k">:</span> <span class="kt">EtcdWaitCallback</span><span class="o">,</span>
+<span class="n">modifiedIndexForWait</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">EtcdIndex</span><span class="o">]</span> <span class="k">=</span> <span class="nc">None</span><span class="o">,</span>
+<span class="n">recursive</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span>
+<span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdWaitAccepted</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>key:</strong> <a class="reference internal" href="../Model/Model.html#etcdkey"><span>EtcdKey</span></a> on watch.</li>
+<li><strong>callback:</strong> <a class="reference internal" href="../Model/Model.html#etcdwaitforkeyresult"><span>EtcdWaitCallback</span></a> which will return a EtcdGetResonse or a throwable once it is called upon.</li>
+<li><strong>modifiedIndexForWait:</strong> <a class="reference internal" href="../Model/Model.html#etcdindex"><span>EtcdIndex</span></a> associated to an operation performed on a given key.</li>
+<li><strong>recursive:</strong> waits on changes of subnoded of the specified key, when it is set to true.
+Defaults to false.</li>
+</ul>
+<p><strong>Returns</strong> a Future wrapped around either <a class="reference internal" href="../Model/Model.html#etcdwaitforkeyresult"><span>EtcdWaitAccepted</span></a> containing the headers of the response or EtcdRequestError extending EtcdWaitForKeyResult.</p>
+<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#waiting-for-a-change">Waiting for a change</a>&#8221;.</p>
+<p>The following code snippets illustrate a possible use case of this method.
+They are a continuation of the <a class="reference internal" href="#first-setkey-example"><span>first three examples of the EtcdClient.setKey method</span></a>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">waitCallback</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">FutureBasedEtcdWaitCallback</span><span class="o">()</span>
+<span class="k">val</span> <span class="n">waitCall</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdWaitForKeyResult</span><span class="o">]</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">unset</span> <span class="k">&lt;-</span> <span class="n">unsetTTLResult</span>
+  <span class="n">wait</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">waitForKey</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">waitCallback</span><span class="o">)</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">wait</span>
+
+<span class="n">waitCall</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdWaitForKeyAccepted</span><span class="o">(</span><span class="n">headers</span><span class="k">:</span> <span class="kt">EtcdHeaders</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be a String</span>
+    <span class="n">headers</span><span class="o">.</span><span class="n">xEtcdClusterId</span><span class="o">.</span><span class="n">id</span>
+    <span class="c1">// should be true</span>
+    <span class="nc">EtcdWaitForKeyAccepted</span><span class="o">(</span><span class="n">headers</span><span class="k">:</span> <span class="kt">EtcdHeaders</span><span class="o">).</span><span class="n">accepted</span>
+    <span class="c1">// should be false</span>
+    <span class="n">waitCallback</span><span class="o">.</span><span class="n">isCompleted</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Now, suppose we want the result of the operation (for example, the body of a response) once there has been a change in the state of the key:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">updatedValue</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="s">&quot;phoo&quot;</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">callbackAccepted</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdGetKeyBody</span><span class="o">]</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="c1">// an update to key, so as to provoke a call to the wait</span>
+  <span class="n">update</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">setKey</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">updatedValue</span><span class="o">)</span>
+  <span class="nc">EtcdGetKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="k">:</span> <span class="kt">EtcdHeaders</span><span class="o">,</span> <span class="n">body</span><span class="k">:</span> <span class="kt">EtcdGetKeyBody</span><span class="o">)</span> <span class="k">&lt;-</span> <span class="n">waitCallback</span><span class="o">.</span><span class="n">future</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">body</span>
+
+<span class="n">callbackAccepted</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdGetKeyBody</span><span class="o">(</span><span class="n">action</span><span class="o">,</span> <span class="n">node</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be true</span>
+    <span class="c1">// since there was an update before calling for the future</span>
+    <span class="n">waitCallback</span><span class="o">.</span><span class="n">isCompleted</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Optionally, one can choose an etcd modified index for which the watch is being set.
+An etcd modified index is the integer associated to the operation modifying the state of a key in etcd.
+If an index <cite>i</cite> is chosen, such that there were subsequent changes in the state of the key after the operation associated to <cite>i</cite>, etcd returns an <strong>EtcdGetKeyResponse</strong> with the state of the key after the first change to that key registered after operation indexed by <cite>i</cite>.
+For an index <cite>j</cite> greater than the etcd index associated to the last operation, the watch will not return a response until a change with index greater than <cite>j</cite> is made.</p>
+<p>The following lines of code illustrate this.
+They are related to the <a class="reference internal" href="#compare-and-swap-examples"><span>compare and swap examples</span></a>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">waitCallback2</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">FutureBasedEtcdWaitCallback</span><span class="o">()</span>
+<span class="c1">// when a wait call with a second callback and the modified index</span>
+<span class="c1">// of a previous operation plus 1 is executed</span>
+<span class="k">val</span> <span class="n">waitCall2</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdWaitForKeyResult</span><span class="o">]</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="nc">EtcdSetKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">&lt;-</span> <span class="n">keyUpdated</span>
+  <span class="n">mustHaveCondition</span> <span class="k">&lt;-</span> <span class="n">mustHaveValSetKey</span>
+  <span class="n">accepted</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span>
+    <span class="n">waitForKey</span><span class="o">(</span><span class="n">randomKey</span><span class="o">,</span> <span class="n">waitCallback2</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">EtcdIndex</span><span class="o">(</span><span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">modifiedIndex</span><span class="o">.</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)))</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">accepted</span>
+
+<span class="c1">// then the wait call must be accepted</span>
+<span class="n">waitCall2</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdWaitForKeyAccepted</span><span class="o">(</span><span class="n">headers</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be true,</span>
+    <span class="c1">// since a change in the value of the key has already been registered</span>
+    <span class="nc">EtcdWaitForKeyAccepted</span><span class="o">(</span><span class="n">headers</span><span class="o">).</span><span class="n">accepted</span>
+<span class="o">}</span>
+
+<span class="n">waitCallback2</span><span class="o">.</span><span class="n">future</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdGetKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be thirdValue</span>
+    <span class="c1">// since this was the update made to this key</span>
+    <span class="c1">// immediately after the keyUpdated</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">value</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Also, one can choose to wait for changes in any of the subnodes of a given node.
+This can be achieved by setting the field recursive to true:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">value1</span><span class="k">:</span> <span class="kt">EtcdValue</span> <span class="o">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="s">&quot;firstValue&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">value2</span><span class="k">:</span> <span class="kt">EtcdValue</span> <span class="o">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="s">&quot;secondValue&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">value3</span><span class="k">:</span> <span class="kt">EtcdValue</span> <span class="o">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="s">&quot;thirdValue&quot;</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">listOfNodes</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="s">&quot;path&quot;</span><span class="o">,</span> <span class="s">&quot;leading&quot;</span><span class="o">,</span> <span class="s">&quot;to&quot;</span><span class="o">,</span> <span class="s">&quot;node&quot;</span><span class="o">)</span>
+<span class="c1">// and a key of a node being used as a directory</span>
+<span class="k">val</span> <span class="n">dirKey</span><span class="k">:</span> <span class="kt">EtcdKey</span> <span class="o">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">fromPath</span><span class="o">(</span><span class="n">listOfNodes</span><span class="o">)</span>
+<span class="c1">// returns EtcdKey(/path/leading/to/node/subnode)</span>
+<span class="k">val</span> <span class="n">keyInDir</span><span class="k">:</span> <span class="kt">EtcdKey</span> <span class="o">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">fromPath</span><span class="o">(</span><span class="n">listOfNodes</span> <span class="o">:::</span> <span class="nc">List</span><span class="o">(</span><span class="s">&quot;subnode&quot;</span><span class="o">))</span>
+<span class="c1">// and a callback</span>
+<span class="k">val</span> <span class="n">waitOneCallback</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">FutureBasedEtcdWaitCallback</span><span class="o">()</span>
+<span class="c1">// when set and wait operations are performed in order</span>
+<span class="k">val</span> <span class="n">callReturned</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">set</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">setKey</span><span class="o">(</span><span class="n">keyInDir</span><span class="o">,</span> <span class="n">value1</span><span class="o">)</span>
+  <span class="n">setWatch</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">waitForKey</span><span class="o">(</span><span class="n">dirKey</span><span class="o">,</span> <span class="n">waitOneCallback</span><span class="o">,</span> <span class="nc">None</span><span class="o">,</span> <span class="kc">true</span><span class="o">)</span>
+  <span class="n">modifyKey1</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">setKey</span><span class="o">(</span><span class="n">keyInDir</span><span class="o">,</span> <span class="n">value2</span><span class="o">)</span>
+  <span class="n">modifyKey2</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">setKey</span><span class="o">(</span><span class="n">keyInDir</span><span class="o">,</span> <span class="n">value3</span><span class="o">)</span>
+  <span class="n">returned</span> <span class="k">&lt;-</span> <span class="n">waitOneCallback</span><span class="o">.</span><span class="n">future</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">returned</span>
+
+<span class="c1">// then the wait detects the nested change on value2 update</span>
+<span class="n">callReturned</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdGetKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be true</span>
+    <span class="n">waitOneCallback</span><span class="o">.</span><span class="n">isCompleted</span>
+    <span class="c1">//should be value2</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">value</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>The field recursive defaults to false.</p>
+</div>
+<div class="section" id="getkey">
+<span id="etcdclient-getkey"></span><h2>getKey<a class="headerlink" href="#getkey" title="Permalink to this headline">¶</a></h2>
+<p>Gets the current state of a key in etcd:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">getKey</span><span class="o">(</span>
+<span class="n">key</span><span class="k">:</span> <span class="kt">EtcdKey</span>
+<span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdGetKeyResponse</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>key:</strong> <a class="reference internal" href="../Model/Model.html#etcdkey"><span>EtcdKey</span></a> whose status is queried.</li>
+</ul>
+<p><strong>Returns</strong> a Future wrapped around either an instance of EtcdGetKeyResponse containing the state of the key or an instance of EtcdRequestError extending EtcdSetKeyResult.</p>
+<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#get-the-value-of-a-key">Get the value of a key</a>&#8221;.</p>
+<p id="etcdclient-getkey-examples">In order to get the state of a key, specify a full path and a key name through the <a class="reference internal" href="../Model/Model.html#etcdkey"><span>EtcdKey</span></a> case class:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">key</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">key</span><span class="o">(</span><span class="s">&quot;/foo&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">value</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="s">&quot;bar&quot;</span><span class="o">)</span>
+
+<span class="c1">// setting a key and then a get request</span>
+<span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">keySet</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">setKey</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">)</span>
+  <span class="n">getRequest</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">getKey</span><span class="o">(</span><span class="n">key</span><span class="o">)</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">getRequest</span>
+
+<span class="c1">// Get ok</span>
+<span class="n">result</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdGetKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be value</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">value</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Note that there is no difference in a GET request for a key and a directory.
+An GET HTTP request made to a node used as a directory looks the same as a request to a node used as a key.
+However, there is a difference in terms of a response.
+The getKey method is intended to handle responses only for requests to nodes used as keys.
+If it is used to make a request to a directory, it will return an EtcdRequestError with the statusCode field set to <code class="docutils literal"><span class="pre">200</span></code>.
+This means that etcd accepts the request and returns a response.
+However EtcdClient does not parse the response.
+In order to get a response which extracts the JSON returned in the response body into a case class, use <a class="reference internal" href="#etcdclient-listdir"><span>EtcdClient.listDir</span></a>.</p>
+</div>
+<div class="section" id="deletekey">
+<span id="etcdclient-deletekey"></span><h2>deleteKey<a class="headerlink" href="#deletekey" title="Permalink to this headline">¶</a></h2>
+<p>Deletes a key from etcd:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">deleteKey</span><span class="o">(</span>
+<span class="n">key</span><span class="k">:</span> <span class="kt">EtcdKey</span><span class="o">,</span>
+<span class="n">deleteConditionOp</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">ConditionalDeleteCondition</span><span class="o">]</span> <span class="k">=</span> <span class="nc">None</span>
+<span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdDeleteKeyResult</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>key:</strong> <a class="reference internal" href="../Model/Model.html#etcdkey"><span>EtcdKey</span></a> to be deleted.</li>
+<li><strong>deleteConditionOp:</strong> One of case classes <a class="reference internal" href="../Model/Model.html#keymusthaveindex"><span>KeyMustHaveIndex</span></a> or <a class="reference internal" href="../Model/Model.html#keymusthavevalue"><span>KeyMustHaveValue</span></a> extending <a class="reference internal" href="../Model/Model.html#conditionaldeletecondition"><span>ConditionalDeleteCondition</span></a>.
+Defaults to None.</li>
+</ul>
+<p><strong>Returns</strong> a Future wrapped around either EtcdDeleteKeyResponse or EtcdRequestError extending EtcdDeleteKeyResult.</p>
+<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#deleting-a-key">Deleting a key</a>&#8221;.
+See also &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#atomic-compare-and-delete">Atomic Compare-and-Delete</a>&#8221;.</p>
+<p>To delete a key, just input the key to be deleted through an instance of <a class="reference internal" href="../Model/Model.html#etcdkey"><span>EtcdKey</span></a>.
+Consider the code snippet from the <a class="reference internal" href="#etcdclient-getkey-examples"><span>EtcdClient.getKey examples</span></a>.
+The following lines of code are a continuation of them:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">deleteResult</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">result</span> <span class="k">&lt;-</span> <span class="n">result</span>
+  <span class="n">delete</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">deleteKey</span><span class="o">(</span><span class="n">key</span><span class="o">)</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">delete</span>
+
+<span class="n">deleteResult</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdDeleteKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be &quot;delete&quot;</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">action</span>
+<span class="o">}</span>
+
+<span class="c1">// Get 404 not found</span>
+<span class="k">val</span> <span class="n">failedGet</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="n">deleteResult</span> <span class="n">flatMap</span> <span class="o">{</span> <span class="n">delete</span> <span class="k">=&gt;</span>
+  <span class="n">etcdcli</span><span class="o">.</span><span class="n">getKey</span><span class="o">(</span><span class="n">key</span><span class="o">).</span><span class="n">map</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">EtcdRequestError</span><span class="o">(</span><span class="n">statusCode</span><span class="o">,</span> <span class="n">headers</span><span class="o">,</span> <span class="n">error</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="c1">//should be 404</span>
+      <span class="n">statusCode</span><span class="o">.</span><span class="n">code</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Optionally etcd allows to conditionally delete a key.
+This can be done by setting the conditionOp field to any of the case classes extending trait <a class="reference internal" href="../Model/Model.html#conditionaldeletecondition"><span>ConditionalDeleteCondition</span></a>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">someKey</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">key</span><span class="o">(</span><span class="s">&quot;/foo&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">someValue</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="s">&quot;bar&quot;</span><span class="o">)</span>
+
+<span class="c1">//given an existing key</span>
+<span class="k">val</span> <span class="n">deletedF</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">created</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">setKey</span><span class="o">(</span><span class="n">someKey</span><span class="o">,</span> <span class="n">someValue</span><span class="o">)</span>
+  <span class="n">deleted</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">deleteKey</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">KeyMustHaveValue</span><span class="o">(</span><span class="n">someValue</span><span class="o">)))</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">deleted</span>
+
+<span class="n">deletedF</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdDeleteKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be &quot;compareAndDelete&quot;</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">action</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">mustHaveIdxDelete</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdDeleteKeyResult</span><span class="o">]</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">deleted</span> <span class="k">&lt;-</span> <span class="n">deletedF</span>
+  <span class="c1">// key set again</span>
+  <span class="nc">EtcdSetKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">setKey</span><span class="o">(</span><span class="n">someKey</span><span class="o">,</span> <span class="n">someValue</span><span class="o">)</span>
+  <span class="n">deletedAgain</span> <span class="k">&lt;-</span>
+  <span class="n">etcdcli</span><span class="o">.</span><span class="n">deleteKey</span><span class="o">(</span><span class="n">someKey</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="nc">KeyMustHaveIndex</span><span class="o">(</span><span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">modifiedIndex</span><span class="o">)))</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">deletedAgain</span>
+
+<span class="n">mustHaveIdxDelete</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdDeleteKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be &quot;compareAndDelete&quot;</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">action</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="createdir">
+<span id="etcdclient-createdir"></span><h2>createDir<a class="headerlink" href="#createdir" title="Permalink to this headline">¶</a></h2>
+<p>Creates an empty directory in the specified path:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">createDir</span><span class="o">(</span>
+<span class="n">dir</span><span class="k">:</span> <span class="kt">EtcdDirectory</span><span class="o">,</span>
+<span class="n">ttlOp</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">EtcdTTL</span><span class="o">]</span> <span class="k">=</span> <span class="nc">None</span>
+<span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdCreateDirResult</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>dir:</strong> <a class="reference internal" href="../Model/Model.html#etcddirectory"><span>EtcdDirectory</span></a> to be created.</li>
+<li><strong>ttlOp:</strong> Life span in seconds of the directory.
+Defaults to None.</li>
+</ul>
+<p><strong>Returns</strong> a Future wrapped around either EtcdCreateDirResponse or EtcdRequestError extending EtcdCreateDirResult.</p>
+<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#creating-directories">Creating Directories</a>&#8221;.
+See also &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#using-a-directory-ttl">Using a directory TTL</a>&#8221;.</p>
+<p id="first-etcdclient-createdir-example">In order to set a new empty dir, specify a full path through the <a class="reference internal" href="../Model/Model.html#etcddirectory"><span>EtcdDirectory</span></a> case class:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">dir</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">directory</span><span class="o">(</span><span class="s">&quot;/path/leading/to/some/node/&quot;</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">dirCreated</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdCreateDirResult</span><span class="o">]</span> <span class="k">=</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">createDir</span><span class="o">(</span><span class="n">dir</span><span class="o">)</span>
+
+<span class="n">dirCreated</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdCreateDirResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be &quot;set&quot;</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">action</span>
+    <span class="c1">// should be true</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">dir</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>One can also choose to create a directory by setting a key in it using <a class="reference internal" href="#etcdclient-setkey"><span>EtcdClient.setKey</span></a>.</p>
+<p id="second-etcdclient-createdir-example">Optionally one can choose a TTL (time to live), which is a lifespan in seconds for the key-value.
+When it expires, the key is deleted:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">dirTTL</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">directory</span><span class="o">(</span><span class="s">&quot;/path/leading/to/other/node/&quot;</span><span class="o">)</span>
+<span class="c1">// and a time to leave</span>
+<span class="k">val</span> <span class="n">ttl</span> <span class="k">=</span> <span class="nc">EtcdTTL</span><span class="o">(</span><span class="mi">2400</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">dirTTLCreated</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdCreateDirResult</span><span class="o">]</span> <span class="k">=</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">createDir</span><span class="o">(</span><span class="n">dirTTL</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="n">ttl</span><span class="o">))</span>
+
+<span class="n">dirTTLCreated</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdCreateDirResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be &quot;set&quot;</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">action</span>
+    <span class="c1">//  should be true</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">dir</span>
+    <span class="c1">// should be &lt;= ttl.ttl</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">ttl</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">ttl</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>To update the TTL, use method <a class="reference internal" href="#etcdclient-refreshdirttl"><span>EtcdClient.refreshDirTTL</span></a>.</p>
+</div>
+<div class="section" id="deletedir">
+<span id="etcdclient-deletedir"></span><h2>deleteDir<a class="headerlink" href="#deletedir" title="Permalink to this headline">¶</a></h2>
+<p>Deletes a directory from etcd:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">deleteDir</span><span class="o">(</span>
+<span class="n">dir</span><span class="k">:</span> <span class="kt">EtcdDirectory</span><span class="o">,</span>
+<span class="n">recursive</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span>
+<span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdCreateDirResult</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>dir:</strong> <a class="reference internal" href="../Model/Model.html#etcddirectory"><span>EtcdDirectory</span></a> to be deleted.</li>
+<li><strong>recursive:</strong> enables deletion of non-empty directories when set to true.
+Defaults to false.</li>
+</ul>
+<p><strong>Returns</strong> a Future wrapped around either EtcdCreateDirResponse or EtcdRequestError extending EtcdCreateDirResult.</p>
+<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#deleting-a-directory">Deleting a Directory</a>&#8221;.</p>
+<p>An empty directory can be deleted form etcd by simply specifying <a class="reference internal" href="../Model/Model.html#etcddirectory"><span>EtcdDirectory</span></a> leading to the directory in etcd.</p>
+<p>The following lines of code are a continuation of the <a class="reference internal" href="#first-etcdclient-createdir-example"><span>first EtcdClient.createDir example</span></a>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">dirDeleted</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdCreateDirResult</span><span class="o">]</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">created</span> <span class="k">&lt;-</span> <span class="n">dirCreated</span>
+  <span class="n">deleted</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">deleteDir</span><span class="o">(</span><span class="n">dir</span><span class="o">)</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">deleted</span>
+
+<span class="n">dirDeleted</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdCreateDirResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be &quot;delete&quot;</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">action</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>However, for a non-empty directory one must also set the recursive parameter (which defaults to false) to true.</p>
+</div>
+<div class="section" id="listdir">
+<span id="etcdclient-listdir"></span><h2>listDir<a class="headerlink" href="#listdir" title="Permalink to this headline">¶</a></h2>
+<p>Lists the elements of a directory:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">listDir</span><span class="o">(</span>
+<span class="n">dir</span><span class="k">:</span> <span class="kt">EtcdDirectory</span><span class="o">,</span>
+<span class="n">recursive</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span>
+<span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdListDirResult</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>dir:</strong> <a class="reference internal" href="../Model/Model.html#etcddirectory"><span>EtcdDirectory</span></a> to be listed.</li>
+<li><strong>recursive:</strong> recursively gets all subnodes of a directory when set to true.</li>
+<li><strong>sorted:</strong> sorts listed key when set to true in combination with the recursive parameter.</li>
+</ul>
+<p><strong>Returns</strong> a Future wrapped around either EtcdListDirResponse or EtcdRequestError extending EtcdListDirResult.</p>
+<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#listing-a-directory">Listing a directory</a>&#8221;.
+See also &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#atomically-creating-in-order-keys">Atomically Creating In-Order Keys</a>&#8221; for information on the sorted parameter.</p>
+<p>When the field recursive is set to false (as it is by default), it lists the immediate children of the given node.
+When it is set to true, it also recursively lists subnodes of the directory.</p>
+<p>When both parameters recursive and sorted are set to true, the list returned is ordered.</p>
+</div>
+<div class="section" id="refreshttl">
+<span id="etcdclient-refreshttl"></span><h2>refreshTTL<a class="headerlink" href="#refreshttl" title="Permalink to this headline">¶</a></h2>
+<p>Updates the TTL of a key without notifying watchers:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">refreshTTL</span><span class="o">(</span>
+<span class="n">key</span><span class="k">:</span> <span class="kt">EtcdKey</span><span class="o">,</span>
+<span class="n">ttlOp</span><span class="k">:</span> <span class="kt">EtcdTTL</span><span class="o">,</span>
+<span class="n">conditionOp</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">CompareAndSwapCondition</span><span class="o">]</span> <span class="k">=</span> <span class="nc">None</span>
+<span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdSetKeyResult</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>key:</strong> <a class="reference internal" href="../Model/Model.html#etcdkey"><span>EtcdKey</span></a> that is to be updated.</li>
+<li><strong>ttlOp:</strong> Life span in seconds of key-value .
+Defaults to None.</li>
+<li><strong>conditionOp:</strong> One of case classes <a class="reference internal" href="../Model/Model.html#keymustexist"><span>KeyMustExist</span></a>, <a class="reference internal" href="../Model/Model.html#keymusthaveindex"><span>KeyMustHaveIndex</span></a> or <a class="reference internal" href="../Model/Model.html#keymusthavevalue"><span>KeyMustHaveValue</span></a> extending <a class="reference internal" href="../Model/Model.html#compareandswapcondition"><span>CompareAndSwapCondition</span></a>.
+Defaults to None.</li>
+</ul>
+<p><strong>Returns</strong> a Future wrapped around either EtcdSetKeyResponse or EtcdRequestError extending EtcdSetKeyResult.</p>
+<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#refreshing-key-ttl">Refreshing key TTL</a>&#8221;.</p>
+<p>When a watch is set, and a key is updated using <a class="reference internal" href="#etcdclient-setkey"><span>EtcdClient.setKey</span></a>, watchers are notified, triggering any operation conditionally set to follow given a particular response.
+This includes updates to its TTL.
+etcd allows updating TTL without notifying watches set on a key, thus not causing such side effects.
+EtcdClient implements this feature in the refreshTTL method:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">key</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">key</span><span class="o">(</span><span class="s">&quot;/Hello!&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">value</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="s">&quot;¡Hola!&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">ttl</span> <span class="k">=</span> <span class="nc">EtcdTTL</span><span class="o">(</span><span class="mi">1200</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">newTtl</span> <span class="k">=</span> <span class="nc">EtcdTTL</span><span class="o">(</span><span class="mi">2400</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">callback</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">FutureBasedEtcdWaitCallback</span><span class="o">()</span>
+
+<span class="k">val</span> <span class="n">refreshTTLRequest</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">keySet</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">setKey</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="n">ttl</span><span class="o">))</span>
+  <span class="n">watchReady</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">waitForKey</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">callback</span><span class="o">)</span>
+  <span class="n">ttlRefreshed</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">refreshTTL</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">newTtl</span><span class="o">)</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">ttlRefreshed</span>
+
+<span class="n">refreshTTLRequest</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdSetKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be &quot;set&quot;</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">action</span>
+    <span class="c1">// should be Some(newTtl)</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">ttl</span>
+    <span class="c1">// should be false</span>
+    <span class="c1">// because the watch was never notified of an update operation</span>
+    <span class="n">callback</span><span class="o">.</span><span class="n">isCompleted</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>When a TTL is refreshed, its value cannot be updated.</p>
+</div>
+<div class="section" id="refreshdirttl">
+<span id="etcdclient-refreshdirttl"></span><h2>refreshDirTTL<a class="headerlink" href="#refreshdirttl" title="Permalink to this headline">¶</a></h2>
+<p>Refreshes or unsets the TTL of an existing directory:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">refreshDirTTL</span><span class="o">(</span>
+<span class="n">dir</span><span class="k">:</span> <span class="kt">EtcdDirectory</span><span class="o">,</span>
+<span class="n">ttlOp</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">EtcdTTL</span><span class="o">]</span>
+<span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdCreateDirResult</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>dir:</strong> <a class="reference internal" href="../Model/Model.html#etcddirectory"><span>EtcdDirectory</span></a> whose TTL is to be updated.</li>
+<li><strong>ttlOp:</strong> Life span in seconds of the directory.
+Defaults to None.</li>
+</ul>
+<p><strong>Returns</strong> a Future wrapped around either EtcdCreateDirResponse or EtcdRequestError extending EtcdCreateDirResult.</p>
+<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#using-a-directory-ttl">Using a directory TTL</a>&#8221;.</p>
+<p>Sets a lifespan in seconds for an existing directory.
+Once it expires, the directory is deleted.
+The following code snippets complement the <a class="reference internal" href="#second-etcdclient-createdir-example"><span>second EtcdClient.createDir example</span></a>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="c1">// and a different time to live</span>
+<span class="k">val</span> <span class="n">newTTL</span> <span class="k">=</span> <span class="nc">EtcdTTL</span><span class="o">(</span><span class="mi">6000</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">ttlRefreshed</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdCreateDirResult</span><span class="o">]</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">dirTTLC</span> <span class="k">&lt;-</span> <span class="n">dirTTLCreated</span>
+  <span class="n">refreshed</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">refreshDirTTL</span><span class="o">(</span><span class="n">dirTTL</span><span class="o">,</span> <span class="nc">Some</span><span class="o">(</span><span class="n">newTTL</span><span class="o">))</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">refreshed</span>
+
+<span class="n">ttlRefreshed</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdCreateDirResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be &quot;update&quot;</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">action</span>
+    <span class="c1">// should be true</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">dir</span>
+    <span class="c1">// should should be &lt;= newTTL.ttl</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">ttl</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">ttl</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Setting ttlOp field to None allows to unset TTL:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">ttlUnset</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdCreateDirResult</span><span class="o">]</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">refreshed</span> <span class="k">&lt;-</span> <span class="n">ttlRefreshed</span>
+  <span class="n">unset</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">refreshDirTTL</span><span class="o">(</span><span class="n">dirTTL</span><span class="o">,</span> <span class="nc">None</span><span class="o">)</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">unset</span>
+
+<span class="n">ttlUnset</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdCreateDirResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be None</span>
+    <span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">ttl</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="createkeyfromcurrentetcdindex">
+<span id="etcdclient-createkeyfromcurrentetcdindex"></span><h2>createKeyFromCurrentEtcdIndex<a class="headerlink" href="#createkeyfromcurrentetcdindex" title="Permalink to this headline">¶</a></h2>
+<p>Creates a key in a specified directory whose name is the current etcd index preceded with leading zeros:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">createKeyFromCurrentEtcdIndex</span><span class="o">(</span>
+<span class="n">dir</span><span class="k">:</span> <span class="kt">EtcdDirectory</span><span class="o">,</span>
+<span class="n">value</span><span class="k">:</span> <span class="kt">EtcdValue</span>
+<span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdSetKeyResult</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>dir:</strong> <a class="reference internal" href="../Model/Model.html#etcddirectory"><span>EtcdDirectory</span></a> where the new key will be placed.</li>
+<li><strong>value:</strong> <a class="reference internal" href="../Model/Model.html#etcdvalue"><span>EtcdValue</span></a> to be associated to key.</li>
+</ul>
+<p><strong>Returns</strong> a Future wrapped around either EtcdSetKeyResponse or EtcdRequestError extending EtcdSetKeyResult.</p>
+<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#atomically-creating-in-order-keys">Atomically Creating In-Order Keys</a>&#8221;.</p>
+<p>etcd keeps a counter for every operation performed.
+The etcd index keeps track of this counter, that is, it is the integer associated to the last opeartion performed in etcd.
+Given a specified directory <a class="reference internal" href="../Model/Model.html#etcddirectory"><span>EtcdDirectory</span></a>, createKeyFromCurrentEtcdIndex creates a key in that directory named after the etcd index and associates the value inputed through field value to it.
+This allows to create keys which are strictly ordered by those indexes, since etcd indexes increment monotonously:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">value1</span><span class="k">:</span> <span class="kt">EtcdValue</span> <span class="o">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="s">&quot;firstValue&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">value2</span><span class="k">:</span> <span class="kt">EtcdValue</span> <span class="o">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="s">&quot;secondValue&quot;</span><span class="o">)</span>
+<span class="c1">// and a existing directory</span>
+<span class="k">val</span> <span class="n">dir</span><span class="k">:</span> <span class="kt">EtcdDirectory</span> <span class="o">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">directory</span><span class="o">(</span><span class="s">&quot;/path/to/node/&quot;</span><span class="o">)</span>
+
+<span class="c1">// createDir and createKeyFromCurrentEtcdIndex operations performed successively</span>
+<span class="k">val</span> <span class="n">createUniqueKeyReq</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">newDirReq</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">createDir</span><span class="o">(</span><span class="n">dir</span><span class="o">)</span>
+  <span class="n">newKeyFromIndex</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">createKeyFromCurrentEtcdIndex</span><span class="o">(</span><span class="n">dir</span><span class="o">,</span> <span class="n">value1</span><span class="o">)</span>
+  <span class="n">secondKeyFromIndex</span> <span class="k">&lt;-</span> <span class="n">etcdcli</span><span class="o">.</span><span class="n">createKeyFromCurrentEtcdIndex</span><span class="o">(</span><span class="n">dir</span><span class="o">,</span> <span class="n">value2</span><span class="o">)</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="nc">List</span><span class="o">(</span><span class="n">newKeyFromIndex</span><span class="o">,</span> <span class="n">secondKeyFromIndex</span><span class="o">)</span>
+
+<span class="n">createUniqueKeyReq</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="n">list</span> <span class="k">=&gt;</span>
+    <span class="k">val</span> <span class="n">firstResponseBody</span> <span class="k">=</span> <span class="n">list</span><span class="o">.</span><span class="n">head</span> <span class="k">match</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">EtcdSetKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+        <span class="n">body</span>
+    <span class="o">}</span>
+    <span class="k">val</span> <span class="n">secondResponseBody</span> <span class="k">=</span> <span class="n">list</span><span class="o">.</span><span class="n">tail</span><span class="o">.</span><span class="n">head</span> <span class="k">match</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="nc">EtcdSetKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+        <span class="n">body</span>
+    <span class="o">}</span>
+    <span class="c1">// sample key: EtcdKey(/path/to/node/00000000000000000118)</span>
+    <span class="k">val</span> <span class="n">key1</span> <span class="k">=</span> <span class="n">firstResponseBody</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">key</span>
+    <span class="c1">// sample index: EtcdIndex(118)</span>
+    <span class="k">val</span> <span class="n">modIdx1</span> <span class="k">=</span> <span class="n">firstResponseBody</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">modifiedIndex</span>
+    <span class="c1">//The created key name is 000000${modIdx1.index.toString}, thus</span>
+    <span class="c1">// this example&#39;s integer value is 118</span>
+    <span class="k">val</span> <span class="n">lastNodeName1</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">toPath</span><span class="o">(</span><span class="n">key1</span><span class="o">).</span><span class="n">takeRight</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="n">head</span><span class="o">.</span><span class="n">toInt</span>
+    <span class="c1">//  sample key: EtcdKey(/path/to/node/00000000000000000119)</span>
+    <span class="k">val</span> <span class="n">key2</span> <span class="k">=</span> <span class="n">secondResponseBody</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">key</span>
+    <span class="c1">// sample index: EtcdIndex(119)</span>
+    <span class="k">val</span> <span class="n">modIdx2</span> <span class="k">=</span> <span class="n">secondResponseBody</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">modifiedIndex</span>
+    <span class="c1">//The created key name is 000000${modIdx1.index.toString}, thus</span>
+    <span class="c1">// this example&#39;s integer value is 119</span>
+    <span class="k">val</span> <span class="n">lastNodeName2</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">toPath</span><span class="o">(</span><span class="n">key2</span><span class="o">).</span><span class="n">takeRight</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="n">head</span><span class="o">.</span><span class="n">toInt</span>
+    <span class="c1">// should be true</span>
+    <span class="n">modIdx1</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;</span> <span class="n">modIdx2</span><span class="o">.</span><span class="n">index</span>
+    <span class="c1">// should be true, i.e. the names of the last nodes are ordered</span>
+    <span class="n">lastNodeName1</span> <span class="o">&lt;</span> <span class="n">lastNodeName2</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          <h3>Table Of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Model/Model.html">Package Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EtcdClient.html">EtcdClient</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Key-Value Methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#setkey">setKey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#waitforkey">waitForKey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getkey">getKey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deletekey">deleteKey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#createdir">createDir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deletedir">deleteDir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#listdir">listDir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#refreshttl">refreshTTL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#refreshdirttl">refreshDirTTL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#createkeyfromcurrentetcdindex">createKeyFromCurrentEtcdIndex</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Statistics.html">Statistics Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Authentication Methods.html">Authentication Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Member Methods.html">Member Methods</a></li>
+</ul>
+
+          <div role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+            </form>
+            <p class="searchtip" style="font-size: 90%">
+                Enter search terms or a module, class or function name.
+            </p>
+          </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="related navigaton">
+            <a href="EtcdClient.html" title="EtcdClient"
+              >previous</a> |
+            <a href="Statistics.html" title="Statistics Methods"
+              >next</a> |
+            <a href="../genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="../_sources/Client/Key-Value Methods.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Antonio Maciej Matamoros Ochman, Paweł Cesar Sanjuan Sklarz.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

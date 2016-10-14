@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Statistics Methods &mdash; EtcdClient 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/agogo.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="EtcdClient 1.0 documentation" href="../index.html" />
+    <link rel="next" title="Authentication Methods" href="Authentication Methods.html" />
+    <link rel="prev" title="Key-Value Methods" href="Key-Value Methods.html" /> 
+  </head>
+  <body role="document">
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="../index.html">EtcdClient 1.0 documentation</a></div>
+        <div class="rel" role="navigation" aria-label="related navigation">
+          <a href="Key-Value Methods.html" title="Key-Value Methods"
+             accesskey="P">previous</a> |
+          <a href="Authentication Methods.html" title="Authentication Methods"
+             accesskey="N">next</a> |
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="statistics-methods">
+<span id="id1"></span><h1>Statistics Methods<a class="headerlink" href="#statistics-methods" title="Permalink to this headline">¶</a></h1>
+<p>The implementation of methods for retrieving etcd cluster statistics also follows the specification given in the <a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html">etcd API</a> and and <a class="reference external" href="https://coreos.com/etcd/docs/latest/other_apis.html">etcd Admin API</a>.</p>
+<div class="section" id="getleaderstats">
+<span id="id2"></span><h2>getLeaderStats<a class="headerlink" href="#getleaderstats" title="Permalink to this headline">¶</a></h2>
+<p>Gets statistics from the leader of a cluster, which holds information of the whole cluster:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">getLeaderStats</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdLeaderStatsResult</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#leader-statistics">Leader Statistics</a>&#8221;.</p>
+</div>
+<div class="section" id="gethealth">
+<span id="id3"></span><h2>getHealth<a class="headerlink" href="#gethealth" title="Permalink to this headline">¶</a></h2>
+<p>Checks if a member of a cluster is healthy:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">getHealth</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdHealthResponse</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Implemented according to etcd Admin API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/other_apis.html#checking-health-of-an-etcd-member-node">Checking health of an etcd member node</a>&#8221;.</p>
+<p>The following is a simple example of the usage of this method:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">etcdcli</span><span class="o">.</span><span class="n">getHealth</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdGetHealthResponse</span><span class="o">(</span><span class="n">health</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be &quot;true&quot;</span>
+    <span class="n">health</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getselfstats">
+<span id="id4"></span><h2>getSelfStats<a class="headerlink" href="#getselfstats" title="Permalink to this headline">¶</a></h2>
+<p>Gets statistics stores in the member of an etcd cluster to which the request is addressed:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">getSelfStats</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdSelfStatsResponse</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#self-statistics">Self Statistics</a>&#8221;.</p>
+<p>The following is a simple example of the usage of this method:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">etcdcli</span><span class="o">.</span><span class="n">getSelfStats</span> <span class="n">onSuccess</span>  <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdGetSelfStatsResponse</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+  <span class="n">leaderInfo</span><span class="k">:</span> <span class="kt">EtcdLeaderInfo</span><span class="o">,</span>
+  <span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+  <span class="n">recvAppendRequestCnt</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span>
+  <span class="n">recvBandwidthRate</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Double</span><span class="o">],</span>
+  <span class="n">recvPkgRate</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Double</span><span class="o">],</span>
+  <span class="n">sendAppendRequestCnt</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span>
+  <span class="n">startTime</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
+  <span class="n">state</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// sample id string: 77fb14b13d7590f7</span>
+    <span class="n">id</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getstorestats">
+<span id="id5"></span><h2>getStoreStats<a class="headerlink" href="#getstorestats" title="Permalink to this headline">¶</a></h2>
+<p>Gets statistics of operations that a given etcd member has handeled (store stats):</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">getStoreStats</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdStoreStatsResponse</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#store-statistics">Store Statistics</a>&#8221;.</p>
+<p>The following is a simple example of the usage of this method:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">etcdcli</span><span class="o">.</span><span class="n">getStoreStats</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdGetStoreStatsResponse</span><span class="o">(</span><span class="n">compareAndSwapFail</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span>
+  <span class="n">compareAndSwapSuccess</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span>
+  <span class="n">createFail</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span>
+  <span class="n">createSuccess</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span>
+  <span class="n">deleteFail</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span>
+  <span class="n">deleteSuccess</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span>
+  <span class="n">expireCount</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span>
+  <span class="n">getsFail</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span>
+  <span class="n">getsSuccess</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span>
+  <span class="n">setsFail</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span>
+  <span class="n">setsSuccess</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span>
+  <span class="n">updateFail</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span>
+  <span class="n">updateSuccess</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span>
+  <span class="n">watchers</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// shoulb de an integer.</span>
+    <span class="n">watchers</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getversion">
+<span id="id6"></span><h2>getVersion<a class="headerlink" href="#getversion" title="Permalink to this headline">¶</a></h2>
+<p>Gets the version of etcd used ina given cluster:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">getVersion</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdVersionResponse</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Implemented according to etcd Admin API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/other_apis.html#getting-the-etcd-version">Getting the etcd version</a>&#8221;.</p>
+<p>The following is a simple example of the usage of this method:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">etcdcli</span><span class="o">.</span><span class="n">getVersion</span> <span class="n">onSuccess</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">EtcdGetVersionResponse</span><span class="o">(</span><span class="n">etcdserver</span><span class="o">,</span> <span class="n">etcdcluster</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="c1">// should be a string starting with &quot;2.3&quot;</span>
+    <span class="n">etcdcluster</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          <h3>Table Of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Model/Model.html">Package Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="EtcdClient.html">EtcdClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Key-Value Methods.html">Key-Value Methods</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Statistics Methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#getleaderstats">getLeaderStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gethealth">getHealth</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getselfstats">getSelfStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getstorestats">getStoreStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getversion">getVersion</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Authentication Methods.html">Authentication Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Member Methods.html">Member Methods</a></li>
+</ul>
+
+          <div role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+            </form>
+            <p class="searchtip" style="font-size: 90%">
+                Enter search terms or a module, class or function name.
+            </p>
+          </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="related navigaton">
+            <a href="Key-Value Methods.html" title="Key-Value Methods"
+              >previous</a> |
+            <a href="Authentication Methods.html" title="Authentication Methods"
+              >next</a> |
+            <a href="../genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="../_sources/Client/Statistics.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Antonio Maciej Matamoros Ochman, Paweł Cesar Sanjuan Sklarz.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

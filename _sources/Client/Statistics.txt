@@ -1,0 +1,116 @@
+.. _Statistics Methods:
+
+==================
+Statistics Methods
+==================
+
+The implementation of methods for retrieving etcd cluster statistics also follows the specification given in the `etcd API <https://coreos.com/etcd/docs/latest/api.html>`_ and and `etcd Admin API <https://coreos.com/etcd/docs/latest/other_apis.html>`_.
+
+.. _getLeaderStats:
+
+getLeaderStats
+--------------
+
+Gets statistics from the leader of a cluster, which holds information of the whole cluster::
+
+  getLeaderStats: Future[EtcdLeaderStatsResult]
+
+Implemented according to etcd Client API: "`Leader Statistics <https://coreos.com/etcd/docs/latest/api.html#leader-statistics>`_".
+
+.. _getHealth:
+
+getHealth
+---------
+
+Checks if a member of a cluster is healthy::
+
+  getHealth: Future[EtcdHealthResponse]
+
+Implemented according to etcd Admin API: "`Checking health of an etcd member node <https://coreos.com/etcd/docs/latest/other_apis.html#checking-health-of-an-etcd-member-node>`_".
+
+The following is a simple example of the usage of this method::
+
+    etcdcli.getHealth onSuccess {
+      case EtcdGetHealthResponse(health) =>
+        // should be "true"
+        health
+    }
+
+.. _getSelfStats:
+
+getSelfStats
+------------
+
+Gets statistics stores in the member of an etcd cluster to which the request is addressed::
+
+  getSelfStats: Future[EtcdSelfStatsResponse]
+
+Implemented according to etcd Client API: "`Self Statistics <https://coreos.com/etcd/docs/latest/api.html#self-statistics>`_".
+
+The following is a simple example of the usage of this method::
+
+    etcdcli.getSelfStats onSuccess  {
+      case EtcdGetSelfStatsResponse(id: String,
+      leaderInfo: EtcdLeaderInfo,
+      name: String,
+      recvAppendRequestCnt: Int,
+      recvBandwidthRate: Option[Double],
+      recvPkgRate: Option[Double],
+      sendAppendRequestCnt: Int,
+      startTime: String,
+      state: String) =>
+        // sample id string: 77fb14b13d7590f7
+        id
+    }
+
+.. _getStoreStats:
+
+getStoreStats
+-------------
+
+Gets statistics of operations that a given etcd member has handeled (store stats)::
+
+  getStoreStats: Future[EtcdStoreStatsResponse]
+
+Implemented according to etcd Client API: "`Store Statistics <https://coreos.com/etcd/docs/latest/api.html#store-statistics>`_".
+
+The following is a simple example of the usage of this method::
+
+    etcdcli.getStoreStats onSuccess {
+      case EtcdGetStoreStatsResponse(compareAndSwapFail: Int,
+      compareAndSwapSuccess: Int,
+      createFail: Int,
+      createSuccess: Int,
+      deleteFail: Int,
+      deleteSuccess: Int,
+      expireCount: Int,
+      getsFail: Int,
+      getsSuccess: Int,
+      setsFail: Int,
+      setsSuccess: Int,
+      updateFail: Int,
+      updateSuccess: Int,
+      watchers: Int) =>
+        // shoulb de an integer.
+        watchers
+    }
+
+.. _getVersion:
+
+getVersion
+----------
+
+Gets the version of etcd used ina given cluster::
+
+  getVersion: Future[EtcdVersionResponse]
+
+Implemented according to etcd Admin API: "`Getting the etcd version <https://coreos.com/etcd/docs/latest/other_apis.html#getting-the-etcd-version>`_".
+
+The following is a simple example of the usage of this method::
+
+    etcdcli.getVersion onSuccess {
+      case EtcdGetVersionResponse(etcdserver, etcdcluster) =>
+        // should be a string starting with "2.3"
+        etcdcluster
+    }
+

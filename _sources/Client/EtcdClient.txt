@@ -1,0 +1,97 @@
+﻿==========
+EtcdClient
+==========
+
+EtcdClient asynchronously sends HTTP requests to etcd servers and handles outcome responses.
+ 
+EtcdClient uses `AsyncHttpClient <https://github.com/AsyncHttpClient/async-http-client/>`_ in order to build and send HTTP requests.
+Its methods were developed to suit `etcd documentation <https://coreos.com/etcd/docs/latest/>`_.
+All methods use `Scala Futures and Promises <http://docs.scala-lang.org/overviews/core/futures.html>`_ in order to provide an asynchronous implementation.
+
+Depending on the request, either an error will be thrown or a response will bre returned.
+In both cases, there is a case class extending a trait in package :ref:`model <Model>` with a name ending in Result, which will be eventually returned containing either the response or information about the error in the manner explained in :ref:`model <Model>`.
+ 
+Here we explain how to configure EtcdClient.
+We leave the discussion of all other implemented methods for later.
+For now, it suffices to say that there are four types of methods implemented:
+
+  * :ref:`Key-Value Methods <Key-Value Methods>`
+
+  * :ref:`Statistics Methods <Statistics Methods>`
+
+  * :ref:`Authentication Methods <Authentication Methods>`
+
+  * :ref:`Member Methods <Member Methods>`
+
+Parameters:
+
+* **etcdConfig**: Instance of :ref:`EtcdConfiguration <EtcdConfiguration>` with information about an endpoint to which requests will be sent and optional authorization data.
+ 
+Configuration Methods
+=====================
+
+The following are methods used by EtcdClient for its configuration.
+
+One of Etcd Client's features is that it allows you to use etcd's `Auth and Security API <https://coreos.com/etcd/docs/latest/auth_api.html>`_.
+Once authentication is enabled, users must authenticate if they want to access some of the resources etcd has to offer.
+To do so, user the with authorization method.
+
+Also, be aware that each EtcdClient instance must be closed after it is no longer used.
+Therefore there is also a method that allows to do just that.
+
+withAuthorization
+-----------------
+
+Creates a new EtcdClient instance with authorization configuration.
+
+Parameters:
+
+* **auth**: Case class providing a login and a password used for authorization.
+
+close()
+-------
+
+Closes the internal resources.
+EtcdClient is based on `AsyncHttpClient <https://github.com/AsyncHttpClient/async-http-client/>`_.
+This method closes the internal instance of AsyncHttpClient used to make HTTP response.
+This must be done with every instance of EtcdClient used, in order to close all internal instances of AsyncHttpClient.
+
+.. _EtcdConfiguration:
+
+EtcdConfiguration
+=================
+
+Configures the EtcdClient with information about an endpoint to which requests will be sent and optional authorization data::
+
+    case class EtcdConfiguration(conn: String,
+                                authorization: Option[EtcdUserAuthenticationData] = None
+                                )
+
+Parameters:
+
+* **conn**: String representing an HTTP endpoint composed of an IP address and a port.
+
+* **authorization**:  Optional :ref:`EtcdUserAuthenticationData <EtcdUserAuthenticationData>` that will be used to get authorization.
+
+.. _withAuthorization:
+
+The withAuthorization method
+----------------------------
+
+Adds data used for authorization when it is enabled.
+
+Parameters:
+
+* **auth**: A login and a password used for authorization.
+
+
+.. _EtcdDSL:
+
+The EtcdDSL Object
+==================
+
+Returns an instance of [[eu.pmsoft.etcd.client.EtcdConfiguration EtcdConfiguration]] using the parameter conn as input.
+
+Parameters:
+
+* **conn**: String representing an HTTP endpoint composed of an IP address and a port.

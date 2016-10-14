@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to EtcdClient’s documentation! &mdash; EtcdClient 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/agogo.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="EtcdClient 1.0 documentation" href="#" />
+    <link rel="next" title="Package Model" href="Model/Model.html" /> 
+  </head>
+  <body role="document">
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="#">EtcdClient 1.0 documentation</a></div>
+        <div class="rel" role="navigation" aria-label="related navigation">
+          <a href="Model/Model.html" title="Package Model"
+             accesskey="N">next</a> |
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-etcdclient-s-documentation">
+<h1>Welcome to EtcdClient&#8217;s documentation!<a class="headerlink" href="#welcome-to-etcdclient-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>EtcdClient is an asynchronous etcd client library with key-value methods, support for authentication and methods for retrieving statistics and managing members of etcd clusters.
+EtcdClient is built on top of <a class="reference external" href="http://docs.scala-lang.org/overviews/core/futures.html">Scala Futures and Promises</a>,
+<a class="reference external" href="https://github.com/AsyncHttpClient/async-http-client/">AsyncHttpClient</a>, <a class="reference external" href="http://netty.io/">Netty</a>  and <a class="reference external" href="https://github.com/json4s/json4s">JSON4S</a>.</p>
+<p>Complete etcd server api information can be found on <a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html">etcd documentation</a>.</p>
+<p>The following is a tutorial explaining how to use EtcdClient, in order to get you started as quickly as possible.
+There is also a scaladoc with more information about the implementation.
+Both documents are supposed to complement each other.
+We recommend reading this tutorial first, and referring to the scaladoc for any doubts on implementation that are not covered here.
+In particular, the exact contents of the responses returned by etcd are not covered here.
+However, it is only a matter of searching in the scaladoc the selected case class representing the response of a particular operation.
+The implementation is straightforward.</p>
+<p>The first part of the tutorial briefly explains the model used in order to render responses to HTTP requests made to etcd servers.
+Then we proceed to list all methods implemented by EtcdClient and examples to illustrate possible use cases.
+We hope that a few examples will suffice to get most users started.</p>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Model/Model.html">Package Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Model/Model.html#results-responses-and-errors">Results, Responses and Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Model/Model.html#result-sealed-traits">Result sealed traits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Model/Model.html#model-case-classes-and-traits">Model Case Classes and Traits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Model/Model.html#the-etcdmodel-object">The EtcdModel Object</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Client/EtcdClient.html">EtcdClient</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Client/EtcdClient.html#configuration-methods">Configuration Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/EtcdClient.html#etcdconfiguration">EtcdConfiguration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/EtcdClient.html#the-etcddsl-object">The EtcdDSL Object</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Client/Key-Value Methods.html">Key-Value Methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Client/Key-Value Methods.html#setkey">setKey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Key-Value Methods.html#waitforkey">waitForKey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Key-Value Methods.html#getkey">getKey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Key-Value Methods.html#deletekey">deleteKey</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Key-Value Methods.html#createdir">createDir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Key-Value Methods.html#deletedir">deleteDir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Key-Value Methods.html#listdir">listDir</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Key-Value Methods.html#refreshttl">refreshTTL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Key-Value Methods.html#refreshdirttl">refreshDirTTL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Key-Value Methods.html#createkeyfromcurrentetcdindex">createKeyFromCurrentEtcdIndex</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Client/Statistics.html">Statistics Methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Client/Statistics.html#getleaderstats">getLeaderStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Statistics.html#gethealth">getHealth</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Statistics.html#getselfstats">getSelfStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Statistics.html#getstorestats">getStoreStats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Statistics.html#getversion">getVersion</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Client/Authentication Methods.html">Authentication Methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Client/Authentication Methods.html#getauthenticationstatus">getAuthenticationStatus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Authentication Methods.html#enableauthentication">enableAuthentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Authentication Methods.html#disableauthentication">disableAuthentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Authentication Methods.html#addupdateuser">addUpdateUser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Authentication Methods.html#deleteuser">deleteUser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Authentication Methods.html#getusers">getUsers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Authentication Methods.html#getuserdetails">getUserDetails</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Authentication Methods.html#addupdaterole">addUpdateRole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Authentication Methods.html#deleterole">deleteRole</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Authentication Methods.html#getroles">getRoles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Authentication Methods.html#getroledetails">getRoleDetails</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Authentication Methods.html#a-possible-work-flow">A possible work flow</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Client/Member Methods.html">Member Methods</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Client/Member Methods.html#getmembers">getMembers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Member Methods.html#addmembers">addMembers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Member Methods.html#deletemembers">deleteMembers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Member Methods.html#changepeerurls">changePeerURLs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Client/Member Methods.html#a-possible-work-flow">A possible work flow</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          <h3>Table Of Contents</h3>
+          <ul>
+<li class="toctree-l1"><a class="reference internal" href="Model/Model.html">Package Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Client/EtcdClient.html">EtcdClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Client/Key-Value Methods.html">Key-Value Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Client/Statistics.html">Statistics Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Client/Authentication Methods.html">Authentication Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Client/Member Methods.html">Member Methods</a></li>
+</ul>
+
+          <div role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+            </form>
+            <p class="searchtip" style="font-size: 90%">
+                Enter search terms or a module, class or function name.
+            </p>
+          </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="related navigaton">
+            <a href="Model/Model.html" title="Package Model"
+              >next</a> |
+            <a href="genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="_sources/index.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Antonio Maciej Matamoros Ochman, Paweł Cesar Sanjuan Sklarz.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

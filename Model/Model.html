@@ -1,0 +1,821 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Package Model &mdash; EtcdClient 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/agogo.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="EtcdClient 1.0 documentation" href="../index.html" />
+    <link rel="next" title="EtcdClient" href="../Client/EtcdClient.html" />
+    <link rel="prev" title="Welcome to EtcdClient’s documentation!" href="../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="../index.html">EtcdClient 1.0 documentation</a></div>
+        <div class="rel" role="navigation" aria-label="related navigation">
+          <a href="../index.html" title="Welcome to EtcdClient’s documentation!"
+             accesskey="P">previous</a> |
+          <a href="../Client/EtcdClient.html" title="EtcdClient"
+             accesskey="N">next</a> |
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="package-model">
+<span id="model"></span><h1>Package Model<a class="headerlink" href="#package-model" title="Permalink to this headline">¶</a></h1>
+<p>Here we discuss package model of EtcdClient</p>
+<p>Package model contains case classes for dealing with etcd HTTP responses and building correct HTTP requests to etcd.
+Most of the case classes are self-explanatory, once the Responses and Errors section below is read.
+Those that are not are discussed in more detail in this documentation.
+They are mostly used by handlers or by the client to <a class="reference external" href="https://github.com/json4s/json4s#extracting-values">extract</a> information from JSON objects or <a class="reference external" href="https://github.com/json4s/json4s#serialization">write</a> information to JSON objects sent in requests.</p>
+<p>Also, package model contains an object for properly building instances of <a class="reference internal" href="#etcdkey"><span>EtcdKey</span></a>, <a class="reference internal" href="#etcddirectory"><span>EtcdDirectory</span></a>, or <a class="reference internal" href="#etcdvalue"><span>EtcdValue</span></a> case classes.
+There is also a method for creating hidden nodes, a special case of <a class="reference internal" href="#etcdkey"><span>EtcdKey</span></a>.</p>
+<p>Finally, it contains <a class="reference external" href="https://github.com/json4s/json4s#serializing-non-supported-types">JSON4S custom serializers</a> for JSON parsing support.
+All the custom serializers contained in this package are contained  in the <a class="reference external" href="EtcdJsonFormat">EtcdJsonFormat</a> object, which in turn is used by handlers in package <a class="reference external" href="Handlers">handlers</a> to parse responses from etcd to HTTP requests.</p>
+<div class="section" id="results-responses-and-errors">
+<span id="responses-and-errors"></span><h2>Results, Responses and Errors<a class="headerlink" href="#results-responses-and-errors" title="Permalink to this headline">¶</a></h2>
+<p>All requests can return either a response or an error.
+In order to deal with this two possible situations, the outcome of each request is represented by a <strong>Result</strong> sealed trait in this package.
+These traits are extended by case classes representing an error or a response in the manner described bellow.
+The naming convention for <strong>Result</strong> sealed traits is the following: <code class="docutils literal"><span class="pre">Etcd&lt;NameOfTheEtcdClientMethod&gt;Result</span></code>.
+For example <code class="docutils literal"><span class="pre">EtcdGetKeyReslut</span></code>.</p>
+<p>There are two types of error that etcd could return.
+For EtcdClient, they are represented in the <strong>EtcdStandardError</strong> and <strong>EtcdRequestError</strong>.
+One of these case classes extends each <strong>Result</strong> sealed trait representing the outcome of a request sent by the client.</p>
+<p>On the other hand, responses are dealt with using <strong>Response</strong> case classes.
+They contain all the necessary fields used to deserialize the information contained in the HTTP response received from etcd.
+<strong>Response</strong> case classes also extend <strong>Result</strong> sealed traits. The naming convention is similar: <code class="docutils literal"><span class="pre">Etcd&lt;NameOfTheEtcdClientMethod&gt;Response</span></code>.
+For example <code class="docutils literal"><span class="pre">EtcdGetKeyResponse</span></code>.</p>
+<p>Both <strong>Response</strong> and <strong>Error</strong> case classes contain the relevant information about etcd that can be found in headers and in the response body.</p>
+<p>A more involved case, which is delt with a callback, is <strong>EtcdWaitForKeyResult</strong>.
+We discuss it <a class="reference internal" href="#etcdwaitforkeyresult"><span>bellow</span></a>.</p>
+<p>Also, note that each <strong>Reslut</strong> used by EtcdClient is wrapped around a Future.</p>
+</div>
+<div class="section" id="result-sealed-traits">
+<span id="id1"></span><h2>Result sealed traits<a class="headerlink" href="#result-sealed-traits" title="Permalink to this headline">¶</a></h2>
+<p>A common feature of <strong>Result</strong> sealed traits is that they have an accepted method.
+<strong>Response</strong> case classes extending such sealed traits override this method and set it to true, while <strong>Error</strong> case classes set it to false.</p>
+<p>The following table illustrates the relation between <strong>Result</strong> seald traits and <strong>Error</strong> and <strong>Response</strong> case classes.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Sealed trait</th>
+<th class="head">Response case class extending trait</th>
+<th class="head">Type of error extending trait</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>EtcdSetKeyResult</td>
+<td>EtcdSetKeyResponse</td>
+<td rowspan="6">EtcdRequestError</td>
+</tr>
+<tr class="row-odd"><td>EtcdGetKeyResult</td>
+<td>EtcdGetKeyResponse</td>
+</tr>
+<tr class="row-even"><td>EtcdWaitForKeyResult</td>
+<td>EtcdWaitForKeyAccepted</td>
+</tr>
+<tr class="row-odd"><td>EtcdCreateDirResult</td>
+<td>EtcdCreateDirResponse</td>
+</tr>
+<tr class="row-even"><td>EtcdDeleteResult</td>
+<td>EtcdDeleteResponse</td>
+</tr>
+<tr class="row-odd"><td>EtcdListDirResult</td>
+<td>EtcdListDirResponse</td>
+</tr>
+<tr class="row-even"><td>EtcdGetVersionResult</td>
+<td>EtcdGetVersionResponse</td>
+<td rowspan="15">EtcdStandardError</td>
+</tr>
+<tr class="row-odd"><td>EtcdGetHealthResult</td>
+<td>EtcdGetHealthResponse</td>
+</tr>
+<tr class="row-even"><td>EtcdGetLeaderStatsResult</td>
+<td>EtcdGetLeaderStatsResponse</td>
+</tr>
+<tr class="row-odd"><td>EtcdGetSelfStatsResult</td>
+<td>EtcdGetSelfStatsResponse</td>
+</tr>
+<tr class="row-even"><td>EtcdGetStoreStatsResult</td>
+<td>EtcdGetStoreStatsResponse</td>
+</tr>
+<tr class="row-odd"><td>EtcdGetAuthenticationStatusResult</td>
+<td>EtcdGetAuthenticationStatusResponse</td>
+</tr>
+<tr class="row-even"><td>EtcdAddUpdateUserResult</td>
+<td>EtcdAddUpdateUserResponse</td>
+</tr>
+<tr class="row-odd"><td>EtcdGetUsersResult</td>
+<td>EtcdGetUsersResponse</td>
+</tr>
+<tr class="row-even"><td>EtcdGetUserDetailsResult</td>
+<td>EtcdGetUserDetailsResponse</td>
+</tr>
+<tr class="row-odd"><td>EtcdAddUpdateRoleResult</td>
+<td>EtcdAddUpdateRoleResponse</td>
+</tr>
+<tr class="row-even"><td>EtcdGetRolesResult</td>
+<td>EtcdGetRolesResponse</td>
+</tr>
+<tr class="row-odd"><td>EtcdGetRoleDetailsResult</td>
+<td>EtcdGetRoleDetailsResponse</td>
+</tr>
+<tr class="row-even"><td>EtcdGetMembersResult</td>
+<td>EtcdGetMembersResponse</td>
+</tr>
+<tr class="row-odd"><td>EtcdAddMemberResult</td>
+<td>EtcdAddMemberResponse</td>
+</tr>
+<tr class="row-even"><td>EtcdConfirmationResult</td>
+<td>EtcdConfirmationResponse</td>
+</tr>
+</tbody>
+</table>
+<p>It is also important to note that the outcome of some operations to etcd is the same as the outcome of other case classes.
+Therefore, it is not the case that there is one <strong>Result</strong> sealed trait for each of EtcdClient&#8217;s methods.
+Instead, some <strong>Result</strong> sealed traits are reused.
+The following table shows exactly this:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">EtcdClient method</th>
+<th class="head">Result sealed trait returned
+(wrapped around a Future)</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>setKey</td>
+<td rowspan="3">EtcdSetKeyResult</td>
+</tr>
+<tr class="row-odd"><td>refreshTTL</td>
+</tr>
+<tr class="row-even"><td>createKeyFromCurrentEtcdIndex</td>
+</tr>
+<tr class="row-odd"><td>waitForKey</td>
+<td>EtcdWaitForKeyResult</td>
+</tr>
+<tr class="row-even"><td>getKey</td>
+<td>EtcdGetKeyResult</td>
+</tr>
+<tr class="row-odd"><td>deleteKey</td>
+<td>EtcdDeleteKeyResult</td>
+</tr>
+<tr class="row-even"><td>createDir</td>
+<td rowspan="3">EtcdCreateDirResult</td>
+</tr>
+<tr class="row-odd"><td>deleteDir</td>
+</tr>
+<tr class="row-even"><td>refreshDirTTL</td>
+</tr>
+<tr class="row-odd"><td>listDir</td>
+<td>EtcdListDirResult</td>
+</tr>
+<tr class="row-even"><td>getLeaderStats</td>
+<td>EtcdGetLeaderStatsResult</td>
+</tr>
+<tr class="row-odd"><td>getHealth</td>
+<td>EtcdGetHealthResult</td>
+</tr>
+<tr class="row-even"><td>getSelfStats</td>
+<td>EtcdGetSelfStatsResult</td>
+</tr>
+<tr class="row-odd"><td>getStoreStats</td>
+<td>EtcdGetStoreStatsResult</td>
+</tr>
+<tr class="row-even"><td>getVersion</td>
+<td>EtcdGetVersionResult</td>
+</tr>
+<tr class="row-odd"><td>getAuthenticationStatus</td>
+<td>EtcdGetAuthenticationStatusResult</td>
+</tr>
+<tr class="row-even"><td>enableAuthentication</td>
+<td rowspan="6">EtcdConfirmationResult</td>
+</tr>
+<tr class="row-odd"><td>disableAuthentication</td>
+</tr>
+<tr class="row-even"><td>deleteUser</td>
+</tr>
+<tr class="row-odd"><td>deleteRole</td>
+</tr>
+<tr class="row-even"><td>deleteMember</td>
+</tr>
+<tr class="row-odd"><td>changePeerURLs</td>
+</tr>
+<tr class="row-even"><td>addUpdateUser</td>
+<td>EtcdAddUpdateUserResult</td>
+</tr>
+<tr class="row-odd"><td>getUsers</td>
+<td>EtcdGetUsersResult</td>
+</tr>
+<tr class="row-even"><td>getUserDetails</td>
+<td>EtcdGetUserDetailsResult</td>
+</tr>
+<tr class="row-odd"><td>addUpdateRole</td>
+<td>EtcdAddUpdateRoleResult</td>
+</tr>
+<tr class="row-even"><td>getRoles</td>
+<td>EtcdGetRolesResult</td>
+</tr>
+<tr class="row-odd"><td>getRoleDetails</td>
+<td>EtcdGetRoleDetailsResult</td>
+</tr>
+<tr class="row-even"><td>getMembers</td>
+<td>EtcdGetMembersResult</td>
+</tr>
+<tr class="row-odd"><td>addMember</td>
+<td>EtcdAddMemberResult</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="response-and-error-case-classes">
+<span id="id2"></span><h3>Response and Error case classes<a class="headerlink" href="#response-and-error-case-classes" title="Permalink to this headline">¶</a></h3>
+<p>As mentioned above, <strong>Response</strong> case classes contain all the necessary fields used to deserialize the information contained in the HTTP response received from etcd,
+while <strong>Error</strong> case classes also contain fields to deserialize information returned by etcd explaining the cause of the error.</p>
+<p>The information returned by etcd responses is different in each case.
+Therefore, each case class contains different information, depending on the outcome of the request.
+A good place to see exactly what information is contained in a <strong>Response</strong> or <strong>Error</strong> case class is the EtcdClient scaladoc.</p>
+</div>
+<div class="section" id="etcdwaitforkeyresult">
+<span id="id3"></span><h3>EtcdWaitForKeyResult<a class="headerlink" href="#etcdwaitforkeyresult" title="Permalink to this headline">¶</a></h3>
+<p>The wait operation is handled in a special manner.
+It is implemented using a callback.
+Therefore, instead of returning <strong>Response</strong> case class whenever the request sent is valid, it returns a <strong>EtcdWaitForKeyAccepted</strong> containing the headers of the response.
+<strong>EtcdWaitForKeyAccepted</strong> also overrides <strong>EtcdWaitForKeyResult</strong>&#8216;s accepted method, setting it to true.
+In the case there has not been any change in etcd since the watch has been set, etcd returns a HTTP response with an empty body, but with headers confirming the wait has been set
+(see <a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#waiting-for-a-change">Waiting for a change</a>).</p>
+<p>The callback is implemented using a trait (<strong>EtcdWaitCallback</strong>) and a class extending it (<strong>FutureBasedEtcdWaitCallback</strong>).
+<strong>FutureBasedEtcdWaitCallback</strong> has a method (.future) for returning a Future wrapped around a <strong>EtcdGetKeyResponse</strong> if the request is valid.
+It also has a method (.isCompleted) which returns a Boolean.
+It is set to true when the callback is completed (i.e. the watch has been notified that a change occurred modifying the key on watch).
+It returns false otherwise.</p>
+</div>
+</div>
+<div class="section" id="model-case-classes-and-traits">
+<h2>Model Case Classes and Traits<a class="headerlink" href="#model-case-classes-and-traits" title="Permalink to this headline">¶</a></h2>
+<p>In this section we discuss some other case classes contained in package model.
+In particular, we discuss how we deal with keys, directories and values.
+These are the basic objects used in the key space of etcd.</p>
+<div class="section" id="etcdkey">
+<span id="id4"></span><h3>EtcdKey<a class="headerlink" href="#etcdkey" title="Permalink to this headline">¶</a></h3>
+<p>A key&#8217;s name is a full path name that is placed in etcd&#8217;s key space.
+The key space is the node found at the /v2/keys directory and all its sub nodes.</p>
+<p>The key&#8217;s name should start with a &#8216;/&#8217;.
+If the path contains many nodes, it should separate each of them with &#8216;/&#8217;.
+Finally, the last node should not contain &#8216;/&#8217;.</p>
+<p>The following example shows a key named using randomly generated strings:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">EtcdKey</span><span class="o">(</span><span class="s">&quot;/k6/tq6eo3Wntsy7qymj3kwSply0xuqxrmysl9p5i/bsnhuen7o&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>An instance of a GET request for such a key made using <code class="docutils literal"><span class="pre">curl</span></code> would look as follows:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span>curl http://127.0.0.1:2379/v2/keys/k6/tq6eo3Wntsy7qymj3kwSply0xuqxrmysl9p5i/bsnhuen7o
+</pre></div>
+</div>
+<p>The idea of using such a path to name a key is to associate a value to it.</p>
+<p>The recommended way to create keys and perform operations on them is by using the <a class="reference internal" href="#etcdmodel"><span>EtcdModel object</span></a>.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>key</strong>: the string representation of the key.</li>
+</ul>
+</div>
+<div class="section" id="etcddirectory">
+<span id="id5"></span><h3>EtcdDirectory<a class="headerlink" href="#etcddirectory" title="Permalink to this headline">¶</a></h3>
+<p>Like a key, a directory is a full path, but it has a trailing &#8216;/&#8217;.</p>
+<p>The directory&#8217;s name should start with a &#8216;/&#8217;.
+If the path contains many nodes, it should separate each of them with &#8216;/&#8217;.
+Finally, the last node should contain &#8216;/&#8217;.</p>
+<p>The same example as above shows that a key can be viewed as a directory by adding a trailing &#8216;/&#8217;:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="nc">EtcdDirectory</span><span class="o">(</span><span class="s">&quot;/k6/tq6eo3Wntsy7qymj3kwSply0xuqxrmysl9p5i/bsnhuen7o/&quot;</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>The idea of using such a path to name a directory is to put other keys and directories into it.</p>
+<p>In our model, we make a difference between keys and directories, since operations made on keys return different responses than operations made on directories.</p>
+<p>Again, the recommended way to create directories and perform operations on them is by using the <a class="reference internal" href="#etcdmodel"><span>EtcdModel object</span></a>.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>dir</strong>: the string representation of the directory.</li>
+</ul>
+</div>
+<div class="section" id="etcdvalue">
+<span id="id6"></span><h3>EtcdValue<a class="headerlink" href="#etcdvalue" title="Permalink to this headline">¶</a></h3>
+<p>A value is any data being stored under a key.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>value</strong>: the string representation of the value.</li>
+</ul>
+</div>
+<div class="section" id="compareandswapcondition">
+<span id="id7"></span><h3>CompareAndSwapCondition<a class="headerlink" href="#compareandswapcondition" title="Permalink to this headline">¶</a></h3>
+<p>A sealed trait used to represent the conditions that can be imposed on the <a class="reference internal" href="../Client/Key-Value Methods.html#etcdclient-setkey"><span>EtcdClient.setKey</span></a>  method.</p>
+<p>It can be either <a class="reference internal" href="#keymustexist"><span>KeyMustExist</span></a>, <a class="reference internal" href="#keymusthaveindex"><span>KeyMustHaveIndex</span></a> or <a class="reference internal" href="#keymusthavevalue"><span>KeyMustHaveValue</span></a>.</p>
+</div>
+<div class="section" id="conditionaldeletecondition">
+<span id="id8"></span><h3>ConditionalDeleteCondition<a class="headerlink" href="#conditionaldeletecondition" title="Permalink to this headline">¶</a></h3>
+<p>A sealed trait used to represent the conditions that can be imposed on the <a class="reference internal" href="../Client/Key-Value Methods.html#etcdclient-deletekey"><span>EtcdClient.deleteKey</span></a> method.</p>
+<p>It can be either <a class="reference internal" href="#keymusthaveindex"><span>KeyMustHaveIndex</span></a> or <a class="reference internal" href="#keymusthavevalue"><span>KeyMustHaveValue</span></a>.</p>
+</div>
+<div class="section" id="keymustexist">
+<span id="id9"></span><h3>KeyMustExist<a class="headerlink" href="#keymustexist" title="Permalink to this headline">¶</a></h3>
+<p>This case class is used as input for a compare-and-swap operation:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">case</span> <span class="k">class</span> <span class="nc">KeyMustExist</span><span class="o">(</span><span class="n">state</span><span class="k">:</span> <span class="kt">Boolean</span><span class="o">)</span>
+    <span class="k">extends</span> <span class="nc">CompareAndSwapCondition</span>
+</pre></div>
+</div>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>state</strong>: Requires that the key already exist, when set to true. When set to false, requires for the key to not exist.</li>
+</ul>
+</div>
+<div class="section" id="keymusthaveindex">
+<span id="id10"></span><h3>KeyMustHaveIndex<a class="headerlink" href="#keymusthaveindex" title="Permalink to this headline">¶</a></h3>
+<p>This case class is used as input for a compare-and-swap operation or for a conditional delete:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">case</span> <span class="k">class</span> <span class="nc">KeyMustHaveIndex</span><span class="o">(</span><span class="n">index</span><span class="k">:</span> <span class="kt">EtcdIndex</span><span class="o">)</span>
+    <span class="k">extends</span> <span class="nc">CompareAndSwapCondition</span> <span class="k">with</span> <span class="nc">ConditionalDeleteCondition</span>
+</pre></div>
+</div>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>index</strong>: Requires for the key to have this modified index associated to its last operation.</li>
+</ul>
+</div>
+<div class="section" id="keymusthavevalue">
+<span id="id11"></span><h3>KeyMustHaveValue<a class="headerlink" href="#keymusthavevalue" title="Permalink to this headline">¶</a></h3>
+<p>This case class is used as input for a compare-and-swap operation or for a conditional delete:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">case</span> <span class="k">class</span> <span class="nc">KeyMustHaveValue</span><span class="o">(</span><span class="n">value</span><span class="k">:</span> <span class="kt">EtcdValue</span><span class="o">)</span>
+    <span class="k">extends</span> <span class="nc">CompareAndSwapCondition</span> <span class="k">with</span> <span class="nc">ConditionalDeleteCondition</span>
+</pre></div>
+</div>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>value</strong>: Requires for the key to have this value at the time of the request.</li>
+</ul>
+</div>
+<div class="section" id="etcdindex">
+<span id="id12"></span><h3>EtcdIndex<a class="headerlink" href="#etcdindex" title="Permalink to this headline">¶</a></h3>
+<p>Index associated to the last operation performed in etcd.</p>
+<p>See &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#response-headers">Response Headers</a>&#8221;.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>index</strong>: Integer representation of the etcd index.</li>
+</ul>
+</div>
+<div class="section" id="etcdttl">
+<span id="id13"></span><h3>EtcdTTL<a class="headerlink" href="#etcdttl" title="Permalink to this headline">¶</a></h3>
+<p>Life span in seconds of a key or directory.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>ttl</strong>: Integer representing the time to live in seconds.</li>
+</ul>
+</div>
+<div class="section" id="etcdresponsecode">
+<h3>EtcdResponseCode<a class="headerlink" href="#etcdresponsecode" title="Permalink to this headline">¶</a></h3>
+<p>HTTP response code to a request.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>code</strong>: Integer representation of the response code.</li>
+</ul>
+</div>
+<div class="section" id="raftterm">
+<h3>RaftTerm<a class="headerlink" href="#raftterm" title="Permalink to this headline">¶</a></h3>
+<p>An integer that will increase whenever an etcd master election happens in the cluster.</p>
+<p>See &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#response-headers">Response Headers</a>&#8221;.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>term</strong>: Integer representation of the raft term.</li>
+</ul>
+</div>
+<div class="section" id="raftindex">
+<h3>RaftIndex<a class="headerlink" href="#raftindex" title="Permalink to this headline">¶</a></h3>
+<p>See &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#response-headers">Response Headers</a>&#8221;.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>rIndex</strong>: Integer representation of the etcd index.</li>
+</ul>
+</div>
+<div class="section" id="etcdheaders">
+<span id="id16"></span><h3>EtcdHeaders<a class="headerlink" href="#etcdheaders" title="Permalink to this headline">¶</a></h3>
+<p>This case class contains the most relevant information returned in headers of responses to requests performed by key-value methods:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">case</span> <span class="k">class</span> <span class="nc">EtcdHeaders</span><span class="o">(</span>
+  <span class="n">xEtcdClusterId</span><span class="k">:</span> <span class="kt">EtcdClusterId</span><span class="o">,</span>
+  <span class="n">xEtcdIndex</span><span class="k">:</span> <span class="kt">EtcdIndex</span><span class="o">,</span>
+  <span class="n">xRaftIndex</span><span class="k">:</span> <span class="kt">RaftIndex</span><span class="o">,</span>
+  <span class="n">xRaftTerm</span><span class="k">:</span> <span class="kt">RaftTerm</span>
+<span class="o">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="etcdmember">
+<span id="id17"></span><h3>EtcdMember<a class="headerlink" href="#etcdmember" title="Permalink to this headline">¶</a></h3>
+<p>Case class representing the information that a member of a cluster may have of another member.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>id</strong>: String identifying a member of an etcd cluster.</li>
+<li><strong>name</strong>: String identifying a member of an etcd cluster by name.</li>
+<li><strong>peerURLs</strong>: List of URLs (represented as strings) used for communication between peers in an etcd cluster.</li>
+<li><strong>clientURLs</strong>: List of URLs (represented as strings) used for communication with clients.</li>
+</ul>
+</div>
+<div class="section" id="etcdmemberform">
+<span id="id18"></span><h3>EtcdMemberForm<a class="headerlink" href="#etcdmemberform" title="Permalink to this headline">¶</a></h3>
+<p>Form used to update the peer URLs of a member of a cluster.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>peerURLs</strong>: List of strings representing the peer URLs.</li>
+</ul>
+</div>
+<div class="section" id="etcduserrequestform">
+<span id="id19"></span><h3>EtcdUserRequestForm<a class="headerlink" href="#etcduserrequestform" title="Permalink to this headline">¶</a></h3>
+<p>Form that needs to be filled to use as input for <a class="reference internal" href="../Client/Authentication Methods.html#addupdateuser"><span>EtcdClient.addUpdateUser</span></a> and <a class="reference internal" href="../Client/Authentication Methods.html#deleteuser"><span>EtcdClient.deleteUser</span></a> methods.
+Sometimes the only parameter needed is the user field.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>user</strong>: String identifying a user.</li>
+<li><strong>password</strong>: Password that the user will use for authentication.</li>
+<li><strong>roles</strong>: List of roles that a user has when it gets created.</li>
+<li><strong>grant</strong>: List of roles to be granted when performing an update.</li>
+<li><strong>revoke</strong>: List of roles to be revoked when performing an update.</li>
+</ul>
+</div>
+<div class="section" id="etcduserauthenticationdata">
+<span id="id20"></span><h3>EtcdUserAuthenticationData<a class="headerlink" href="#etcduserauthenticationdata" title="Permalink to this headline">¶</a></h3>
+<p>Data used to get authorization when authentication is enabled.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>userLogin</strong>: String representing a login.</li>
+<li><strong>password</strong>: String representing a password.</li>
+</ul>
+</div>
+<div class="section" id="etcduser">
+<span id="id21"></span><h3>EtcdUser<a class="headerlink" href="#etcduser" title="Permalink to this headline">¶</a></h3>
+<p>Data representing a user in etcd.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>user</strong>: String representing the name of the user.</li>
+<li><strong>password</strong>: String representing the password of the user.</li>
+<li><strong>roles</strong>: List of instances of <a class="reference internal" href="#etcdrole"><span>EtcdRole</span></a>, which specify the permissions the user has.</li>
+</ul>
+</div>
+<div class="section" id="etcdrole">
+<span id="id22"></span><h3>EtcdRole<a class="headerlink" href="#etcdrole" title="Permalink to this headline">¶</a></h3>
+<p>Data specifying what write and read privileges are granted or revoked to the users in possession of it.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>role</strong>: String representing the name of the role.</li>
+<li><strong>permissions</strong>: List of permissions that the possession of the role grants.</li>
+<li><strong>grant</strong>: Used for granting a permission when a role is updated.</li>
+<li><strong>revoke</strong>: Used for revoking a permission when a role is updated.</li>
+</ul>
+</div>
+<div class="section" id="etcdpermission">
+<span id="id23"></span><h3>EtcdPermission<a class="headerlink" href="#etcdpermission" title="Permalink to this headline">¶</a></h3>
+<p>Data specifying the read and write access to the key-value and authentication spaces.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>kv</strong>: Instance of <a class="reference internal" href="#etcdkv"><span>EtcdKV</span></a>.</li>
+</ul>
+</div>
+<div class="section" id="etcdkv">
+<span id="id24"></span><h3>EtcdKV<a class="headerlink" href="#etcdkv" title="Permalink to this headline">¶</a></h3>
+<p>Data specifying the read and write access to the key-value and authentication spaces.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>read</strong>: List of strings specifying read access to a certain domain of the key-value and authentication spaces.</li>
+<li><strong>write</strong>: List of strings specifying write access to a certain domain of the key-value and authentication spaces.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="the-etcdmodel-object">
+<span id="etcdmodel"></span><h2>The EtcdModel Object<a class="headerlink" href="#the-etcdmodel-object" title="Permalink to this headline">¶</a></h2>
+<p>The EtcdModel object contains methods for getting well-formed instances of <a class="reference internal" href="#etcdkey"><span>EtcdKey</span></a>, <a class="reference internal" href="#etcddirectory"><span>EtcdDirectory</span></a>, or <a class="reference internal" href="#etcdvalue"><span>EtcdValue</span></a> case classes.
+It also includes a method for creating hidden nodes, a type of <a class="reference internal" href="#etcdkey"><span>EtcdKey</span></a>.</p>
+<div class="section" id="key-key-string">
+<h3>key(key: String)<a class="headerlink" href="#key-key-string" title="Permalink to this headline">¶</a></h3>
+<p>Creates a well-formed instance of <a class="reference internal" href="#etcdkey"><span>EtcdKey</span></a> from a String that represents a path to an etcd node.
+In general, this method is used to check that an input string will not produce errors while sending requests.
+It creates instances of keys that conform to the description of keys given in <a class="reference internal" href="#etcdkey"><span>EtcdKey</span></a>.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>key</strong>: the String representation of the key</li>
+</ul>
+</div></blockquote>
+<p>The following examples show the outcome of some operations using this method:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="c1">//returns EtcdKey(/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj)</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">key</span><span class="o">(</span><span class="s">&quot;/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj&quot;</span><span class="o">)</span>
+
+<span class="c1">//returns java.lang.IllegalArgumentException: key name must not end with &#39;/&#39;.</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">key</span><span class="o">(</span><span class="s">&quot;/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/&quot;</span><span class="o">)</span>
+
+<span class="c1">//returns java.lang.IllegalArgumentException: key name must start with &#39;/&#39;.</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">key</span><span class="o">(</span><span class="s">&quot;model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj&quot;</span><span class="o">)</span>
+
+<span class="c1">//returns java.lang.IllegalArgumentException: key name can not be null.</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">key</span><span class="o">(</span><span class="s">&quot;&quot;</span><span class="o">)</span>
+
+<span class="c1">//returns java.lang.IllegalArgumentException: key name can not be null.</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">key</span><span class="o">(</span><span class="kc">null</span><span class="o">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="key-dir-etcddirectory-key-string">
+<h3>key(dir: EtcdDirectory, key: String)<a class="headerlink" href="#key-dir-etcddirectory-key-string" title="Permalink to this headline">¶</a></h3>
+<p>Creates a well-formed instance of <a class="reference internal" href="#etcdkey"><span>EtcdKey</span></a> from a String that represents a path to an etcd node and a String that represents the name of the node.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>dir</strong>: the string representation of the directory.</li>
+<li><strong>key</strong>: the string representation of the key.</li>
+</ul>
+</div></blockquote>
+<p>The following is an instance of how this method could be used:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">someDir</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">directory</span><span class="o">(</span>
+<span class="s">&quot;/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/&quot;</span>
+<span class="o">)</span>
+<span class="k">val</span> <span class="n">someName</span> <span class="k">=</span> <span class="s">&quot;foo&quot;</span>
+
+<span class="c1">// returns EtcdKey(/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/foo)</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">key</span><span class="o">(</span><span class="n">someDir</span><span class="o">,</span> <span class="n">someName</span><span class="o">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="directory-dir-string">
+<h3>directory(dir: String)<a class="headerlink" href="#directory-dir-string" title="Permalink to this headline">¶</a></h3>
+<p>Creates a well-formed instance of <a class="reference internal" href="#etcddirectory"><span>EtcdDirectory</span></a> from a String that represents a path.
+It creates instances of directories that conform to the description of keys given in <a class="reference internal" href="#etcddirectory"><span>EtcdDirectory</span></a>.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>dir</strong>: the string representation of the directory.</li>
+</ul>
+</div></blockquote>
+<p>The following examples show the outcome of some operations using this method:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="c1">//returns EtcdDirectory(/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/)</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">directory</span><span class="o">(</span><span class="s">&quot;/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/&quot;</span><span class="o">)</span>
+
+<span class="c1">//returns java.lang.IllegalArgumentException: Directory name must start with &#39;/&#39;.</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">directory</span><span class="o">(</span><span class="s">&quot;model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/&quot;</span><span class="o">)</span>
+
+<span class="c1">//returns java.lang.IllegalArgumentException: Directory must end with &#39;/&#39;.</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">directory</span><span class="o">(</span><span class="s">&quot;/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj&quot;</span><span class="o">)</span>
+
+<span class="c1">//returns java.lang.IllegalArgumentException: Directory name must start with &#39;/&#39;.</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">directory</span><span class="o">(</span><span class="s">&quot;&quot;</span><span class="o">)</span>
+
+<span class="c1">//returns java.lang.IllegalArgumentException: Directory name can not be null.</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">directory</span><span class="o">(</span><span class="kc">null</span><span class="o">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="hiddennode-dir-string-node-string">
+<h3>hiddenNode(dir: String, node: String)<a class="headerlink" href="#hiddennode-dir-string-node-string" title="Permalink to this headline">¶</a></h3>
+<p>Creates a well-formed instance of <a class="reference internal" href="#etcdkey"><span>EtcdKey</span></a> from a String that represents a path to a node and a String that represents the name of the node.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>dir</strong>: the string representation of the directory.</li>
+<li><strong>node</strong>: the string representation of the node&#8217;s name.</li>
+</ul>
+</div></blockquote>
+<p><strong>Returns</strong> A <a class="reference internal" href="#etcdkey"><span>EtcdKey</span></a> composed of a path and the name of a node prepended with &#8216;_&#8217;.</p>
+<p>A hidden node is an <a class="reference internal" href="#etcdkey"><span>EtcdKey</span></a> which will not be shown when a directory is listed.
+It can be set, updated and deleted like any other <a class="reference internal" href="#etcdkey"><span>EtcdKey</span></a>.
+It is possible to retrieve its value when the <a class="reference internal" href="../Client/Key-Value Methods.html#etcdclient-getkey"><span>EtcdClient.getKey</span></a> method is called.
+However it will not be included in the list of keys returned by <a class="reference internal" href="../Client/Key-Value Methods.html#etcdclient-listdir"><span>EtcdClient.listDir</span></a>.
+For more information on hidden nodes see &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#creating-a-hidden-node">Creating a hidden node</a>&#8221;.</p>
+<p>The following examples show the outcome of some operations using this method:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">someDirName</span> <span class="k">=</span> <span class="s">&quot;/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/&quot;</span>
+<span class="k">val</span> <span class="n">someKeyName</span> <span class="k">=</span> <span class="s">&quot;/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj&quot;</span>
+<span class="k">val</span> <span class="n">someName</span> <span class="k">=</span> <span class="s">&quot;foo&quot;</span>
+
+<span class="c1">//returns EtcdKey(/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/_foo)</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">hiddenNode</span><span class="o">(</span><span class="n">someDirName</span><span class="o">,</span> <span class="n">someName</span><span class="o">)</span>
+
+<span class="c1">//returns java.lang.IllegalArgumentException: node name cannot be null.</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">hiddenNode</span><span class="o">(</span><span class="n">someDirName</span><span class="o">,</span> <span class="s">&quot;&quot;</span><span class="o">)</span>
+
+<span class="c1">//returns java.lang.IllegalArgumentException: node name cannot be null.</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">hiddenNode</span><span class="o">(</span><span class="n">someDirName</span><span class="o">,</span> <span class="kc">null</span><span class="o">)</span>
+
+<span class="c1">//returns java.lang.IllegalArgumentException: Directory name can not be null.</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">hiddenNode</span><span class="o">(</span><span class="s">&quot;&quot;</span><span class="o">,</span> <span class="n">someName</span><span class="o">)</span>
+
+<span class="c1">//returns java.lang.IllegalArgumentException: Directory name can not be null.</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">hiddenNode</span><span class="o">(</span><span class="kc">null</span><span class="o">,</span> <span class="n">someName</span><span class="o">)</span>
+
+<span class="c1">//returns java.lang.IllegalArgumentException: Node name must not end or start with &#39;/&#39;.</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">hiddenNode</span><span class="o">(</span><span class="n">someDirName</span><span class="o">,</span> <span class="s">&quot;/&quot;</span> <span class="o">+</span> <span class="n">someName</span><span class="o">)</span>
+
+<span class="c1">//returns java.lang.IllegalArgumentException: Directory must end with &#39;/&#39;.</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">hiddenNode</span><span class="o">(</span><span class="n">someKeyName</span><span class="o">,</span> <span class="n">someName</span><span class="o">)</span>
+
+<span class="c1">//returns java.lang.IllegalArgumentException: Directory name must start with &#39;/&#39;.</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">hiddenNode</span><span class="o">(</span><span class="n">someName</span><span class="o">,</span> <span class="n">someName</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>The examples above show a number of restrictions on the input data.
+Neither the directory&#8217;s name nor the node&#8217;s name cannot be  <code class="docutils literal"><span class="pre">null</span></code> nor empty strings.
+Also, the directory&#8217;s name must start and end with &#8220;/&#8221;, but the node name must not start nor end with &#8220;/&#8221;.</p>
+</div>
+<div class="section" id="value-value-string">
+<h3>value(value: String)<a class="headerlink" href="#value-value-string" title="Permalink to this headline">¶</a></h3>
+<p>Creates a well-formed instance of <a class="reference internal" href="#etcdvalue"><span>EtcdValue</span></a>.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>value</strong>: the string representation of the value</li>
+</ul>
+</div></blockquote>
+<p>The following is an instance of how this method could be used:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">str</span> <span class="k">=</span> <span class="s">&quot;foo&quot;</span>
+
+<span class="c1">//returns EtcdValue(foo)</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="n">str</span><span class="o">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="keyofdirectory-dir-etcddirectory">
+<h3>keyOfDirectory(dir: EtcdDirectory)<a class="headerlink" href="#keyofdirectory-dir-etcddirectory" title="Permalink to this headline">¶</a></h3>
+<p>Returns an instance of <a class="reference internal" href="#etcdkey"><span>EtcdKey</span></a> from a <a class="reference internal" href="#etcddirectory"><span>EtcdDirectory</span></a>.</p>
+<p>An EtcdDirectory can be treated as an EtcdKey by dropping the closing &#8216;/&#8217;.</p>
+<p>Parameters:</p>
+<blockquote>
+<div><ul class="simple">
+<li><strong>dir</strong>: the <a class="reference internal" href="#etcddirectory"><span>EtcdDirectory</span></a> that is to be treated as a key.</li>
+</ul>
+</div></blockquote>
+<p>The following is an instance of how this method could be used:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">someDir</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">directory</span><span class="o">(</span>
+<span class="s">&quot;/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/&quot;</span>
+<span class="o">)</span>
+
+<span class="c1">//returns EtcdKey(/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj)</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">keyOfDirectory</span><span class="o">(</span><span class="n">someDir</span><span class="o">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="directoryofkey-key-etcdkey">
+<h3>directoryOfKey(key: EtcdKey)<a class="headerlink" href="#directoryofkey-key-etcdkey" title="Permalink to this headline">¶</a></h3>
+<p>Returns an instance of <a class="reference internal" href="#etcddirectory"><span>EtcdDirectory</span></a>  from a <a class="reference internal" href="#etcdkey"><span>EtcdKey</span></a>.</p>
+<p>An EtcdDirectory can be treated as an EtcdKey by adding a closing &#8216;/&#8217;.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>key</strong>: the <a class="reference internal" href="#etcdkey"><span>EtcdKey</span></a> that is to be treated as a directory.</li>
+</ul>
+<p>The following is an instance of how this method could be used:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">someKey</span> <span class="k">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">key</span><span class="o">(</span>
+<span class="s">&quot;/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj&quot;</span>
+<span class="o">)</span>
+
+<span class="c1">//returns EtcdDirectory(/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/)</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">directoryOfKey</span><span class="o">(</span><span class="n">someKey</span><span class="o">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="frompath-path-list-string">
+<h3>fromPath(path: List[String])<a class="headerlink" href="#frompath-path-list-string" title="Permalink to this headline">¶</a></h3>
+<p>Returns an instance of <a class="reference internal" href="#etcdkey"><span>EtcdKey</span></a> from a list of node names.</p>
+<p>The key preserves the order of the list given as input.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>path</strong>: A list of strings not containing &#8220;/&#8221;, which are to be used as node names.</li>
+</ul>
+<p>The following examples show the outcome of some operations using this method:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">listOfNodes</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="s">&quot;path&quot;</span><span class="o">,</span> <span class="s">&quot;leading&quot;</span><span class="o">,</span> <span class="s">&quot;to&quot;</span><span class="o">,</span> <span class="s">&quot;node&quot;</span><span class="o">)</span>
+
+<span class="c1">//returns EtcdKey(/path/leading/to/node)</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">fromPath</span><span class="o">(</span><span class="n">listOfNodes</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">listOfNodes2</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="s">&quot;path&quot;</span><span class="o">,</span> <span class="s">&quot;leading/to&quot;</span><span class="o">,</span> <span class="s">&quot;node&quot;</span><span class="o">)</span>
+
+<span class="c1">//returns java.lang.IllegalArgumentException: node names cannot contain &#39;/&#39;</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">fromPath</span><span class="o">(</span><span class="n">listOfNodes2</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>One restriction on this method ist that the strings included on the list cannot contain &#8220;/&#8221;.</p>
+</div>
+<div class="section" id="topath-key-etcdkey">
+<h3>toPath(key: EtcdKey)<a class="headerlink" href="#topath-key-etcdkey" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div>Returns a list of all node names in order.</div></blockquote>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>key</strong>: An <a class="reference internal" href="#etcdkey"><span>EtcdKey</span></a> which is to be split in node names and placed in order into a list.</li>
+</ul>
+<p>The following is an instance of how this method could be used:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">someKey</span> <span class="k">=</span> <span class="nc">EtcdKey</span><span class="o">(</span><span class="s">&quot;/path/leading/to/node&quot;</span><span class="o">)</span>
+
+<span class="c1">//returns List(path, leading, to, node)</span>
+<span class="nc">EtcdModel</span><span class="o">.</span><span class="n">toPath</span><span class="o">(</span><span class="n">someKey</span><span class="o">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          <h3>Table Of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Package Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#results-responses-and-errors">Results, Responses and Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#result-sealed-traits">Result sealed traits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model-case-classes-and-traits">Model Case Classes and Traits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-etcdmodel-object">The EtcdModel Object</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../Client/EtcdClient.html">EtcdClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Client/Key-Value Methods.html">Key-Value Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Client/Statistics.html">Statistics Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Client/Authentication Methods.html">Authentication Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Client/Member Methods.html">Member Methods</a></li>
+</ul>
+
+          <div role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+            </form>
+            <p class="searchtip" style="font-size: 90%">
+                Enter search terms or a module, class or function name.
+            </p>
+          </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="related navigaton">
+            <a href="../index.html" title="Welcome to EtcdClient’s documentation!"
+              >previous</a> |
+            <a href="../Client/EtcdClient.html" title="EtcdClient"
+              >next</a> |
+            <a href="../genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="../_sources/Model/Model.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Antonio Maciej Matamoros Ochman, Paweł Cesar Sanjuan Sklarz.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>

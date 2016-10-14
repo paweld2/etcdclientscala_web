@@ -1,0 +1,535 @@
+.. _Authentication Methods:
+
+======================
+Authentication Methods
+======================
+
+The implementation of authentication methods follows the specification given in the `etcd authentication and security API <https://coreos.com/etcd/docs/latest/auth_api.html>`_.
+etcd permits the use of authentication only on authentication and key-value methods.
+
+There are three types of authentication resources in etcd. Users, roles and permissions.
+
+#. A user is an identity to be authenticated and under which one can get access to different resources in etcd.
+   A user has a list of permissions and a list of roles.
+
+#. A role is basically a list of permissions that can be granted to a number of users.
+
+#. A permission grants access to resources in etcd.
+   It can be either read access, write access, or both.
+
+With the help of authentication methods, a system administrator can enable or disable authentication.
+It is also possible to create, update or delete users and roles with different levels of access to etcd.
+Once authentication is enabled, users must get authorization in order to get or set data in etcd.
+
+.. _getAuthenticationStatus:
+
+getAuthenticationStatus
+-----------------------
+
+Checks whether authentication is enabled or disabled::
+
+  getAuthenticationStatus: Future[EtcdGetAuthenticationStatusResult]
+
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+
+**Returns** a Future wrapped around either **EtcdGetAuthenticationStatusResponse** or **EtcdStandardError** extending **EtcdGetAuthenticationStatusResult**.
+
+.. _enableAuthentication:
+
+enableAuthentication
+--------------------
+
+Enables authentication::
+
+  enableAuthentication(): Future[EtcdDefaultResult]
+
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+
+In order to enable authentication, the root user must be created first using :ref:`addUpdateUser <addUpdateUser>`.
+After authentication only the root user or users with root rights (for example, with the root role) can access and modify permission resources.
+
+**Returns** a Future wrapped around either **EtcdConfirmationResponse** or **EtcdStandardError** extending **EtcdConfirmationResult**.
+
+.. _disableAuthentication:
+
+disableAuthentication
+---------------------
+
+Disables authentication::
+
+  disableAuthentication(): Future[EtcdDefaultResult]
+
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+
+**Returns** a Future wrapped around either **EtcdConfirmationResponse** or **EtcdStandardError** extending **EtcdConfirmationResult**.
+
+.. _addUpdateUser:
+
+addUpdateUser
+-------------
+
+Creates an user or updates the details of an existing one::
+
+  addUpdateUser(user: EtcdUserRequestForm): Future[EtcdAddUpdateUserResult]
+
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+
+In order to add a new user, one must fill a :ref:`EtcdUserRequestForm <EtcdUserRequestForm>` and pass it as an argument to this method.
+
+Parameters:
+
+ * **user**: :ref:`EtcdUserRequestForm <EtcdUserRequestForm>` containing the details (login, password, granted and revoked permissions, and roles) to be updated for a given user.
+ 
+**Returns** a Future wrapped around either **EtcdAddUpdateUserResponse** or **EtcdStandardError** extending **EtcdAddUpdateUserResult**.
+
+.. _deleteUser:
+
+deleteUser
+----------
+
+Deletes an existing user::
+
+  deleteUser(user: EtcdUserRequestForm): Future[EtcdDefaultResult]
+
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+
+Parameters:
+
+ * **user**: :ref:`EtcdUserRequestForm <EtcdUserRequestForm>` containing the details of a given user.
+ 
+**Returns** a Future wrapped around either **EtcdConfirmationResponse** or **EtcdStandardError** extending **EtcdConfirmationResult**.
+
+.. _getUsers:
+
+getUsers
+--------
+
+Gets a list of users and their details::
+
+  getUsers(): Future[EtcdGetUsersResult]
+
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+
+**Returns** a Future wrapped around either **EtcdGetUsersResponse** or **EtcdStandardError** extending **EtcdGetUsersResult**.
+
+.. _getUserDetails:
+
+getUserDetails
+--------------
+
+Gets the details of a user::
+
+  getUserDetails(user: EtcdUserRequestForm): Future[EtcdGetUserDetailsResult]
+
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+
+In this case, it suffices to provide the user field in the :ref:`EtcdUserRequestForm <EtcdUserRequestForm>`.
+
+Parameters:
+
+ * **user**: :ref:`EtcdUserRequestForm <EtcdUserRequestForm>` containing the details of a given user.
+ 
+**Returns** a Future wrapped around either **EtcdGetUserDetailsResponse** or **EtcdStandardError** extending **EtcdGetUserDetailsResult**.
+
+.. _addUpdateRole:
+
+addUpdateRole
+-------------
+
+Creates a role or updates an existing one::
+
+  addUpdateRole(role: EtcdRole): Future[EtcdCreateUpdateRoleResult]
+
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+
+Parameters:
+
+ * **role**: :ref:`EtcdRole <EtcdRole>` with details of the role to be created or updated.
+ 
+**Returns** a Future wrapped around either **EtcdAddUpdateRoleResponse** or **EtcdStandardError** extending **EtcdAddUpdateRoleResult**.
+
+.. _deleteRole:
+
+deleteRole
+----------
+
+Deletes a role::
+
+  deleteRole(role: EtcdRole): Future[EtcdDefaultResult]
+
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+
+In this case, it suffices to provide the role field in the :ref:`EtcdRole <EtcdRole>`.
+
+Parameters:
+
+ * **role**: :ref:`EtcdRole <EtcdRole>` with details of the role to be created or updated.
+ 
+**Returns** a Future wrapped around either **EtcdConfirmationResponse** or **EtcdStandardError** extending **EtcdConfirmationResult**.
+
+.. _getRoles:
+
+getRoles
+--------
+
+Gets a list of the existing roles and their details::
+
+  getRoles(): Future[EtcdGetRolesResult]
+
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+
+**Returns** a Future wrapped around either **EtcdGetRolesResponse** or **EtcdStandardError** extending **EtcdGetRolesResult**.
+
+.. _getRoleDetails:
+
+getRoleDetails
+--------------
+
+Lists the details of a role::
+
+  getRoleDetails(role: EtcdRole): Future[EtcdGetRoleDetailsResult]
+
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+
+In this case, it suffices to provide the role field in the :ref:`EtcdRole <EtcdRole>`.
+
+Parameters:
+
+ * **role**: :ref:`EtcdRole <EtcdRole>` with details of the role to be created or updated.
+ 
+**Returns** a Future wrapped around either **EtcdGetRoleDetailsResponse** or **EtcdStandardError** extending **EtcdGetRoleDetailsResult**.
+
+.. _A possible work flow authenticationDocs:
+
+A possible work flow
+--------------------
+
+The following snippets of code are meant to be read linearly.
+Each depends on the previous one.
+They present subsequent operations using EtcdClient's authentication methods.
+
+We first check if authentication is enabled.
+By default, it is disabled::
+
+    val statusQuery: Future[EtcdGetAuthenticationStatusResult] = etcdcli.getAuthenticationStatus
+
+    statusQuery onSuccess {
+      case EtcdGetAuthenticationStatusResponse(clusterId, body) =>
+        // should be Some(false) if authentication is not enabled
+        // Some(true) otherwise.
+        body.enabled
+    }
+
+Next, we would like to enable authentication.
+In order to do so, we must first create the root user using :ref:`addUpdateUser <addUpdateUser>`.
+If we try to enable authentication before this, we get an error::
+
+    val enableFail: Future[EtcdConfirmationResult] = for {
+      status <- statusQuery
+      enable <- etcdcli.enableAuthentication()
+    } yield enable
+
+    enableFail onSuccess {
+      case error @ EtcdStandardError(status, clusterId, message) =>
+        // when there is no root user
+        // should be "auth: No root user available, please create one"
+        message.message
+    }
+
+The following example shows how to add the root user.
+First we fill an :ref:`EtcdUserRequestForm <EtcdUserRequestForm>`::
+
+    val rootUser: EtcdUserRequestForm = EtcdUserRequestForm("root", Some("password"))
+
+Then we can add a new user::
+
+    val rootUserCreated: Future[EtcdAddUpdateUserResult] = for {
+      enable <- enableFail
+      added <- etcdcli.addUpdateUser(rootUser)
+    } yield added
+
+    rootUserCreated onSuccess {
+      case EtcdAddUpdateUserResponse(clusterId, body) =>
+        // should be rootUser.user
+        body.user
+        // should be List("root")
+        body.roles
+    }
+
+We also add another user, in order to have a more involved example::
+
+    val newUser: EtcdUserRequestForm = EtcdUserRequestForm("antonio", Some("password"))
+
+    val newUserCreated: Future[EtcdAddUpdateUserResult] = for {
+      rootAdded <- rootUserCreated
+      added <- etcdcli.addUpdateUser(newUser)
+    } yield added
+
+    newUserCreated onSuccess {
+      case EtcdAddUpdateUserResponse(clusterId, body) =>
+        // should be newUser.user
+        body.user
+        // should be List()
+        body.roles
+    }
+
+And we create a new role, with permissions to read and write in the user space, i.e. it can add, delete and update users.
+First we specify the name and permissions of the new role through the :ref:`EtcdRole <EtcdRole>` case class, and then we perform an :ref:`addUpdateRole <addUpdateRole>` operation::
+
+    val newRole: EtcdRole =
+      EtcdRole("usersAdmin", Some(EtcdPermission(EtcdKV(List("/users/*"), List("/users/*")))))
+
+    val newRoleCreated: Future[EtcdAddUpdateRoleResult] = for {
+      newUserAdded <- newUserCreated
+      added <- etcdcli.addUpdateRole(newRole)
+    } yield added
+
+    newRoleCreated onSuccess {
+      case EtcdAddUpdateRoleResponse(clusterId, body) =>
+        //  should be newRole.role
+        body.role
+        // should be List("/users/*")
+        body.permissions.get.kv.read
+        // should be List("/users/*")
+        body.permissions.get.kv.write
+    }
+
+Once the root user has been created, we can enable authentication::
+
+    val authEnabled: Future[EtcdConfirmationResult] = for {
+      added <- newRoleCreated
+      enabled <- etcdcli.enableAuthentication()
+    } yield enabled
+
+    authEnabled onSuccess {
+      // a response without a body which only contains an id found in the headers
+      case EtcdConfirmationResponse(clusterID) =>
+        // should be a string with an id of the member of the cluster
+        clusterID.id
+    }
+
+After authentication is enabled, only the root user or users with root rights can access and modify permission resources.
+For instance, let us try to get the details of a user without authentication::
+
+    val getUserFailed: Future[EtcdGetUserDetailsResult] = for {
+      enabled <- authEnabled
+      // without authorization
+      // rootUser was defined in an example above
+      details <- etcdcli.getUserDetails(rootUser)
+    } yield details
+
+    getUserFailed onSuccess {
+      case error @ EtcdStandardError(status, clusterId, message) =>
+        // should be "Insufficient credentials"
+        message.message
+    }
+
+Now, we provide some data in order to get authorization::
+
+    val rootAccess = EtcdUserAuthenticationData("root", "password")
+
+    val etcdClientRoot: EtcdClient = etcdcli.withAuthorization(rootAccess)
+
+    val getUserSuccess: Future[EtcdGetUserDetailsResult] = for {
+      failed <- getUserFailed
+      //with authorization
+      success <- etcdClientRoot.getUserDetails(rootUser)
+    } yield success
+
+    getUserSuccess onSuccess {
+      case EtcdGetUserDetailsResponse(clusterId, body) =>
+        // should be rootUser.user
+        body.user
+        // should be
+        // List(EtcdRole("root", Some(EtcdPermission(EtcdKV(List("/*"), List("/*")))), None, None))
+        body.roles
+    }
+
+The same applies to the getRoleDetails method::
+
+    val getRole: Future[EtcdGetRoleDetailsResult] = for {
+      user <- getUserSuccess
+      // newRole was defined in an example above
+      //with authorization
+      role <- etcdClientRoot.getRoleDetails(newRole)
+    } yield role
+
+    getRole onSuccess {
+      case EtcdGetRoleDetailsResponse(clusterId, body) =>
+        // should be newRole.role
+        body.role
+        // should be "/users/*"
+        body.permissions.get.kv.read.head
+    }
+
+Now let us list all users and all roles::
+
+    val listOfUsers: Future[EtcdGetUsersResult] = for {
+      role <- getRole
+      list <- etcdClientRoot.getUsers()
+    } yield list
+
+    listOfUsers onSuccess {
+      case EtcdGetUsersResponse(clusterId, body) =>
+        // should be "antonio"
+        body.users.head.user
+        // should be "root"
+        body.users.tail.head.user
+        // should be "root"
+        body.users.tail.head.roles.head.role
+        // should be "/*"
+        body.users.tail.head.roles.head.permissions.get.kv.read.head
+    }
+
+    val listOfRoles: Future[EtcdGetRolesResult] = for {
+      users <- listOfUsers
+      //with authorization
+      list <- etcdClientRoot.getRoles()
+    } yield list
+
+    listOfRoles onSuccess {
+      case EtcdGetRolesResponse(clusterId, body) =>
+        // should be "guest"
+        body.roles.head.role
+        //  should be "root"
+        body.roles.tail.head.role
+        // should be "/*"
+        body.roles.tail.head.permissions.get.kv.read.head
+    }
+
+Notice that there is a role named "guest".
+The guest role defines what users can do without authentication.
+
+Let us next update a user with a new role.
+Again, first we fill a :ref:`EtcdUserRequestForm <EtcdUserRequestForm>`, and then we perform the operation::
+
+    val newUserUpdate: EtcdUserRequestForm =
+      EtcdUserRequestForm("antonio", None, List(), List("usersAdmin"))
+
+    val newUserUpdated: Future[EtcdAddUpdateUserResult] = for {
+      list <- listOfRoles
+      updated <- etcdClientRoot.addUpdateUser(newUserUpdate)
+    } yield updated
+
+    newUserUpdated onSuccess {
+      case EtcdAddUpdateUserResponse(clusterId, body) =>
+        // should be newUser.user
+        body.user
+        // should be "usersAdmin"
+        body.roles.head
+    }
+
+We would also like to update a role.
+In the following example the guest role is updated;
+read and write permissions on the key space are revoked::
+
+    // role with a permissions to read and write in the key space
+    // placed in the revoke field, i.e. a request to revoke read
+    // and write permissions to the guest role
+    val guestRole: EtcdRole =
+      EtcdRole("guest", None, None, Some(EtcdPermission(EtcdKV(List("/*"), List("/*")))))
+
+    val guestRoleUpdated: Future[EtcdAddUpdateRoleResult] = for {
+      newUserUpdated <- newUserUpdated
+      updated <- etcdClientRoot.addUpdateRole(guestRole)
+    } yield updated
+
+    guestRoleUpdated onSuccess {
+      case EtcdAddUpdateRoleResponse(clusterId, body) =>
+        // should be guestRole.role
+        body.role
+        // should be List()
+        body.permissions.get.kv.read
+        // should be List()
+        body.permissions.get.kv.write
+    }
+
+After such operation, it is no longer possible to make key-value operations without authentication::
+
+    val newKey = EtcdModel.key("/foo")
+    val newValue = EtcdModel.value("bar")
+
+    val setFailure: Future[EtcdSetKeyResult] = for {
+      updated <- guestRoleUpdated
+      // without the proper credentials
+      failure <- etcdcli.setKey(newKey, newValue)
+    } yield failure
+
+    setFailure onSuccess {
+      case error @ EtcdRequestError(status, headers, body) =>
+        body match {
+          case EtcdError(cause, errorCode, index, message) =>
+            // should be 110
+            errorCode
+            // should be "The request requires user authentication"
+            message
+        }
+    }
+
+    val setSuccess: Future[EtcdSetKeyResult] = for {
+      failure <- setFailure
+      //with root access
+      success <- etcdClientRoot.setKey(newKey, newValue, None, None)
+    } yield success
+
+    setSuccess onSuccess {
+      case EtcdSetKeyResponse(headers, body) =>
+        // should be "set"
+        body.action
+        // should be newValue
+        body.node.value
+    }
+
+Now, suppose we no longer have a use for a user.
+There is a method to delete users::
+
+    val newUserDeleted: Future[EtcdConfirmationResult] = for {
+      success <- setSuccess
+      // with root access
+      deleted <- etcdClientRoot.deleteUser(newUser)
+    } yield deleted
+
+    newUserDeleted onSuccess {
+      case EtcdConfirmationResponse(clusterID) =>
+        clusterID.id
+    }
+
+The same applies to roles::
+
+    val newRoleDeleted: Future[EtcdConfirmationResult] = for {
+      userDeleted <- newUserDeleted
+      // with root access
+      deleted <- etcdClientRoot.deleteRole(newRole)
+    } yield deleted
+
+    newRoleDeleted onSuccess {
+      case EtcdConfirmationResponse(clusterID) =>
+        // should be a string
+        clusterID.id
+    }
+
+Finally, let us suppose we choose to disable authentication::
+
+    val disableAuthFailure: Future[EtcdConfirmationResult] = for {
+      deleted <- newRoleDeleted
+      // without the proper credentials
+      failure <- etcdcli.disableAuthentication()
+    } yield failure
+
+    disableAuthFailure onSuccess {
+      case error @ EtcdStandardError(status, clusterId, message) =>
+        // should be "Insufficient credentials"
+        message.message
+    }
+
+    val disableAuthSuccess: Future[EtcdConfirmationResult] = for {
+      failure <- disableAuthFailure
+      //with root access
+      success <- etcdClientRoot.disableAuthentication()
+    } yield success
+
+    disableAuthSuccess onSuccess {
+      case EtcdConfirmationResponse(clusterID) =>
+        clusterID.id
+        etcdClientRoot.close()
+    }

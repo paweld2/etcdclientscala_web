@@ -1,0 +1,146 @@
+.. _Member Methods:
+
+==============
+Member Methods
+==============
+
+They allow an administrator to configure a cluster, by changing the members of a cluster.
+The implementation for member methods follows the specification given in the `etcd members Api <https://coreos.com/etcd/docs/latest/members_api.html>`_.
+
+.. _getMembers:
+
+getMembers
+----------
+
+Gets a list of members of an etcd cluster and their details::
+
+  getMembers: Future[EtcdGetMembersResult]
+
+Implemented according to etcd Members API: "`List members <https://coreos.com/etcd/docs/latest/members_api.html#list-members>`_".
+
+**Returns** a Future wrapped around either EtcdGetMembersResponse or EtcdStandardError extending EtcdGetMembersResult.
+.. _addMembers:
+
+addMembers
+----------
+
+Adds a member to an existing etcd cluster::
+
+  addMember(peerURLs: EtcdMemberForm): Future[EtcdAddMemberResult]
+
+Implemented according to etcd Members API: "`Add a member <https://coreos.com/etcd/docs/latest/members_api.html#add-a-member>`_".
+
+Parameters:
+
+  * **peerURLs:** :ref:`EtcdMemberForm <EtcdMemberForm>`  containing a list of strings representing the peer URLs of the new member.
+
+**Returns** a Future wrapped around either EtcdAddMemberResponse or EtcdStandardError extending EtcdAddMemberResult.
+
+.. _deleteMembers:
+
+deleteMembers
+-------------
+
+Deletes a member form an etcd cluster::
+
+  deleteMember(peerID: String): Future[EtcdDefaultResult]
+
+Implemented according to etcd Members API: "`Delete a member <https://coreos.com/etcd/docs/latest/members_api.html#delete-a-member>`_".
+
+Parameters:
+
+  * **peerID:** A string identifying another member of the etcd cluster.
+
+**Returns** a Future wrapped around either EtcdConfirmationResponse or EtcdStandardError extending EtcdConfirmationResult.
+.. _changePeerURLs:
+
+changePeerURLs
+--------------
+
+Updates the peer URLs of a given member of an etcd cluster::
+
+  changePeerURLs(peerID: String, peerURLs: EtcdMemberForm): Future[EtcdDefaultResult]
+
+Implemented according to etcd Members API: "`Change the peer urls of a member <https://coreos.com/etcd/docs/latest/members_api.html#change-the-peer-urls-of-a-member>`_".
+
+Parameters:
+
+  * **peerID:** A string identifying another member of the etcd cluster.
+
+  * **peerURLs:** :ref:`EtcdMemberForm <EtcdMemberForm>` containing a list of strings representing the new peer URLs that will replace the old ones.
+
+**Returns** aFuture wrapped around either EtcdConfirmationResponse or  EtcdStandardError extending EtcdConfirmationResult.
+
+.. _A possible work flow memberDocs:
+
+A possible work flow
+--------------------
+
+The following snippets of code are meant to be read linearly.
+Each depends on the previous one.
+They present subsequent operations using EtcdClient's member methods.
+
+We start by filling a **EtcdMemberForm** containing a list of peer URLs::
+
+    val newMemberForm: EtcdMemberForm =
+      EtcdMemberForm(List("http://10.0.0.10:2380", "http://10.0.0.11:2380"))
+
+When an addMember operation is performed using the form from above, we receive an id, which identifies the new member added::
+
+    val member: Future[String] = for {
+      EtcdAddMemberResponse(headers, body) <- etcdcli.addMember(newMemberForm)
+    } yield body.id
+
+We can verify that the member was added by listing the members of the cluster::
+
+    val getMembersReq: Future[EtcdGetMembersResult] = for {
+      memberID <- member
+      membersResp <- etcdcli.getMembers
+    } yield membersResp
+    val memberAdded: Future[Boolean] = member flatMap {member =>
+    getMembersReq.map{
+      case EtcdGetMembersResponse(clusterId, body) =>
+        // should be true
+        body.members.contains(
+          EtcdMember(member, "", List("http://10.0.0.10:2380", "http://10.0.0.11:2380"), List ())
+          )
+    }
+    }
+But now, suppose we want to change the peer URLs of the recently added member.
+We need to fill another **EtcdMemberForm** containing a list of peer URLs that will replace the previous peer URLs::
+
+     val changeMemberForm: EtcdMemberForm = EtcdMemberForm(List("http://10.0.0.12:4002"))
+
+Next we perform a changePeerURLs operation.
+After that operation we perform a getMembers operation::
+
+     val changePeerURLReq: Future[EtcdGetMembersResult] = for{
+       member <- member
+       confirmation <- memberAdded
+       changeUrls <- etcdcli.changePeerURLs(member, changeMemberForm)
+       membersResp <- etcdcli.getMembers
+     } yield membersResp
+
+The getMembers operation performed last can help us check that ``member``'s peer URLs have been modified::
+
+    val memberPeerURLsChanged: Future[Boolean] = member flatMap {member =>
+      changePeerURLReq.map{
+        case EtcdGetMembersResponse(clusterId, body) =>
+          // should be true
+          body.members.contains(EtcdMember(member, "", List("http://10.0.0.12:4002"), List()))
+      }
+    }
+
+Finally, suppose we want to delete the recently added ``member``.
+In that case we need to perform a deleteMember operation::
+
+    val deleteMemberReq: Future[EtcdConfirmationResult] = for{
+      member <- member
+      deleteMember <- etcdcli.deleteMember(member)
+    } yield deleteMember
+
+    deleteMemberReq onSuccess{
+      case EtcdConfirmationResponse(clusterID) =>
+        //shouldBe a EtcdClusterId
+        clusterID shouldBe a[EtcdClusterId]
+    }

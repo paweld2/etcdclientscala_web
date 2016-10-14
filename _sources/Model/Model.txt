@@ -1,0 +1,754 @@
+.. _Model:
+
+=============
+Package Model
+=============
+
+Here we discuss package model of EtcdClient
+
+Package model contains case classes for dealing with etcd HTTP responses and building correct HTTP requests to etcd.
+Most of the case classes are self-explanatory, once the Responses and Errors section below is read.
+Those that are not are discussed in more detail in this documentation.
+They are mostly used by handlers or by the client to `extract <https://github.com/json4s/json4s#extracting-values>`_ information from JSON objects or `write <https://github.com/json4s/json4s#serialization>`_ information to JSON objects sent in requests.
+
+Also, package model contains an object for properly building instances of :ref:`EtcdKey  <EtcdKey>`, :ref:`EtcdDirectory  <EtcdDirectory>`, or :ref:`EtcdValue  <EtcdValue>` case classes.
+There is also a method for creating hidden nodes, a special case of :ref:`EtcdKey  <EtcdKey>`.
+
+Finally, it contains `JSON4S custom serializers <https://github.com/json4s/json4s#serializing-non-supported-types>`_ for JSON parsing support.
+All the custom serializers contained in this package are contained  in the `EtcdJsonFormat <EtcdJsonFormat>`_ object, which in turn is used by handlers in package `handlers <Handlers>`_ to parse responses from etcd to HTTP requests.
+
+.. _Responses and Errors:
+
+Results, Responses and Errors
+=============================
+
+All requests can return either a response or an error.
+In order to deal with this two possible situations, the outcome of each request is represented by a **Result** sealed trait in this package.
+These traits are extended by case classes representing an error or a response in the manner described bellow.
+The naming convention for **Result** sealed traits is the following: ``Etcd<NameOfTheEtcdClientMethod>Result``.
+For example ``EtcdGetKeyReslut``.
+
+There are two types of error that etcd could return.
+For EtcdClient, they are represented in the **EtcdStandardError** and **EtcdRequestError**.
+One of these case classes extends each **Result** sealed trait representing the outcome of a request sent by the client.
+
+On the other hand, responses are dealt with using **Response** case classes.
+They contain all the necessary fields used to deserialize the information contained in the HTTP response received from etcd.
+**Response** case classes also extend **Result** sealed traits. The naming convention is similar: ``Etcd<NameOfTheEtcdClientMethod>Response``.
+For example ``EtcdGetKeyResponse``.
+
+Both **Response** and **Error** case classes contain the relevant information about etcd that can be found in headers and in the response body.
+
+A more involved case, which is delt with a callback, is **EtcdWaitForKeyResult**.
+We discuss it :ref:`bellow <EtcdWaitForKeyResult>`.
+
+Also, note that each **Reslut** used by EtcdClient is wrapped around a Future.
+
+.. _Result sealed traits:
+
+Result sealed traits
+====================
+
+A common feature of **Result** sealed traits is that they have an accepted method.
+**Response** case classes extending such sealed traits override this method and set it to true, while **Error** case classes set it to false.
+
+The following table illustrates the relation between **Result** seald traits and **Error** and **Response** case classes.
+
++----------------------------------------+----------------------------------------+----------------------------------------+
+|  Sealed trait                          |  Response case class extending trait   |  Type of error extending trait         |
++========================================+========================================+========================================+
+|  EtcdSetKeyResult                      |  EtcdSetKeyResponse                    |  EtcdRequestError                      |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdGetKeyResult                      |  EtcdGetKeyResponse                    |                                        |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdWaitForKeyResult                  |  EtcdWaitForKeyAccepted                |                                        |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdCreateDirResult                   |  EtcdCreateDirResponse                 |                                        |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdDeleteResult                      |  EtcdDeleteResponse                    |                                        |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdListDirResult                     |  EtcdListDirResponse                   |                                        |
++----------------------------------------+----------------------------------------+----------------------------------------+
+|  EtcdGetVersionResult                  |  EtcdGetVersionResponse                |  EtcdStandardError                     |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdGetHealthResult                   |  EtcdGetHealthResponse                 |                                        |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdGetLeaderStatsResult              |  EtcdGetLeaderStatsResponse            |                                        |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdGetSelfStatsResult                |  EtcdGetSelfStatsResponse              |                                        |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdGetStoreStatsResult               |  EtcdGetStoreStatsResponse             |                                        |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdGetAuthenticationStatusResult     |  EtcdGetAuthenticationStatusResponse   |                                        |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdAddUpdateUserResult               |  EtcdAddUpdateUserResponse             |                                        |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdGetUsersResult                    |  EtcdGetUsersResponse                  |                                        |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdGetUserDetailsResult              |  EtcdGetUserDetailsResponse            |                                        |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdAddUpdateRoleResult               |  EtcdAddUpdateRoleResponse             |                                        |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdGetRolesResult                    |  EtcdGetRolesResponse                  |                                        |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdGetRoleDetailsResult              |  EtcdGetRoleDetailsResponse            |                                        |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdGetMembersResult                  |  EtcdGetMembersResponse                |                                        |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdAddMemberResult                   |  EtcdAddMemberResponse                 |                                        |
++----------------------------------------+----------------------------------------+                                        +
+|  EtcdConfirmationResult                |  EtcdConfirmationResponse              |                                        |
++----------------------------------------+----------------------------------------+----------------------------------------+
+
+It is also important to note that the outcome of some operations to etcd is the same as the outcome of other case classes.
+Therefore, it is not the case that there is one **Result** sealed trait for each of EtcdClient's methods.
+Instead, some **Result** sealed traits are reused.
+The following table shows exactly this:
+
+
++----------------------------------------+----------------------------------------+
+|  EtcdClient method                     |  Result sealed trait returned          |
+|                                        |  (wrapped around a Future)             |
++========================================+========================================+
+| setKey                                 |  EtcdSetKeyResult                      |
++----------------------------------------+                                        +
+| refreshTTL                             |                                        |
++----------------------------------------+                                        +
+| createKeyFromCurrentEtcdIndex          |                                        |
++----------------------------------------+----------------------------------------+
+| waitForKey                             |  EtcdWaitForKeyResult                  |
++----------------------------------------+----------------------------------------+
+| getKey                                 |  EtcdGetKeyResult                      |
++----------------------------------------+----------------------------------------+
+| deleteKey                              |  EtcdDeleteKeyResult                   |
++----------------------------------------+----------------------------------------+
+| createDir                              |  EtcdCreateDirResult                   |
++----------------------------------------+                                        +
+| deleteDir                              |                                        |
++----------------------------------------+                                        +
+| refreshDirTTL                          |                                        |
++----------------------------------------+----------------------------------------+
+| listDir                                |  EtcdListDirResult                     |
++----------------------------------------+----------------------------------------+
+| getLeaderStats                         |  EtcdGetLeaderStatsResult              |
++----------------------------------------+----------------------------------------+
+| getHealth                              |  EtcdGetHealthResult                   |
++----------------------------------------+----------------------------------------+
+| getSelfStats                           |  EtcdGetSelfStatsResult                |
++----------------------------------------+----------------------------------------+
+| getStoreStats                          |  EtcdGetStoreStatsResult               |
++----------------------------------------+----------------------------------------+
+| getVersion                             |  EtcdGetVersionResult                  |
++----------------------------------------+----------------------------------------+
+| getAuthenticationStatus                |  EtcdGetAuthenticationStatusResult     |
++----------------------------------------+----------------------------------------+
+| enableAuthentication                   |  EtcdConfirmationResult                |
++----------------------------------------+                                        +
+| disableAuthentication                  |                                        |
++----------------------------------------+                                        +
+| deleteUser                             |                                        |
++----------------------------------------+                                        +
+| deleteRole                             |                                        |
++----------------------------------------+                                        +
+| deleteMember                           |                                        |
++----------------------------------------+                                        +
+| changePeerURLs                         |                                        |
++----------------------------------------+----------------------------------------+
+| addUpdateUser                          |  EtcdAddUpdateUserResult               |
++----------------------------------------+----------------------------------------+
+| getUsers                               |  EtcdGetUsersResult                    |
++----------------------------------------+----------------------------------------+
+| getUserDetails                         |  EtcdGetUserDetailsResult              |
++----------------------------------------+----------------------------------------+
+| addUpdateRole                          |  EtcdAddUpdateRoleResult               |
++----------------------------------------+----------------------------------------+
+| getRoles                               |  EtcdGetRolesResult                    |
++----------------------------------------+----------------------------------------+
+| getRoleDetails                         |  EtcdGetRoleDetailsResult              |
++----------------------------------------+----------------------------------------+
+| getMembers                             |  EtcdGetMembersResult                  |
++----------------------------------------+----------------------------------------+
+| addMember                              |  EtcdAddMemberResult                   |
++----------------------------------------+----------------------------------------+
+
+
+.. _Response and Error case classes:
+
+Response and Error case classes
+-------------------------------
+
+As mentioned above, **Response** case classes contain all the necessary fields used to deserialize the information contained in the HTTP response received from etcd,
+while **Error** case classes also contain fields to deserialize information returned by etcd explaining the cause of the error.
+
+The information returned by etcd responses is different in each case.
+Therefore, each case class contains different information, depending on the outcome of the request.
+A good place to see exactly what information is contained in a **Response** or **Error** case class is the EtcdClient scaladoc.
+
+
+
+.. _EtcdWaitForKeyResult:
+
+EtcdWaitForKeyResult
+--------------------
+
+The wait operation is handled in a special manner.
+It is implemented using a callback.
+Therefore, instead of returning **Response** case class whenever the request sent is valid, it returns a **EtcdWaitForKeyAccepted** containing the headers of the response.
+**EtcdWaitForKeyAccepted** also overrides **EtcdWaitForKeyResult**'s accepted method, setting it to true.
+In the case there has not been any change in etcd since the watch has been set, etcd returns a HTTP response with an empty body, but with headers confirming the wait has been set
+(see `Waiting for a change <https://coreos.com/etcd/docs/latest/api.html#waiting-for-a-change>`_).
+
+The callback is implemented using a trait (**EtcdWaitCallback**) and a class extending it (**FutureBasedEtcdWaitCallback**).
+**FutureBasedEtcdWaitCallback** has a method (.future) for returning a Future wrapped around a **EtcdGetKeyResponse** if the request is valid.
+It also has a method (.isCompleted) which returns a Boolean.
+It is set to true when the callback is completed (i.e. the watch has been notified that a change occurred modifying the key on watch).
+It returns false otherwise.
+
+
+Model Case Classes and Traits
+=============================
+
+In this section we discuss some other case classes contained in package model.
+In particular, we discuss how we deal with keys, directories and values.
+These are the basic objects used in the key space of etcd.
+
+.. _EtcdKey:
+
+EtcdKey
+-------
+
+A key's name is a full path name that is placed in etcd's key space.
+The key space is the node found at the /v2/keys directory and all its sub nodes.
+
+The key's name should start with a '/'.
+If the path contains many nodes, it should separate each of them with '/'.
+Finally, the last node should not contain '/'.
+
+The following example shows a key named using randomly generated strings::
+
+ EtcdKey("/k6/tq6eo3Wntsy7qymj3kwSply0xuqxrmysl9p5i/bsnhuen7o")
+
+An instance of a GET request for such a key made using ``curl`` would look as follows::
+
+ curl http://127.0.0.1:2379/v2/keys/k6/tq6eo3Wntsy7qymj3kwSply0xuqxrmysl9p5i/bsnhuen7o
+
+The idea of using such a path to name a key is to associate a value to it.
+
+The recommended way to create keys and perform operations on them is by using the :ref:`EtcdModel object  <EtcdModel>`.
+
+Parameters:
+
+* **key**: the string representation of the key.
+
+.. _EtcdDirectory:
+
+EtcdDirectory
+-------------
+Like a key, a directory is a full path, but it has a trailing '/'.
+
+The directory's name should start with a '/'.
+If the path contains many nodes, it should separate each of them with '/'.
+Finally, the last node should contain '/'.
+
+The same example as above shows that a key can be viewed as a directory by adding a trailing '/'::
+
+ EtcdDirectory("/k6/tq6eo3Wntsy7qymj3kwSply0xuqxrmysl9p5i/bsnhuen7o/")
+
+The idea of using such a path to name a directory is to put other keys and directories into it.
+
+In our model, we make a difference between keys and directories, since operations made on keys return different responses than operations made on directories.
+
+Again, the recommended way to create directories and perform operations on them is by using the :ref:`EtcdModel object  <EtcdModel>`.
+
+Parameters:
+
+* **dir**: the string representation of the directory.
+
+.. _EtcdValue:
+
+EtcdValue
+---------
+
+A value is any data being stored under a key.
+
+Parameters:
+
+* **value**: the string representation of the value.
+
+.. _CompareAndSwapCondition:
+
+CompareAndSwapCondition
+-----------------------
+
+A sealed trait used to represent the conditions that can be imposed on the :ref:`EtcdClient.setKey <EtcdClient.setKey>`  method.
+
+It can be either :ref:`KeyMustExist <KeyMustExist>`, :ref:`KeyMustHaveIndex <KeyMustHaveIndex>` or :ref:`KeyMustHaveValue <KeyMustHaveValue>`.
+
+.. _ConditionalDeleteCondition:
+
+ConditionalDeleteCondition
+--------------------------
+
+A sealed trait used to represent the conditions that can be imposed on the :ref:`EtcdClient.deleteKey <EtcdClient.deleteKey>` method.
+
+It can be either :ref:`KeyMustHaveIndex <KeyMustHaveIndex>` or :ref:`KeyMustHaveValue <KeyMustHaveValue>`.
+
+.. _KeyMustExist:
+
+KeyMustExist
+------------
+This case class is used as input for a compare-and-swap operation::
+
+    case class KeyMustExist(state: Boolean)
+        extends CompareAndSwapCondition
+
+Parameters:
+
+* **state**: Requires that the key already exist, when set to true. When set to false, requires for the key to not exist.
+
+.. _KeyMustHaveIndex:
+
+KeyMustHaveIndex
+----------------
+This case class is used as input for a compare-and-swap operation or for a conditional delete::
+
+    case class KeyMustHaveIndex(index: EtcdIndex)
+        extends CompareAndSwapCondition with ConditionalDeleteCondition
+
+Parameters:
+
+* **index**: Requires for the key to have this modified index associated to its last operation.
+
+.. _KeyMustHaveValue:
+
+KeyMustHaveValue
+----------------
+This case class is used as input for a compare-and-swap operation or for a conditional delete::
+
+    case class KeyMustHaveValue(value: EtcdValue)
+        extends CompareAndSwapCondition with ConditionalDeleteCondition
+
+Parameters:
+
+* **value**: Requires for the key to have this value at the time of the request.
+
+.. _EtcdIndex:
+
+EtcdIndex
+---------
+Index associated to the last operation performed in etcd.
+
+See "`Response Headers <https://coreos.com/etcd/docs/latest/api.html#response-headers>`_".
+
+Parameters:
+
+* **index**: Integer representation of the etcd index.
+
+.. _EtcdTTL:
+
+EtcdTTL
+-------
+
+Life span in seconds of a key or directory.
+
+Parameters:
+
+* **ttl**: Integer representing the time to live in seconds.
+
+EtcdResponseCode
+----------------
+
+HTTP response code to a request.
+
+Parameters:
+
+* **code**: Integer representation of the response code.
+
+RaftTerm
+--------
+
+An integer that will increase whenever an etcd master election happens in the cluster.
+
+See "`Response Headers <https://coreos.com/etcd/docs/latest/api.html#response-headers>`_".
+
+
+Parameters:
+
+* **term**: Integer representation of the raft term.
+
+RaftIndex
+---------
+
+See "`Response Headers <https://coreos.com/etcd/docs/latest/api.html#response-headers>`_".
+
+
+Parameters:
+
+* **rIndex**: Integer representation of the etcd index.
+
+.. _EtcdHeaders:
+
+EtcdHeaders
+-----------
+
+This case class contains the most relevant information returned in headers of responses to requests performed by key-value methods::
+
+    case class EtcdHeaders(
+      xEtcdClusterId: EtcdClusterId,
+      xEtcdIndex: EtcdIndex,
+      xRaftIndex: RaftIndex,
+      xRaftTerm: RaftTerm
+    )
+
+.. _EtcdMember:
+
+EtcdMember
+----------
+
+Case class representing the information that a member of a cluster may have of another member.
+
+Parameters:
+
+* **id**: String identifying a member of an etcd cluster.
+
+* **name**: String identifying a member of an etcd cluster by name.
+
+* **peerURLs**: List of URLs (represented as strings) used for communication between peers in an etcd cluster.
+
+* **clientURLs**: List of URLs (represented as strings) used for communication with clients.
+
+.. _EtcdMemberForm:
+
+EtcdMemberForm
+--------------
+
+Form used to update the peer URLs of a member of a cluster.
+
+Parameters:
+
+* **peerURLs**: List of strings representing the peer URLs.
+  
+.. _EtcdUserRequestForm:
+
+EtcdUserRequestForm
+-------------------
+
+Form that needs to be filled to use as input for :ref:`EtcdClient.addUpdateUser <addUpdateUser>` and :ref:`EtcdClient.deleteUser <deleteUser>` methods.
+Sometimes the only parameter needed is the user field.
+
+Parameters:
+
+* **user**: String identifying a user.
+
+* **password**: Password that the user will use for authentication.
+
+* **roles**: List of roles that a user has when it gets created.
+
+* **grant**: List of roles to be granted when performing an update.
+
+* **revoke**: List of roles to be revoked when performing an update.
+
+.. _EtcdUserAuthenticationData:
+
+EtcdUserAuthenticationData
+--------------------------
+
+Data used to get authorization when authentication is enabled.
+
+Parameters:
+
+* **userLogin**: String representing a login.
+
+* **password**: String representing a password.
+
+.. _EtcdUser:
+
+EtcdUser
+--------
+
+Data representing a user in etcd.
+
+Parameters:
+
+* **user**: String representing the name of the user.
+
+* **password**: String representing the password of the user.
+
+* **roles**: List of instances of :ref:`EtcdRole <EtcdRole>`, which specify the permissions the user has.
+  
+.. _EtcdRole:
+
+EtcdRole
+--------
+
+Data specifying what write and read privileges are granted or revoked to the users in possession of it.
+
+Parameters:
+
+* **role**: String representing the name of the role.
+
+* **permissions**: List of permissions that the possession of the role grants.
+
+* **grant**: Used for granting a permission when a role is updated.
+
+* **revoke**: Used for revoking a permission when a role is updated.
+  
+.. _EtcdPermission:
+
+EtcdPermission
+--------------
+
+Data specifying the read and write access to the key-value and authentication spaces.
+
+Parameters:
+
+* **kv**: Instance of :ref:`EtcdKV <EtcdKV>`.
+  
+.. _EtcdKV:
+
+EtcdKV
+------
+
+Data specifying the read and write access to the key-value and authentication spaces.
+
+Parameters:
+
+* **read**: List of strings specifying read access to a certain domain of the key-value and authentication spaces.
+
+* **write**: List of strings specifying write access to a certain domain of the key-value and authentication spaces.
+
+.. _EtcdModel:
+
+The EtcdModel Object
+====================
+
+The EtcdModel object contains methods for getting well-formed instances of :ref:`EtcdKey  <EtcdKey>`, :ref:`EtcdDirectory  <EtcdDirectory>`, or :ref:`EtcdValue  <EtcdValue>` case classes.
+It also includes a method for creating hidden nodes, a type of :ref:`EtcdKey <EtcdKey>`.
+
+key(key: String)
+----------------
+
+Creates a well-formed instance of :ref:`EtcdKey  <EtcdKey>` from a String that represents a path to an etcd node.
+In general, this method is used to check that an input string will not produce errors while sending requests.
+It creates instances of keys that conform to the description of keys given in :ref:`EtcdKey  <EtcdKey>`.
+
+Parameters:
+
+  * **key**: the String representation of the key
+
+The following examples show the outcome of some operations using this method::
+
+ //returns EtcdKey(/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj)
+ EtcdModel.key("/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj")
+
+ //returns java.lang.IllegalArgumentException: key name must not end with '/'.
+ EtcdModel.key("/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/")
+
+ //returns java.lang.IllegalArgumentException: key name must start with '/'.
+ EtcdModel.key("model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj")
+
+ //returns java.lang.IllegalArgumentException: key name can not be null.
+ EtcdModel.key("")
+
+ //returns java.lang.IllegalArgumentException: key name can not be null.
+ EtcdModel.key(null)
+
+key(dir: EtcdDirectory, key: String)
+------------------------------------
+
+
+Creates a well-formed instance of :ref:`EtcdKey  <EtcdKey>` from a String that represents a path to an etcd node and a String that represents the name of the node.
+
+Parameters:
+
+  * **dir**: the string representation of the directory.
+
+  * **key**: the string representation of the key.
+
+The following is an instance of how this method could be used::
+
+  val someDir = EtcdModel.directory(
+  "/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/"
+  )
+  val someName = "foo"
+
+  // returns EtcdKey(/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/foo)
+  EtcdModel.key(someDir, someName)
+
+directory(dir: String)
+----------------------
+
+Creates a well-formed instance of :ref:`EtcdDirectory  <EtcdDirectory>` from a String that represents a path.
+It creates instances of directories that conform to the description of keys given in :ref:`EtcdDirectory  <EtcdDirectory>`.
+
+Parameters:
+
+  * **dir**: the string representation of the directory.
+
+The following examples show the outcome of some operations using this method::
+
+    //returns EtcdDirectory(/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/)
+    EtcdModel.directory("/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/")
+
+    //returns java.lang.IllegalArgumentException: Directory name must start with '/'.
+    EtcdModel.directory("model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/")
+
+    //returns java.lang.IllegalArgumentException: Directory must end with '/'.
+    EtcdModel.directory("/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj")
+
+    //returns java.lang.IllegalArgumentException: Directory name must start with '/'.
+    EtcdModel.directory("")
+
+    //returns java.lang.IllegalArgumentException: Directory name can not be null.
+    EtcdModel.directory(null)
+
+
+hiddenNode(dir: String, node: String)
+-------------------------------------
+
+Creates a well-formed instance of :ref:`EtcdKey  <EtcdKey>` from a String that represents a path to a node and a String that represents the name of the node.
+
+Parameters:
+
+  * **dir**: the string representation of the directory.
+
+  * **node**: the string representation of the node's name.
+
+**Returns** A :ref:`EtcdKey  <EtcdKey>` composed of a path and the name of a node prepended with '_'.
+
+A hidden node is an :ref:`EtcdKey  <EtcdKey>` which will not be shown when a directory is listed.
+It can be set, updated and deleted like any other :ref:`EtcdKey  <EtcdKey>`.
+It is possible to retrieve its value when the :ref:`EtcdClient.getKey  <EtcdClient.getKey>` method is called.
+However it will not be included in the list of keys returned by :ref:`EtcdClient.listDir  <EtcdClient.listDir>`.
+For more information on hidden nodes see "`Creating a hidden node <https://coreos.com/etcd/docs/latest/api.html#creating-a-hidden-node>`_".
+
+The following examples show the outcome of some operations using this method::
+
+    val someDirName = "/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/"
+    val someKeyName = "/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj"
+    val someName = "foo"
+
+    //returns EtcdKey(/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/_foo)
+    EtcdModel.hiddenNode(someDirName, someName)
+
+    //returns java.lang.IllegalArgumentException: node name cannot be null.
+    EtcdModel.hiddenNode(someDirName, "")
+
+    //returns java.lang.IllegalArgumentException: node name cannot be null.
+    EtcdModel.hiddenNode(someDirName, null)
+
+    //returns java.lang.IllegalArgumentException: Directory name can not be null.
+    EtcdModel.hiddenNode("", someName)
+
+    //returns java.lang.IllegalArgumentException: Directory name can not be null.
+    EtcdModel.hiddenNode(null, someName)
+
+    //returns java.lang.IllegalArgumentException: Node name must not end or start with '/'.
+    EtcdModel.hiddenNode(someDirName, "/" + someName)
+
+    //returns java.lang.IllegalArgumentException: Directory must end with '/'.
+    EtcdModel.hiddenNode(someKeyName, someName)
+
+    //returns java.lang.IllegalArgumentException: Directory name must start with '/'.
+    EtcdModel.hiddenNode(someName, someName)
+
+The examples above show a number of restrictions on the input data.
+Neither the directory's name nor the node's name cannot be  ``null`` nor empty strings.
+Also, the directory's name must start and end with "/", but the node name must not start nor end with "/".
+
+value(value: String)
+--------------------
+
+Creates a well-formed instance of :ref:`EtcdValue  <EtcdValue>`.
+
+Parameters:
+
+  * **value**: the string representation of the value
+
+The following is an instance of how this method could be used::
+
+    val str = "foo"
+
+    //returns EtcdValue(foo)
+    EtcdModel.value(str)
+
+keyOfDirectory(dir: EtcdDirectory)
+----------------------------------
+
+Returns an instance of :ref:`EtcdKey  <EtcdKey>` from a :ref:`EtcdDirectory  <EtcdDirectory>`.
+
+An EtcdDirectory can be treated as an EtcdKey by dropping the closing '/'.
+
+Parameters:
+
+  * **dir**: the :ref:`EtcdDirectory  <EtcdDirectory>` that is to be treated as a key.
+
+The following is an instance of how this method could be used::
+
+      val someDir = EtcdModel.directory(
+      "/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/"
+      )
+
+      //returns EtcdKey(/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj)
+      EtcdModel.keyOfDirectory(someDir)
+
+directoryOfKey(key: EtcdKey)
+----------------------------
+
+Returns an instance of :ref:`EtcdDirectory  <EtcdDirectory>`  from a :ref:`EtcdKey  <EtcdKey>`.
+
+An EtcdDirectory can be treated as an EtcdKey by adding a closing '/'.
+
+Parameters:
+
+* **key**: the :ref:`EtcdKey  <EtcdKey>` that is to be treated as a directory.
+
+The following is an instance of how this method could be used::
+
+    val someKey = EtcdModel.key(
+    "/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj"
+    )
+
+    //returns EtcdDirectory(/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/)
+    EtcdModel.directoryOfKey(someKey)
+
+fromPath(path: List[String])
+----------------------------
+
+Returns an instance of :ref:`EtcdKey  <EtcdKey>` from a list of node names.
+
+The key preserves the order of the list given as input.
+
+Parameters:
+
+* **path**: A list of strings not containing "/", which are to be used as node names.
+
+The following examples show the outcome of some operations using this method::
+
+    val listOfNodes: List[String] = List("path", "leading", "to", "node")
+
+    //returns EtcdKey(/path/leading/to/node)
+    EtcdModel.fromPath(listOfNodes)
+
+    val listOfNodes2: List[String] = List("path", "leading/to", "node")
+
+    //returns java.lang.IllegalArgumentException: node names cannot contain '/'
+    EtcdModel.fromPath(listOfNodes2)
+
+One restriction on this method ist that the strings included on the list cannot contain "/".
+
+toPath(key: EtcdKey)
+--------------------
+
+ Returns a list of all node names in order.
+
+Parameters:
+
+* **key**: An :ref:`EtcdKey  <EtcdKey>` which is to be split in node names and placed in order into a list.
+
+The following is an instance of how this method could be used::
+
+    val someKey = EtcdKey("/path/leading/to/node")
+
+    //returns List(path, leading, to, node)
+    EtcdModel.toPath(someKey)
