@@ -45,10 +45,10 @@ Parameters:
 
 **Returns** a Future wrapped around either EtcdSetKeyResponse or EtcdRequestError extending EtcdSetKeyResult.
 
-Implemented according to etcd Client API: "`Setting the value of a key <https://coreos.com/etcd/docs/latest/api.html#setting-the-value-of-a-key>`_".
-See also "`Using key TTL <https://coreos.com/etcd/docs/latest/api.html#using-key-ttl>`_",
-"`Creating a hidden node <https://coreos.com/etcd/docs/latest/api.html#creating-a-hidden-node>`_"
-and "`Atomic Compare-and-Swap <https://coreos.com/etcd/docs/latest/api.html#atomic-compare-and-swap>`_".
+Implemented according to etcd Client API: `Setting the value of a key <https://coreos.com/etcd/docs/latest/api.html#setting-the-value-of-a-key>`_.
+See also `Using key TTL <https://coreos.com/etcd/docs/latest/api.html#using-key-ttl>`_,
+`Creating a hidden node <https://coreos.com/etcd/docs/latest/api.html#creating-a-hidden-node>`_
+and `Atomic Compare-and-Swap <https://coreos.com/etcd/docs/latest/api.html#atomic-compare-and-swap>`_.
 
 .. _first setKey example:
 
@@ -88,7 +88,7 @@ When it expires, the key is deleted::
 It is also possible to update the TTL of a key by specifying a new value for the ttlOp field with the same key.
 A similar effect can be achieved using :ref:`EtcdClient.refreshTTL  <EtcdClient.refreshTTL>`, except that this last operation does not notify watchers.
 
-The TTL can be unset by updating the key with the field ttlOp set to None and with condition KeyMustExist set to true::
+The TTL can be unset by updating the key with the field ttlOp set to None and with condition KeyMustExist set to ``true``::
 
     val unsetTTLResult: Future[EtcdSetKeyResult] = for {
       ttl <- setTTLResult

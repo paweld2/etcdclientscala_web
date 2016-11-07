@@ -1,0 +1,127 @@
+.. _Quickstart:
+
+==========
+Quickstart
+==========
+
+.. _Adding the library to your project:
+
+Adding the Library to Your Project
+==================================
+
+The first thing you need to do is to add the library to your sbt project.
+Adding the following lines to the ``build.sbt`` file should suffice::
+
+ libraryDependencies += "com.eiipii" %% "etcdclient" % "1.0.0"
+
+.. TODO: Add information about sbt resolvers, if needed.
+
+As for a Maven project, add these lines to your ``pom.xml``::
+
+ <dependency>
+   <groupId>com.eiipii</groupId>
+   <artifactId>etcdclient</artifactId>
+   <version>1.0.0</version>
+ </dependency>
+
+.. TODO: Change these code to the actual versions once the client is in Maven.
+
+
+.. _EtcdClient Setup:
+
+EtcdClient Setup:
+==================
+
+Let us say that you want to use EtcdClient in your code. First, import the client and the DSL for its configuration::
+
+ package yourpackage
+
+ import com.eiipii.etcd.client.{EtcdClient, EtcdConfiguration, EtcdDSL}
+
+You would probably also need to import `Scala Futures <http://docs.scala-lang.org/overviews/core/futures.html>`_, and the :ref:`Model <Model>` package::
+
+ import com.eiipii.etcd.client.model._
+
+ import scala.concurrent.Future
+
+In your code, remember to add an execution context for Scala Futures to work::
+
+ implicit val executionContext = ExecutionContext.Implicits.global
+
+As for the tests, in addition to the previous imports, you might also need to set a patience configuration::
+
+ implicit val pc = PatienceConfig(Span(3, Seconds), Span(1500, Milliseconds))
+
+Both – the execution context and the patience configuration – are explained in the documentation for `Scala Futures <http://docs.scala-lang.org/overviews/core/futures.html>`_.
+
+In order to configure the client for making requests to etcd, first you have to establish an entrypoint. This could be an IP address::
+
+ //For an instance of etcd in your localhost listening to the standard port
+ val address: String = "http://127.0.0.1:4001"
+
+ val etcdCli = new EtcdClient(EtcdDSL.config(address))
+
+Or it could be a full domain::
+
+ val domain: String = "http://www.mydomain.com"
+
+ val etcdCli = new EtcdClient(EtcdDSL.config(domain))
+
+You could also enable other security features. Go to :ref:`Authentication Methods <Authentication Methods>` in order to learn more.
+
+.. _A Sample Request:
+
+A Sample Request
+================
+
+Let us set a key in etcd::
+
+    val backend1: List[String] = List("myloadbalancer","backends","b1","servers","httpd1")
+    val backendURL1: String = "http://172.0.0.1:80"
+
+    val backend2: List[String] = List("myloadbalancer","backends","b2","servers","httpd2")
+    val backendURL2: String = "http://172.0.0.2:80"
+
+    //The EtcdModel object has methods for creating EtcdKey's and EtcdValue's.
+    //These case classes are used as wrappers for the data used as input in requests.
+    //There are many such classes in the Model package.
+    val firstKey: EtcdKey = EtcdModel.fromPath(backend1)
+    val firstValue: EtcdValue = EtcdModel.value("foo")
+
+    val secondKey: EtcdKey = EtcdModel.fromPath(backend2)
+    val secondValue: EtcdValue = EtcdModel.value("bar")
+
+    //etcdCli is an instance of EtcdClient configured as above.
+    //The outcome of an operation is always a Result class wrapped around a future.
+    val backend1Set: Future[EtcdSetKeyResult] = etcdCli.setKey(firstKey, firstValue)
+    val backend2Set: Future[EtcdSetKeyResult] = etcdCli.setKey(secondKey, secondValue)
+
+Remember that these are asynchronous operations, so they are not performed in order unless you compose them using the operations available in the `Scala Futures <http://docs.scala-lang.org/overviews/core/futures.html>`_ library.
+Some examples of such composition are available in this document in the subsection titled :ref:`A Possible Work Flow <A possible work flow authenticationDocs>`.
+
+Furthermore, accessing the fields of the response returned by etcd is also only a matter of using the methods of the `Scala Futures <http://docs.scala-lang.org/overviews/core/futures.html>`_ library, such as functional composition::
+
+    val storedValue: Future[EtcdValue] = backend1Set.map { response =>
+      response match {
+        case EtcdSetKeyResponse(headers, body) =>
+          body.node.value
+      }
+    }
+
+All methods function similarly to the ``setKey`` method.
+Just input your data through the correct case class and make a request.
+Remember that most methods have some extra options.
+For instance, ``setKey`` allows you to set a "time to live" (TTL) span in seconds.
+The default option, however, is to set a key with no TTL (see :ref:`EtcdClient.setKey <EtcdClient.setKey>`).
+
+Go to :ref:`EtcdClient <EtcdClient>` in order to read all about supported methods and all the options they feature.
+
+
+.. _Further Information:
+
+Further Information:
+====================
+
+We hope that this section helped you get started.
+For further details, see the rest of this document.
+Also, remember that there is a `scaladoc <http://etcdscalaclient.eiipii.com/api/#package>`_, where you could get more details on the implementation.

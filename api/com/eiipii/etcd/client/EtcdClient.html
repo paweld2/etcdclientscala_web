@@ -1,0 +1,1150 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>EtcdClient - com.eiipii.etcd.client.EtcdClient</title>
+          <meta name="description" content="EtcdClient - com.eiipii.etcd.client.EtcdClient" />
+          <meta name="keywords" content="EtcdClient com.eiipii.etcd.client.EtcdClient" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../index.html';
+            var hash = 'com.eiipii.etcd.client.EtcdClient';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="type">
+      <div id="definition">
+        <a href="EtcdClient$.html" title="See companion object"><img alt="Class/Object" src="../../../../lib/class_to_object_big.png" /></a>
+        <p id="owner"><a href="../../../package.html" class="extype" name="com">com</a>.<a href="../../package.html" class="extype" name="com.eiipii">eiipii</a>.<a href="../package.html" class="extype" name="com.eiipii.etcd">etcd</a>.<a href="package.html" class="extype" name="com.eiipii.etcd.client">client</a></p>
+        <h1><a href="EtcdClient$.html" title="See companion object">EtcdClient</a></h1><h3><span class="morelinks"><div>
+            Related Docs:
+            <a href="EtcdClient$.html" title="See companion object">object EtcdClient</a>
+            | <a href="package.html" class="extype" name="com.eiipii.etcd.client">package client</a>
+          </div></span></h3><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <span class="name">EtcdClient</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Asynchronously sends HTTP requests to etcd servers and handles outcome responses.</p><h4>EtcdClient</h4><p>EtcdClient uses <a href="https://github.com/AsyncHttpClient/async-http-client/" target="_blank">AsyncHttpClient</a> in order to build and send HTTP requests.
+Its methods were developed to suit the etcd <a href="https://coreos.com/etcd/docs/latest/" target="_blank">documentation</a>.
+All methods use <a href="http://docs.scala-lang.org/overviews/core/futures.html" target="_blank">Scala Futures and Promises</a> in order to provide an asynchronous implementation.</p><p>Depending on the request, either an error will be thrown or a response will be returned.
+In both cases, there is a case class extending a trait in package <a href="model/package.html" class="extype" name="com.eiipii.etcd.client.model">model</a> with a name ending in Result, which will be returned containing either the response or information about the error.</p><p>For example, when performing an <a href="#setKey(key:com.eiipii.etcd.client.model.EtcdKey,value:com.eiipii.etcd.client.model.EtcdValue,ttlOp:Option[com.eiipii.etcd.client.model.EtcdTTL],conditionOp:Option[com.eiipii.etcd.client.model.CompareAndSwapCondition]):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdSetKeyResult]" class="extmbr" name="com.eiipii.etcd.client.EtcdClient#setKey">EtcdClient.setKey</a> operation, an <a href="model/EtcdSetKeyResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdSetKeyResult">EtcdSetKeyResult</a> is expected.
+The outcome of the operation, either an error or a response, can be accessed considering both cases.
+An easy way to retrieve a response could be with a <code>match</code> statement:</p><pre>etcdcli.setKey(key, value) onSuccess  {
+<span class="kw">case</span> EtcdSetKeyResponse(headers, body) <span class="kw">=&gt;</span>
+ ???
+}</pre><h5>Key-Value Methods</h5><p>The implementation of key-value methods follows the specification given in the <a href="https://coreos.com/etcd/docs/latest/api.html" target="_blank">etcd Client API</a>.
+Their purpose is to set, retrieve, modify or delete keys, values and directories in etcd.
+It is also possible to wait (set a watch) on etcd keys, so as to monitor changes in the server in real time and conditionally set operations depending on the response obtained once a change in the data is registered.</p><p>Key-Value methods take as inputs case classes defined in package <a href="model/package.html" class="extype" name="com.eiipii.etcd.client.model">model</a>.
+The recommended way of getting input data (<a href="model/EtcdKey.html" class="extype" name="com.eiipii.etcd.client.model.EtcdKey">EtcdKey</a>s, <a href="model/EtcdDirectory.html" class="extype" name="com.eiipii.etcd.client.model.EtcdDirectory">EtcdDirectory</a>s, hidden nodes and <a href="model/EtcdValue.html" class="extype" name="com.eiipii.etcd.client.model.EtcdValue">EtcdValue</a>s) for key-value methods is using the <a href="model/EtcdModel$.html" class="extype" name="com.eiipii.etcd.client.model.EtcdModel">EtcdModel</a> object.</p><h5>Statistics</h5><p>The implementation of methods for retrieving etcd cluster statistics also follows the specification given in the <a href="https://coreos.com/etcd/docs/latest/api.html" target="_blank">etcd Client API</a> and <a href="https://coreos.com/etcd/docs/latest/other_apis.html" target="_blank">etcd Admin API</a>.</p><h5>Authentication Methods</h5><p>The implementation of authentication methods follows the specification given in the <a href="https://coreos.com/etcd/docs/latest/auth_api.html" target="_blank">etcd authentication and security API</a>.
+With the help of these methods, a system administrator can enable authentication and create users and roles with different levels of access to etcd.
+etcd only allows authentication on authentication methods and key-value methods.</p><h5>Member Methods</h5><p>The implementation for member methods follows the specification given in the <a href="https://coreos.com/etcd/docs/latest/members_api.html" target="_blank">etcd  Members API</a>.
+They allow an administrator to configure a cluster, by changing the members of a cluster.
+</p></div><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        <div id="order">
+              <span class="filtertype">Ordering</span>
+              <ol>
+                
+                <li class="alpha in"><span>Alphabetic</span></li>
+                <li class="inherit out"><span>By Inheritance</span></li>
+              </ol>
+            </div>
+        <div id="ancestors">
+                <span class="filtertype">Inherited<br />
+                </span>
+                <ol id="linearization">
+                  <li class="in" name="com.eiipii.etcd.client.EtcdClient"><span>EtcdClient</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                </ol>
+              </div><div id="ancestors">
+            <span class="filtertype"></span>
+            <ol>
+              <li class="hideall out"><span>Hide All</span></li>
+              <li class="showall in"><span>Show All</span></li>
+            </ol>
+          </div>
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        <div id="constructors" class="members">
+              <h3>Instance Constructors</h3>
+              <ol><li name="com.eiipii.etcd.client.EtcdClient#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="&lt;init&gt;(etcdConfig:com.eiipii.etcd.client.EtcdConfiguration):com.eiipii.etcd.client.EtcdClient"></a>
+      <a id="&lt;init&gt;:EtcdClient"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">new</span>
+      </span>
+      <span class="symbol">
+        <span class="name">EtcdClient</span><span class="params">(<span name="etcdConfig">etcdConfig: <a href="EtcdConfiguration.html" class="extype" name="com.eiipii.etcd.client.EtcdConfiguration">EtcdConfiguration</a></span>)</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@&lt;init&gt;(etcdConfig:com.eiipii.etcd.client.EtcdConfiguration):com.eiipii.etcd.client.EtcdClient" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">etcdConfig</dt><dd class="cmt"><p><a href="EtcdConfiguration.html" class="extype" name="com.eiipii.etcd.client.EtcdConfiguration">EtcdConfiguration</a> with information about an endpoint to which requests will be sent and optional authorization data.</p></dd></dl></div>
+    </li></ol>
+            </div>
+
+        
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="!=(x$1:Any):Boolean"></a>
+      <a id="!=(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="##():Int"></a>
+      <a id="##():Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@##():Int" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="==(x$1:Any):Boolean"></a>
+      <a id="==(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#addMember" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="addMember(peerURLs:com.eiipii.etcd.client.model.EtcdMemberForm):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdAddMemberResult]"></a>
+      <a id="addMember(EtcdMemberForm):Future[EtcdAddMemberResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">addMember</span><span class="params">(<span name="peerURLs">peerURLs: <a href="model/EtcdMemberForm.html" class="extype" name="com.eiipii.etcd.client.model.EtcdMemberForm">EtcdMemberForm</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdAddMemberResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdAddMemberResult">EtcdAddMemberResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@addMember(peerURLs:com.eiipii.etcd.client.model.EtcdMemberForm):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdAddMemberResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Adds a member to an etcd cluster.</p><div class="fullcomment"><div class="comment cmt"><p>Adds a member to an etcd cluster.</p><h5>Member methods</h5><p>Implemented according to etcd Members API: &quot;<a href="https://coreos.com/etcd/docs/latest/members_api.html#add-a-member" target="_blank">Add a member</a>&quot;.
+</p></div><dl class="paramcmts block"><dt class="param">peerURLs</dt><dd class="cmt"><p><a href="model/EtcdMemberForm.html" class="extype" name="com.eiipii.etcd.client.model.EtcdMemberForm">EtcdMemberForm</a> containing a list of strings representing the peer URLs of the new member.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdAddMemberResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdAddMemberResponse">EtcdAddMemberResponse</a> or <a href="model/EtcdStandardError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdStandardError">EtcdStandardError</a>
+        extending <a href="model/EtcdAddMemberResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdAddMemberResult">EtcdAddMemberResult</a>.</p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#addUpdateRole" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="addUpdateRole(role:com.eiipii.etcd.client.model.EtcdRole):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdAddUpdateRoleResult]"></a>
+      <a id="addUpdateRole(EtcdRole):Future[EtcdAddUpdateRoleResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">addUpdateRole</span><span class="params">(<span name="role">role: <a href="model/EtcdRole.html" class="extype" name="com.eiipii.etcd.client.model.EtcdRole">EtcdRole</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdAddUpdateRoleResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdAddUpdateRoleResult">EtcdAddUpdateRoleResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@addUpdateRole(role:com.eiipii.etcd.client.model.EtcdRole):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdAddUpdateRoleResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Adds new roles and modifies role details.</p><div class="fullcomment"><div class="comment cmt"><p>Adds new roles and modifies role details.</p><h5>Authentication Method</h5><p>Implemented according to etcd Auth and Security API: &quot;<a href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints" target="_blank">API endpoints</a>&quot;.
+</p></div><dl class="paramcmts block"><dt class="param">role</dt><dd class="cmt"><p><a href="model/EtcdRole.html" class="extype" name="com.eiipii.etcd.client.model.EtcdRole">EtcdRole</a> with details of the role to be created or updated.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdAddUpdateRoleResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdAddUpdateRoleResponse">EtcdAddUpdateRoleResponse</a> or <a href="model/EtcdStandardError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdStandardError">EtcdStandardError</a>.
+        extending <a href="model/EtcdAddUpdateRoleResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdAddUpdateRoleResult">EtcdAddUpdateRoleResult</a>.</p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#addUpdateUser" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="addUpdateUser(user:com.eiipii.etcd.client.model.EtcdUserRequestForm):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdAddUpdateUserResult]"></a>
+      <a id="addUpdateUser(EtcdUserRequestForm):Future[EtcdAddUpdateUserResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">addUpdateUser</span><span class="params">(<span name="user">user: <a href="model/EtcdUserRequestForm.html" class="extype" name="com.eiipii.etcd.client.model.EtcdUserRequestForm">EtcdUserRequestForm</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdAddUpdateUserResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdAddUpdateUserResult">EtcdAddUpdateUserResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@addUpdateUser(user:com.eiipii.etcd.client.model.EtcdUserRequestForm):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdAddUpdateUserResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Adds new users and modifies user details.</p><div class="fullcomment"><div class="comment cmt"><p>Adds new users and modifies user details.</p><h5>Authentication Method</h5><p>Implemented according to etcd Auth and Security API: &quot;<a href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints" target="_blank">API endpoints</a>&quot;.
+</p></div><dl class="paramcmts block"><dt class="param">user</dt><dd class="cmt"><p><a href="model/EtcdUserRequestForm.html" class="extype" name="com.eiipii.etcd.client.model.EtcdUserRequestForm">EtcdUserRequestForm</a> containing the details (login, password, granted and revoked permissions, and roles) to be updated for a given user.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdAddUpdateUserResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdAddUpdateUserResponse">EtcdAddUpdateUserResponse</a> or <a href="model/EtcdStandardError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdStandardError">EtcdStandardError</a>.
+        extending <a href="model/EtcdAddUpdateUserResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdAddUpdateUserResult">EtcdAddUpdateUserResult</a>.</p></dd></dl></div>
+    </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="asInstanceOf[T0]:T0"></a>
+      <a id="asInstanceOf[T0]:T0"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#changePeerURLs" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="changePeerURLs(peerID:String,peerURLs:com.eiipii.etcd.client.model.EtcdMemberForm):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdConfirmationResult]"></a>
+      <a id="changePeerURLs(String,EtcdMemberForm):Future[EtcdConfirmationResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">changePeerURLs</span><span class="params">(<span name="peerID">peerID: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="peerURLs">peerURLs: <a href="model/EtcdMemberForm.html" class="extype" name="com.eiipii.etcd.client.model.EtcdMemberForm">EtcdMemberForm</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdConfirmationResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdConfirmationResult">EtcdConfirmationResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@changePeerURLs(peerID:String,peerURLs:com.eiipii.etcd.client.model.EtcdMemberForm):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdConfirmationResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Changes the peer urls of a member of an etcd cluster.</p><div class="fullcomment"><div class="comment cmt"><p>Changes the peer urls of a member of an etcd cluster.</p><h5>Member methods</h5><p>Implemented according to etcd Members API: &quot;<a href="https://coreos.com/etcd/docs/latest/members_api.html#change-the-peer-urls-of-a-member" target="_blank">Change the peer urls of a member</a>&quot;.
+</p></div><dl class="paramcmts block"><dt class="param">peerID</dt><dd class="cmt"><p>A string identifying another member of the etcd cluster.</p></dd><dt class="param">peerURLs</dt><dd class="cmt"><p><a href="model/EtcdMemberForm.html" class="extype" name="com.eiipii.etcd.client.model.EtcdMemberForm">EtcdMemberForm</a> containing a list of strings representing the new peer URLs that will replace the old ones.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdConfirmationResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdConfirmationResponse">EtcdConfirmationResponse</a> or <a href="model/EtcdStandardError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdStandardError">EtcdStandardError</a>
+        extending <a href="model/EtcdConfirmationResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdConfirmationResult">EtcdConfirmationResult</a>.</p></dd></dl></div>
+    </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="clone():Object"></a>
+      <a id="clone():AnyRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@clone():Object" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#close" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="close():Unit"></a>
+      <a id="close():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">close</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@close():Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Close the internal resources.</p>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#createDir" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="createDir(dir:com.eiipii.etcd.client.model.EtcdDirectory,ttlOp:Option[com.eiipii.etcd.client.model.EtcdTTL]):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdCreateDirResult]"></a>
+      <a id="createDir(EtcdDirectory,Option[EtcdTTL]):Future[EtcdCreateDirResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">createDir</span><span class="params">(<span name="dir">dir: <a href="model/EtcdDirectory.html" class="extype" name="com.eiipii.etcd.client.model.EtcdDirectory">EtcdDirectory</a></span>, <span name="ttlOp">ttlOp: <span class="extype" name="scala.Option">Option</span>[<a href="model/EtcdTTL.html" class="extype" name="com.eiipii.etcd.client.model.EtcdTTL">EtcdTTL</a>] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdCreateDirResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdCreateDirResult">EtcdCreateDirResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@createDir(dir:com.eiipii.etcd.client.model.EtcdDirectory,ttlOp:Option[com.eiipii.etcd.client.model.EtcdTTL]):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdCreateDirResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Creates an empty directory in the specified path.</p><div class="fullcomment"><div class="comment cmt"><p>Creates an empty directory in the specified path.</p><h5>Key-Value Method</h5><p>Implemented according to etcd Client API: &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#creating-directories" target="_blank">Creating Directories</a>&quot;.
+See also &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#using-a-directory-ttl" target="_blank">Using a directory TTL</a>&quot;.</p><p>One can also choose to create a directory by setting a key in it using <a href="#setKey(key:com.eiipii.etcd.client.model.EtcdKey,value:com.eiipii.etcd.client.model.EtcdValue,ttlOp:Option[com.eiipii.etcd.client.model.EtcdTTL],conditionOp:Option[com.eiipii.etcd.client.model.CompareAndSwapCondition]):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdSetKeyResult]" class="extmbr" name="com.eiipii.etcd.client.EtcdClient#setKey">EtcdClient.setKey</a>.</p><p>Optionally one can choose a TTL (time to live), which is a lifespan in seconds for the directory.
+When it expires, the directory is deleted.
+To update the TTL, use method <a href="#refreshDirTTL(dir:com.eiipii.etcd.client.model.EtcdDirectory,ttlOp:Option[com.eiipii.etcd.client.model.EtcdTTL]):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdCreateDirResult]" class="extmbr" name="com.eiipii.etcd.client.EtcdClient#refreshDirTTL">EtcdClient.refreshDirTTL</a>.
+</p></div><dl class="paramcmts block"><dt class="param">dir</dt><dd class="cmt"><p><a href="model/EtcdDirectory.html" class="extype" name="com.eiipii.etcd.client.model.EtcdDirectory">EtcdDirectory</a> to be created.</p></dd><dt class="param">ttlOp</dt><dd class="cmt"><p>Life span in seconds of the directory.
+             Defaults to None.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdCreateDirResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdCreateDirResponse">EtcdCreateDirResponse</a> or <a href="model/EtcdRequestError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdRequestError">EtcdRequestError</a> extending <a href="model/EtcdCreateDirResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdCreateDirResult">EtcdCreateDirResult</a>.</p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#createKeyFromCurrentEtcdIndex" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="createKeyFromCurrentEtcdIndex(dir:com.eiipii.etcd.client.model.EtcdDirectory,value:com.eiipii.etcd.client.model.EtcdValue):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdSetKeyResult]"></a>
+      <a id="createKeyFromCurrentEtcdIndex(EtcdDirectory,EtcdValue):Future[EtcdSetKeyResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">createKeyFromCurrentEtcdIndex</span><span class="params">(<span name="dir">dir: <a href="model/EtcdDirectory.html" class="extype" name="com.eiipii.etcd.client.model.EtcdDirectory">EtcdDirectory</a></span>, <span name="value">value: <a href="model/EtcdValue.html" class="extype" name="com.eiipii.etcd.client.model.EtcdValue">EtcdValue</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdSetKeyResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdSetKeyResult">EtcdSetKeyResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@createKeyFromCurrentEtcdIndex(dir:com.eiipii.etcd.client.model.EtcdDirectory,value:com.eiipii.etcd.client.model.EtcdValue):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdSetKeyResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Creates a key in a specified directory whose name is the current etcd index preceded with leading zeroes.</p><div class="fullcomment"><div class="comment cmt"><p>Creates a key in a specified directory whose name is the current etcd index preceded with leading zeroes.</p><h5>Key-Value Method</h5><p>Implemented according to etcd Client API: &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#atomically-creating-in-order-keys" target="_blank">Atomically Creating In-Order Keys</a>&quot;.</p><p>etcd keeps a counter for each operation performed.
+The etcd index keeps track of this counter, that is, it is the integer associated to the last operation performed in etcd.
+Given a specified directory <a href="model/EtcdDirectory.html" class="extype" name="com.eiipii.etcd.client.model.EtcdDirectory">EtcdDirectory</a>, createKeyFromCurrentEtcdIndex creates a key in that directory named after the etcd index and associates the value inputed through parameter value to it.
+This allows to create keys which are strictly ordered by those indexes, since etcd indexes increment monotonously.
+</p></div><dl class="paramcmts block"><dt class="param">dir</dt><dd class="cmt"><p><a href="model/EtcdDirectory.html" class="extype" name="com.eiipii.etcd.client.model.EtcdDirectory">EtcdDirectory</a> where the new key will be placed.</p></dd><dt class="param">value</dt><dd class="cmt"><p><a href="model/EtcdValue.html" class="extype" name="com.eiipii.etcd.client.model.EtcdValue">EtcdValue</a> to be associated to key.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdSetKeyResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdSetKeyResponse">EtcdSetKeyResponse</a> or <a href="model/EtcdRequestError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdRequestError">EtcdRequestError</a> extending <a href="model/EtcdSetKeyResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdSetKeyResult">EtcdSetKeyResult</a>.</p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#deleteDir" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="deleteDir(dir:com.eiipii.etcd.client.model.EtcdDirectory,recursive:Boolean):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdCreateDirResult]"></a>
+      <a id="deleteDir(EtcdDirectory,Boolean):Future[EtcdCreateDirResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">deleteDir</span><span class="params">(<span name="dir">dir: <a href="model/EtcdDirectory.html" class="extype" name="com.eiipii.etcd.client.model.EtcdDirectory">EtcdDirectory</a></span>, <span name="recursive">recursive: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdCreateDirResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdCreateDirResult">EtcdCreateDirResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@deleteDir(dir:com.eiipii.etcd.client.model.EtcdDirectory,recursive:Boolean):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdCreateDirResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Deletes a directory from etcd.</p><div class="fullcomment"><div class="comment cmt"><p>Deletes a directory from etcd.</p><h5>Key-Value Method</h5><p>Implemented according to etcd Client API: &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#deleting-a-directory" target="_blank">Deleting a Directory</a>&quot;.</p><p>An empty directory can be deleted form etcd by simply specifying <a href="model/EtcdDirectory.html" class="extype" name="com.eiipii.etcd.client.model.EtcdDirectory">EtcdDirectory</a> leading to the directory in etcd.
+However, for a non-empty directory one must also set the recursive parameter (which defaults to false) to true.
+</p></div><dl class="paramcmts block"><dt class="param">dir</dt><dd class="cmt"><p><a href="model/EtcdDirectory.html" class="extype" name="com.eiipii.etcd.client.model.EtcdDirectory">EtcdDirectory</a> to be deleted.</p></dd><dt class="param">recursive</dt><dd class="cmt"><p>enables deletion of non-empty directories when set to true.
+                 Defaults to false.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdCreateDirResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdCreateDirResponse">EtcdCreateDirResponse</a> or <a href="model/EtcdRequestError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdRequestError">EtcdRequestError</a> extending <a href="model/EtcdCreateDirResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdCreateDirResult">EtcdCreateDirResult</a>.</p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#deleteKey" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="deleteKey(key:com.eiipii.etcd.client.model.EtcdKey,deleteConditionOp:Option[com.eiipii.etcd.client.model.ConditionalDeleteCondition]):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdDeleteKeyResult]"></a>
+      <a id="deleteKey(EtcdKey,Option[ConditionalDeleteCondition]):Future[EtcdDeleteKeyResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">deleteKey</span><span class="params">(<span name="key">key: <a href="model/EtcdKey.html" class="extype" name="com.eiipii.etcd.client.model.EtcdKey">EtcdKey</a></span>, <span name="deleteConditionOp">deleteConditionOp: <span class="extype" name="scala.Option">Option</span>[<a href="model/ConditionalDeleteCondition.html" class="extype" name="com.eiipii.etcd.client.model.ConditionalDeleteCondition">ConditionalDeleteCondition</a>] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdDeleteKeyResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdDeleteKeyResult">EtcdDeleteKeyResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@deleteKey(key:com.eiipii.etcd.client.model.EtcdKey,deleteConditionOp:Option[com.eiipii.etcd.client.model.ConditionalDeleteCondition]):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdDeleteKeyResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Deletes a key from etcd.</p><div class="fullcomment"><div class="comment cmt"><p>Deletes a key from etcd.</p><h5>Key-Value Method</h5><p>Implemented according to etcd Client API: &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#deleting-a-key" target="_blank">Deleting a key</a>&quot;.
+See also &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#atomic-compare-and-delete" target="_blank">Atomic Compare-and-Delete</a>&quot;.</p><p>Optionally etcd allows to conditionally delete a key.
+This can be done by setting the conditionOp parameter to any of the case classes extending trait <a href="model/ConditionalDeleteCondition.html" class="extype" name="com.eiipii.etcd.client.model.ConditionalDeleteCondition">ConditionalDeleteCondition</a>.
+</p></div><dl class="paramcmts block"><dt class="param">key</dt><dd class="cmt"><p><a href="model/EtcdKey.html" class="extype" name="com.eiipii.etcd.client.model.EtcdKey">EtcdKey</a> to be deleted.</p></dd><dt class="param">deleteConditionOp</dt><dd class="cmt"><p>One of case classes <a href="model/KeyMustHaveIndex.html" class="extype" name="com.eiipii.etcd.client.model.KeyMustHaveIndex">KeyMustHaveIndex</a> or <a href="model/KeyMustHaveValue.html" class="extype" name="com.eiipii.etcd.client.model.KeyMustHaveValue">KeyMustHaveValue </a> extending <a href="model/ConditionalDeleteCondition.html" class="extype" name="com.eiipii.etcd.client.model.ConditionalDeleteCondition">ConditionalDeleteCondition</a>.
+                   Defaults to None.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdDeleteKeyResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdDeleteKeyResponse">EtcdDeleteKeyResponse</a> or <a href="model/EtcdRequestError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdRequestError">EtcdRequestError</a> extending <a href="model/EtcdDeleteKeyResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdDeleteKeyResult">EtcdDeleteKeyResult</a>.</p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#deleteMember" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="deleteMember(peerID:String):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdConfirmationResult]"></a>
+      <a id="deleteMember(String):Future[EtcdConfirmationResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">deleteMember</span><span class="params">(<span name="peerID">peerID: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdConfirmationResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdConfirmationResult">EtcdConfirmationResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@deleteMember(peerID:String):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdConfirmationResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Deletes a member form an etcd cluster.</p><div class="fullcomment"><div class="comment cmt"><p>Deletes a member form an etcd cluster.</p><h5>Member methods</h5><p>Implemented according to etcd Members API: &quot;<a href="https://coreos.com/etcd/docs/latest/members_api.html#delete-a-member" target="_blank">Delete a member</a>&quot;.
+</p></div><dl class="paramcmts block"><dt class="param">peerID</dt><dd class="cmt"><p>A string identifying another member of the etcd cluster.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdConfirmationResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdConfirmationResponse">EtcdConfirmationResponse</a> or <a href="model/EtcdStandardError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdStandardError">EtcdStandardError</a>
+        extending <a href="model/EtcdConfirmationResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdConfirmationResult">EtcdConfirmationResult</a>.</p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#deleteRole" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="deleteRole(role:com.eiipii.etcd.client.model.EtcdRole):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdConfirmationResult]"></a>
+      <a id="deleteRole(EtcdRole):Future[EtcdConfirmationResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">deleteRole</span><span class="params">(<span name="role">role: <a href="model/EtcdRole.html" class="extype" name="com.eiipii.etcd.client.model.EtcdRole">EtcdRole</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdConfirmationResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdConfirmationResult">EtcdConfirmationResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@deleteRole(role:com.eiipii.etcd.client.model.EtcdRole):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdConfirmationResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Deletes a role.</p><div class="fullcomment"><div class="comment cmt"><p>Deletes a role.</p><h5>Authentication Method</h5><p>Implemented according to etcd Auth and Security API: &quot;<a href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints" target="_blank">API endpoints</a>&quot;.</p><p>In this case, it suffices to provide the role field in the <a href="model/EtcdRole.html" class="extype" name="com.eiipii.etcd.client.model.EtcdRole">EtcdRole</a>.
+</p></div><dl class="paramcmts block"><dt class="param">role</dt><dd class="cmt"><p><a href="model/EtcdRole.html" class="extype" name="com.eiipii.etcd.client.model.EtcdRole">EtcdRole</a> with details of the role to be created or updated.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdConfirmationResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdConfirmationResponse">EtcdConfirmationResponse] or <a href="model/EtcdStandardError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdStandardError">EtcdStandardError</a>.
+        extending <a href="model/EtcdConfirmationResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdConfirmationResult">EtcdConfirmationResult</a>.</a></p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#deleteUser" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="deleteUser(user:com.eiipii.etcd.client.model.EtcdUserRequestForm):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdConfirmationResult]"></a>
+      <a id="deleteUser(EtcdUserRequestForm):Future[EtcdConfirmationResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">deleteUser</span><span class="params">(<span name="user">user: <a href="model/EtcdUserRequestForm.html" class="extype" name="com.eiipii.etcd.client.model.EtcdUserRequestForm">EtcdUserRequestForm</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdConfirmationResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdConfirmationResult">EtcdConfirmationResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@deleteUser(user:com.eiipii.etcd.client.model.EtcdUserRequestForm):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdConfirmationResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Deletes a user.</p><div class="fullcomment"><div class="comment cmt"><p>Deletes a user.</p><h5>Authentication Method</h5><p>Implemented according to etcd Auth and Security API: &quot;<a href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints" target="_blank">API endpoints</a>&quot;.</p><p>In this case, it suffices to provide the user in the <a href="model/EtcdUserRequestForm.html" class="extype" name="com.eiipii.etcd.client.model.EtcdUserRequestForm">EtcdUserRequestForm</a>.
+</p></div><dl class="paramcmts block"><dt class="param">user</dt><dd class="cmt"><p><a href="model/EtcdUserRequestForm.html" class="extype" name="com.eiipii.etcd.client.model.EtcdUserRequestForm">EtcdUserRequestForm</a> containing the details of a given user.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdConfirmationResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdConfirmationResponse">EtcdConfirmationResponse</a> or <a href="model/EtcdStandardError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdStandardError">EtcdStandardError</a>.
+        extending <a href="model/EtcdConfirmationResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdConfirmationResult">EtcdConfirmationResult</a>.</p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#disableAuthentication" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="disableAuthentication():scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdConfirmationResult]"></a>
+      <a id="disableAuthentication():Future[EtcdConfirmationResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">disableAuthentication</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdConfirmationResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdConfirmationResult">EtcdConfirmationResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@disableAuthentication():scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdConfirmationResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Disables authentication.</p><div class="fullcomment"><div class="comment cmt"><p>Disables authentication.</p><h5>Authentication Method</h5><p>Implemented according to etcd Auth and Security API: &quot;<a href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints" target="_blank">API endpoints</a>&quot;.
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdConfirmationResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdConfirmationResponse">EtcdConfirmationResponse</a> or <a href="model/EtcdStandardError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdStandardError">EtcdStandardError</a>.
+        extending <a href="model/EtcdConfirmationResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdConfirmationResult">EtcdConfirmationResult</a>.</p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#enableAuthentication" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="enableAuthentication():scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdConfirmationResult]"></a>
+      <a id="enableAuthentication():Future[EtcdConfirmationResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">enableAuthentication</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdConfirmationResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdConfirmationResult">EtcdConfirmationResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@enableAuthentication():scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdConfirmationResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Enables authentication.</p><div class="fullcomment"><div class="comment cmt"><p>Enables authentication.</p><h5>Authentication Method</h5><p>Implemented according to etcd Auth and Security API: &quot;<a href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints" target="_blank">API endpoints</a>&quot;.</p><p>In order to enable authentication, the root user must be created first using <a href="#addUpdateUser(user:com.eiipii.etcd.client.model.EtcdUserRequestForm):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdAddUpdateUserResult]" class="extmbr" name="com.eiipii.etcd.client.EtcdClient#addUpdateUser">EtcdClient.addUpdateUser</a>.
+After authentication only the root user or users with root rights (for example, with the root role) can access and modify permission resources.
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdConfirmationResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdConfirmationResponse">EtcdConfirmationResponse</a> or <a href="model/EtcdStandardError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdStandardError">EtcdStandardError</a>.
+        extending <a href="model/EtcdConfirmationResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdConfirmationResult">EtcdConfirmationResult</a>.</p></dd></dl></div>
+    </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="eq(x$1:AnyRef):Boolean"></a>
+      <a id="eq(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="equals(x$1:Any):Boolean"></a>
+      <a id="equals(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="finalize():Unit"></a>
+      <a id="finalize():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@finalize():Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#getAuthenticationStatus" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getAuthenticationStatus:scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetAuthenticationStatusResult]"></a>
+      <a id="getAuthenticationStatus:Future[EtcdGetAuthenticationStatusResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getAuthenticationStatus</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdGetAuthenticationStatusResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetAuthenticationStatusResult">EtcdGetAuthenticationStatusResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@getAuthenticationStatus:scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetAuthenticationStatusResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Checks if authentication is enabled.</p><div class="fullcomment"><div class="comment cmt"><p>Checks if authentication is enabled.</p><h5>Authentication Method</h5><p>Implemented according to etcd Auth and Security API: &quot;<a href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints" target="_blank">API endpoints</a>&quot;.
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdGetAuthenticationStatusResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetAuthenticationStatusResponse">EtcdGetAuthenticationStatusResponse</a> or <a href="model/EtcdStandardError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdStandardError">EtcdStandardError</a>.
+        extending <a href="model/EtcdGetAuthenticationStatusResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetAuthenticationStatusResult">EtcdGetAuthenticationStatusResult</a>.</p></dd></dl></div>
+    </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getClass():Class[_]"></a>
+      <a id="getClass():Class[_]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#getHealth" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getHealth:scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetHealthResult]"></a>
+      <a id="getHealth:Future[EtcdGetHealthResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getHealth</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdGetHealthResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetHealthResult">EtcdGetHealthResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@getHealth:scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetHealthResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Verifies the health of a member of an etcd cluster.</p><div class="fullcomment"><div class="comment cmt"><p>Verifies the health of a member of an etcd cluster.</p><h5>Statistics Method</h5><p>Implemented according to etcd Admin API: &quot;<a href="https://coreos.com/etcd/docs/latest/other_apis.html#checking-health-of-an-etcd-member-node" target="_blank">Checking health of an etcd member node</a>&quot;.
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>A Future wrapped around <a href="model/EtcdGetHealthResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetHealthResult">EtcdGetHealthResult</a> with an error or a response containing a boolean, which evaluates to true if the member is healthy, false otherwise.</p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#getKey" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getKey(key:com.eiipii.etcd.client.model.EtcdKey):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetKeyResult]"></a>
+      <a id="getKey(EtcdKey):Future[EtcdGetKeyResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getKey</span><span class="params">(<span name="key">key: <a href="model/EtcdKey.html" class="extype" name="com.eiipii.etcd.client.model.EtcdKey">EtcdKey</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdGetKeyResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetKeyResult">EtcdGetKeyResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@getKey(key:com.eiipii.etcd.client.model.EtcdKey):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetKeyResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Gets the current state of a key in etcd.</p><div class="fullcomment"><div class="comment cmt"><p>Gets the current state of a key in etcd.</p><h5>Key-Value Method</h5><p>Implemented according to etcd Client API: &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#get-the-value-of-a-key" target="_blank">Get the value of a key</a>&quot;.</p><p>Note that there is no difference in a GET request for a key and a directory.
+An GET HTTP request made to a node used as a directory looks the same as a request to a node used as a key.
+However, there is a difference in terms of a response.
+The getKey method is intended to handle responses only for requests to nodes used as keys.
+If it is used to make a request to a directory, it will return an EtcdRequestError with the statusCode field set to 200.
+This means that etcd accepts the request and returns a response.
+However EtcdClient does not parse the response.
+In order to get a response which extracts the JSON returned in the response body into a case class, use <a href="#listDir(dir:com.eiipii.etcd.client.model.EtcdDirectory,recursive:Boolean,sorted:Boolean):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdListDirResult]" class="extmbr" name="com.eiipii.etcd.client.EtcdClient#listDir">EtcdClient.listDir</a>.
+</p></div><dl class="paramcmts block"><dt class="param">key</dt><dd class="cmt"><p><a href="model/EtcdKey.html" class="extype" name="com.eiipii.etcd.client.model.EtcdKey">EtcdKey</a> whose status is queried.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdGetKeyResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetKeyResponse">EtcdGetKeyResponse</a> or <a href="model/EtcdRequestError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdRequestError">EtcdRequestError</a> extending <a href="model/EtcdGetKeyResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetKeyResult">EtcdGetKeyResult</a></p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#getLeaderStats" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getLeaderStats:scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetLeaderStatsResult]"></a>
+      <a id="getLeaderStats:Future[EtcdGetLeaderStatsResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getLeaderStats</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdGetLeaderStatsResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetLeaderStatsResult">EtcdGetLeaderStatsResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@getLeaderStats:scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetLeaderStatsResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Gets statistics from the leader of a cluster, which holds information of the whole cluster.</p><div class="fullcomment"><div class="comment cmt"><p>Gets statistics from the leader of a cluster, which holds information of the whole cluster.</p><h5>Statistics Method</h5><p>Implemented according to etcd Client API: &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#leader-statistics" target="_blank">Leader Statistics</a>&quot;.</p></div></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#getMembers" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getMembers:scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetMembersResult]"></a>
+      <a id="getMembers:Future[EtcdGetMembersResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getMembers</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdGetMembersResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetMembersResult">EtcdGetMembersResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@getMembers:scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetMembersResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Gets a lsi of members of an etcd cluster.</p><div class="fullcomment"><div class="comment cmt"><p>Gets a lsi of members of an etcd cluster.</p><h5>Member methods</h5><p>Implemented according to etcd Members API: &quot;<a href="https://coreos.com/etcd/docs/latest/members_api.html#list-members" target="_blank">List members</a>&quot;.
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdGetMembersResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetMembersResponse">EtcdGetMembersResponse</a> or <a href="model/EtcdStandardError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdStandardError">EtcdStandardError</a>
+        extending <a href="model/EtcdGetMembersResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetMembersResult">EtcdGetMembersResult</a>.</p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#getRoleDetails" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getRoleDetails(role:com.eiipii.etcd.client.model.EtcdRole):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetRoleDetailsResult]"></a>
+      <a id="getRoleDetails(EtcdRole):Future[EtcdGetRoleDetailsResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getRoleDetails</span><span class="params">(<span name="role">role: <a href="model/EtcdRole.html" class="extype" name="com.eiipii.etcd.client.model.EtcdRole">EtcdRole</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdGetRoleDetailsResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetRoleDetailsResult">EtcdGetRoleDetailsResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@getRoleDetails(role:com.eiipii.etcd.client.model.EtcdRole):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetRoleDetailsResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Gets a list of details of an existing role.</p><div class="fullcomment"><div class="comment cmt"><p>Gets a list of details of an existing role.</p><h5>Authentication Method</h5><p>Implemented according to etcd Auth and Security API: &quot;<a href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints" target="_blank">API endpoints</a>&quot;.</p><p>In this case, it suffices to provide the role field in the <a href="model/EtcdRole.html" class="extype" name="com.eiipii.etcd.client.model.EtcdRole">EtcdRole</a>.
+</p></div><dl class="paramcmts block"><dt class="param">role</dt><dd class="cmt"><p><a href="model/EtcdRole.html" class="extype" name="com.eiipii.etcd.client.model.EtcdRole">EtcdRole</a> with details of the role to be created or updated.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdGetRoleDetailsResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetRoleDetailsResponse">EtcdGetRoleDetailsResponse] or <a href="model/EtcdStandardError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdStandardError">EtcdStandardError</a>
+        extending <a href="model/EtcdGetRoleDetailsResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetRoleDetailsResult">EtcdGetRoleDetailsResult</a>.</a></p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#getRoles" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getRoles():scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetRolesResult]"></a>
+      <a id="getRoles():Future[EtcdGetRolesResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getRoles</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdGetRolesResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetRolesResult">EtcdGetRolesResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@getRoles():scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetRolesResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Gets a list of existing roles.</p><div class="fullcomment"><div class="comment cmt"><p>Gets a list of existing roles.</p><h5>Authentication Method</h5><p>Implemented according to etcd Auth and Security API: &quot;<a href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints" target="_blank">API endpoints</a>&quot;.
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdGetRolesResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetRolesResponse">EtcdGetRolesResponse] or <a href="model/EtcdStandardError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdStandardError">EtcdStandardError</a>.
+        extending <a href="model/EtcdGetRolesResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetRolesResult">EtcdGetRolesResult</a>.</a></p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#getSelfStats" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getSelfStats:scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetSelfStatsResult]"></a>
+      <a id="getSelfStats:Future[EtcdGetSelfStatsResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getSelfStats</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdGetSelfStatsResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetSelfStatsResult">EtcdGetSelfStatsResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@getSelfStats:scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetSelfStatsResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Gets statistics from a member of an etcd cluster.</p><div class="fullcomment"><div class="comment cmt"><p>Gets statistics from a member of an etcd cluster.</p><h5>Statistics Method</h5><p>Implemented according to etcd Client API: &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#self-statistics" target="_blank">Self Statistics</a>&quot;.
+</p></div></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#getStoreStats" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getStoreStats:scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetStoreStatsResult]"></a>
+      <a id="getStoreStats:Future[EtcdGetStoreStatsResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getStoreStats</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdGetStoreStatsResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetStoreStatsResult">EtcdGetStoreStatsResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@getStoreStats:scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetStoreStatsResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Gets statistics about performed operations stored by a node of an etcd cluster.</p><div class="fullcomment"><div class="comment cmt"><p>Gets statistics about performed operations stored by a node of an etcd cluster.</p><h5>Statistics Method</h5><p>Implemented according to etcd Client API: &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#store-statistics" target="_blank">Store Statistics</a>&quot;.
+</p></div></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#getUserDetails" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getUserDetails(user:com.eiipii.etcd.client.model.EtcdUserRequestForm):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetUserDetailsResult]"></a>
+      <a id="getUserDetails(EtcdUserRequestForm):Future[EtcdGetUserDetailsResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getUserDetails</span><span class="params">(<span name="user">user: <a href="model/EtcdUserRequestForm.html" class="extype" name="com.eiipii.etcd.client.model.EtcdUserRequestForm">EtcdUserRequestForm</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdGetUserDetailsResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetUserDetailsResult">EtcdGetUserDetailsResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@getUserDetails(user:com.eiipii.etcd.client.model.EtcdUserRequestForm):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetUserDetailsResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Gets the details of an existing user including permissions granted to her and her roles</p><div class="fullcomment"><div class="comment cmt"><p>Gets the details of an existing user including permissions granted to her and her roles</p><h5>Authentication Method</h5><p>Implemented according to etcd Auth and Security API: &quot;<a href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints" target="_blank">API endpoints</a>&quot;.</p><p>In this case, it suffices to provide the user field in the <a href="model/EtcdUserRequestForm.html" class="extype" name="com.eiipii.etcd.client.model.EtcdUserRequestForm">EtcdUserRequestForm</a>.
+</p></div><dl class="paramcmts block"><dt class="param">user</dt><dd class="cmt"><p><a href="model/EtcdUserRequestForm.html" class="extype" name="com.eiipii.etcd.client.model.EtcdUserRequestForm">EtcdUserRequestForm</a> containing the details of a given user.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdGetUserDetailsResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetUserDetailsResponse">EtcdGetUserDetailsResponse</a> or <a href="model/EtcdStandardError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdStandardError">EtcdStandardError</a>.
+        extending <a href="model/EtcdGetUserDetailsResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetUserDetailsResult">EtcdGetUserDetailsResult</a>.</p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#getUsers" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getUsers():scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetUsersResult]"></a>
+      <a id="getUsers():Future[EtcdGetUsersResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getUsers</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdGetUsersResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetUsersResult">EtcdGetUsersResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@getUsers():scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetUsersResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Gets a list of existing users.</p><div class="fullcomment"><div class="comment cmt"><p>Gets a list of existing users.</p><h5>Authentication Method</h5><p>Implemented according to etcd Auth and Security API: &quot;<a href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints" target="_blank">API endpoints</a>&quot;.
+</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdGetUsersResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetUsersResponse">EtcdGetUsersResponse</a> or <a href="model/EtcdStandardError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdStandardError">EtcdStandardError</a>.
+        extending <a href="model/EtcdGetUsersResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetUsersResult">EtcdGetUsersResult</a>.</p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#getVersion" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getVersion:scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetVersionResult]"></a>
+      <a id="getVersion:Future[EtcdGetVersionResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getVersion</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdGetVersionResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetVersionResult">EtcdGetVersionResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@getVersion:scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdGetVersionResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Gets the version of an instance of etcd.</p><div class="fullcomment"><div class="comment cmt"><p>Gets the version of an instance of etcd.</p><h5>Statistics Method</h5><p>Implemented according to etcd Admin API: &quot;<a href="https://coreos.com/etcd/docs/latest/other_apis.html#getting-the-etcd-version" target="_blank">Getting the etcd version</a>&quot;.
+</p></div></div>
+    </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="hashCode():Int"></a>
+      <a id="hashCode():Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@hashCode():Int" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isInstanceOf[T0]:Boolean"></a>
+      <a id="isInstanceOf[T0]:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#listDir" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="listDir(dir:com.eiipii.etcd.client.model.EtcdDirectory,recursive:Boolean,sorted:Boolean):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdListDirResult]"></a>
+      <a id="listDir(EtcdDirectory,Boolean,Boolean):Future[EtcdListDirResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">listDir</span><span class="params">(<span name="dir">dir: <a href="model/EtcdDirectory.html" class="extype" name="com.eiipii.etcd.client.model.EtcdDirectory">EtcdDirectory</a></span>, <span name="recursive">recursive: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>, <span name="sorted">sorted: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdListDirResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdListDirResult">EtcdListDirResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@listDir(dir:com.eiipii.etcd.client.model.EtcdDirectory,recursive:Boolean,sorted:Boolean):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdListDirResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Lists the elements of a directory.</p><div class="fullcomment"><div class="comment cmt"><p>Lists the elements of a directory.</p><h5>Key-Value Method</h5><p>Implemented according to etcd Client API: &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#listing-a-directory" target="_blank">Listing a directory</a>&quot;.
+See also &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#atomically-creating-in-order-keys" target="_blank">Atomically Creating In-Order Keys</a>&quot; for information on the sorted parameter.</p><p>When the parameter recursive is set to false (as it is by default), it lists the immediate children of the given node.
+When it is set to true, it also recursively lists subnodes of the directory.</p><p>When both parameters recursive and sorted are set to true, the list returned is ordered.
+</p></div><dl class="paramcmts block"><dt class="param">dir</dt><dd class="cmt"><p><a href="model/EtcdDirectory.html" class="extype" name="com.eiipii.etcd.client.model.EtcdDirectory">EtcdDirectory</a> to be listed.</p></dd><dt class="param">recursive</dt><dd class="cmt"><p>recursively gets all subnodes of a directory when set to true.</p></dd><dt class="param">sorted</dt><dd class="cmt"><p>sorts listed key when set to true in combination with the recursive parameter.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdListDirResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdListDirResponse">EtcdListDirResponse</a> or <a href="model/EtcdRequestError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdRequestError">EtcdRequestError</a> extending <a href="model/EtcdListDirResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdListDirResult">EtcdListDirResult</a>.</p></dd></dl></div>
+    </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ne(x$1:AnyRef):Boolean"></a>
+      <a id="ne(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notify():Unit"></a>
+      <a id="notify():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@notify():Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notifyAll():Unit"></a>
+      <a id="notifyAll():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#refreshDirTTL" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="refreshDirTTL(dir:com.eiipii.etcd.client.model.EtcdDirectory,ttlOp:Option[com.eiipii.etcd.client.model.EtcdTTL]):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdCreateDirResult]"></a>
+      <a id="refreshDirTTL(EtcdDirectory,Option[EtcdTTL]):Future[EtcdCreateDirResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">refreshDirTTL</span><span class="params">(<span name="dir">dir: <a href="model/EtcdDirectory.html" class="extype" name="com.eiipii.etcd.client.model.EtcdDirectory">EtcdDirectory</a></span>, <span name="ttlOp">ttlOp: <span class="extype" name="scala.Option">Option</span>[<a href="model/EtcdTTL.html" class="extype" name="com.eiipii.etcd.client.model.EtcdTTL">EtcdTTL</a>]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdCreateDirResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdCreateDirResult">EtcdCreateDirResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@refreshDirTTL(dir:com.eiipii.etcd.client.model.EtcdDirectory,ttlOp:Option[com.eiipii.etcd.client.model.EtcdTTL]):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdCreateDirResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Refreshes or unsets the TTL of an existing directory.</p><div class="fullcomment"><div class="comment cmt"><p>Refreshes or unsets the TTL of an existing directory.</p><h5>Key-Value Method</h5><p>Implemented according to etcd Client API: &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#using-a-directory-ttl" target="_blank">Using a directory TTL</a>&quot;.</p><p>Sets a lifespan in seconds for an existing directory.
+Once it expires, the directory is deleted.
+Setting ttlOp parameter to None allows to unset TTL.
+</p></div><dl class="paramcmts block"><dt class="param">dir</dt><dd class="cmt"><p><a href="model/EtcdDirectory.html" class="extype" name="com.eiipii.etcd.client.model.EtcdDirectory">EtcdDirectory</a> whose TTL is to be updated.</p></dd><dt class="param">ttlOp</dt><dd class="cmt"><p>Life span in seconds of the directory.
+             Defaults to None.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdCreateDirResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdCreateDirResponse">EtcdCreateDirResponse</a> or <a href="model/EtcdRequestError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdRequestError">EtcdRequestError</a> extending <a href="model/EtcdCreateDirResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdCreateDirResult">EtcdCreateDirResult</a>.</p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#refreshTTL" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="refreshTTL(key:com.eiipii.etcd.client.model.EtcdKey,ttlOp:com.eiipii.etcd.client.model.EtcdTTL,conditionOp:Option[com.eiipii.etcd.client.model.CompareAndSwapCondition]):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdSetKeyResult]"></a>
+      <a id="refreshTTL(EtcdKey,EtcdTTL,Option[CompareAndSwapCondition]):Future[EtcdSetKeyResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">refreshTTL</span><span class="params">(<span name="key">key: <a href="model/EtcdKey.html" class="extype" name="com.eiipii.etcd.client.model.EtcdKey">EtcdKey</a></span>, <span name="ttlOp">ttlOp: <a href="model/EtcdTTL.html" class="extype" name="com.eiipii.etcd.client.model.EtcdTTL">EtcdTTL</a></span>, <span name="conditionOp">conditionOp: <span class="extype" name="scala.Option">Option</span>[<a href="model/CompareAndSwapCondition.html" class="extype" name="com.eiipii.etcd.client.model.CompareAndSwapCondition">CompareAndSwapCondition</a>] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdSetKeyResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdSetKeyResult">EtcdSetKeyResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@refreshTTL(key:com.eiipii.etcd.client.model.EtcdKey,ttlOp:com.eiipii.etcd.client.model.EtcdTTL,conditionOp:Option[com.eiipii.etcd.client.model.CompareAndSwapCondition]):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdSetKeyResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Updates the TTL of a key without notifying watchers.</p><div class="fullcomment"><div class="comment cmt"><p>Updates the TTL of a key without notifying watchers.</p><h5>Key-Value Method</h5><p>Implemented according to etcd Client API: &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#refreshing-key-ttl" target="_blank">Refreshing key TTL</a>&quot;.</p><p>When a watch is set, and a key is updated using <a href="#setKey(key:com.eiipii.etcd.client.model.EtcdKey,value:com.eiipii.etcd.client.model.EtcdValue,ttlOp:Option[com.eiipii.etcd.client.model.EtcdTTL],conditionOp:Option[com.eiipii.etcd.client.model.CompareAndSwapCondition]):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdSetKeyResult]" class="extmbr" name="com.eiipii.etcd.client.EtcdClient#setKey">EtcdClient.setKey</a>, watchers are notified, triggering any operation conditionally set to follow given a particular response.
+This includes updates to its TTL.
+etcd allows updating TTL without notifying watches set on a key, thus not causing such side effects.
+EtcdClient implements this feature in the refreshTTL method.
+When a TTL is refreshed, its value cannot be updated.
+</p></div><dl class="paramcmts block"><dt class="param">key</dt><dd class="cmt"><p><a href="model/EtcdKey.html" class="extype" name="com.eiipii.etcd.client.model.EtcdKey">EtcdKey</a> that is to be updated.</p></dd><dt class="param">ttlOp</dt><dd class="cmt"><p>Life span in seconds of key-value .
+             Defaults to None.</p></dd><dt class="param">conditionOp</dt><dd class="cmt"><p>One of case classes <a href="model/KeyMustExist.html" class="extype" name="com.eiipii.etcd.client.model.KeyMustExist">KeyMustExist</a>, <a href="model/KeyMustHaveIndex.html" class="extype" name="com.eiipii.etcd.client.model.KeyMustHaveIndex">KeyMustHaveIndex</a> or <a href="model/KeyMustHaveValue.html" class="extype" name="com.eiipii.etcd.client.model.KeyMustHaveValue">KeyMustHaveValue </a> extending <a href="model/CompareAndSwapCondition.html" class="extype" name="com.eiipii.etcd.client.model.CompareAndSwapCondition">CompareAndSwapCondition</a>.
+                   Defaults to None.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdSetKeyResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdSetKeyResponse">EtcdSetKeyResponse</a> or <a href="model/EtcdRequestError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdRequestError">EtcdRequestError</a> extending <a href="model/EtcdSetKeyResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdSetKeyResult">EtcdSetKeyResult</a>.</p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#setKey" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="setKey(key:com.eiipii.etcd.client.model.EtcdKey,value:com.eiipii.etcd.client.model.EtcdValue,ttlOp:Option[com.eiipii.etcd.client.model.EtcdTTL],conditionOp:Option[com.eiipii.etcd.client.model.CompareAndSwapCondition]):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdSetKeyResult]"></a>
+      <a id="setKey(EtcdKey,EtcdValue,Option[EtcdTTL],Option[CompareAndSwapCondition]):Future[EtcdSetKeyResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setKey</span><span class="params">(<span name="key">key: <a href="model/EtcdKey.html" class="extype" name="com.eiipii.etcd.client.model.EtcdKey">EtcdKey</a></span>, <span name="value">value: <a href="model/EtcdValue.html" class="extype" name="com.eiipii.etcd.client.model.EtcdValue">EtcdValue</a></span>, <span name="ttlOp">ttlOp: <span class="extype" name="scala.Option">Option</span>[<a href="model/EtcdTTL.html" class="extype" name="com.eiipii.etcd.client.model.EtcdTTL">EtcdTTL</a>] = <span class="symbol">None</span></span>, <span name="conditionOp">conditionOp: <span class="extype" name="scala.Option">Option</span>[<a href="model/CompareAndSwapCondition.html" class="extype" name="com.eiipii.etcd.client.model.CompareAndSwapCondition">CompareAndSwapCondition</a>] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdSetKeyResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdSetKeyResult">EtcdSetKeyResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@setKey(key:com.eiipii.etcd.client.model.EtcdKey,value:com.eiipii.etcd.client.model.EtcdValue,ttlOp:Option[com.eiipii.etcd.client.model.EtcdTTL],conditionOp:Option[com.eiipii.etcd.client.model.CompareAndSwapCondition]):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdSetKeyResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Sets or updates a key in a specific etcd node; also, sets and unsets TTL.</p><div class="fullcomment"><div class="comment cmt"><p>Sets or updates a key in a specific etcd node; also, sets and unsets TTL.</p><h5>Key-Value Method</h5><p>Implemented according to etcd Client API: &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#setting-the-value-of-a-key" target="_blank">Setting the value of a key</a>&quot;.
+See also &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#using-key-ttl" target="_blank">Using key TTL</a>&quot;, &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#creating-a-hidden-node" target="_blank">Creating a hidden node</a>&quot; and &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#atomic-compare-and-swap" target="_blank">Atomic Compare-and-Swap</a>&quot;.</p><p>The value of a key can be updated by choosing the same key, but a different value.</p><p>Optionally one can choose a TTL (time to live), which is a lifespan in seconds for the key-value.
+When it expires, the key is deleted.</p><p>It is also possible to update the TTL of a key by specifying a new value for the ttlOp parameter with the same key.
+A similar effect can be achieved using <a href="#refreshTTL(key:com.eiipii.etcd.client.model.EtcdKey,ttlOp:com.eiipii.etcd.client.model.EtcdTTL,conditionOp:Option[com.eiipii.etcd.client.model.CompareAndSwapCondition]):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdSetKeyResult]" class="extmbr" name="com.eiipii.etcd.client.EtcdClient#refreshTTL">EtcdClient.refreshTTL</a>, except that this last operation does not notify watchers.</p><p>The TTL can be unset by updating the key with the parameter ttlOp set to None and with condition KeyMustExist set to true.</p><p>Additionally, etcd allows to conditionally compare and swap values.
+This can be done by setting the conditionOp parameter to any of the case classes extending trait <a href="model/CompareAndSwapCondition.html" class="extype" name="com.eiipii.etcd.client.model.CompareAndSwapCondition">CompareAndSwapCondition</a>.
+</p></div><dl class="paramcmts block"><dt class="param">key</dt><dd class="cmt"><p><a href="model/EtcdKey.html" class="extype" name="com.eiipii.etcd.client.model.EtcdKey">EtcdKey</a> that is to be set or updated.</p></dd><dt class="param">value</dt><dd class="cmt"><p><a href="model/EtcdValue.html" class="extype" name="com.eiipii.etcd.client.model.EtcdValue">EtcdValue</a> to be associated to key.</p></dd><dt class="param">ttlOp</dt><dd class="cmt"><p>Life span in seconds of key-value.
+             Defaults to None.</p></dd><dt class="param">conditionOp</dt><dd class="cmt"><p>One of case classes <a href="model/KeyMustExist.html" class="extype" name="com.eiipii.etcd.client.model.KeyMustExist">KeyMustExist</a>, <a href="model/KeyMustHaveIndex.html" class="extype" name="com.eiipii.etcd.client.model.KeyMustHaveIndex">KeyMustHaveIndex</a> or <a href="model/KeyMustHaveValue.html" class="extype" name="com.eiipii.etcd.client.model.KeyMustHaveValue">KeyMustHaveValue </a> extending <a href="model/CompareAndSwapCondition.html" class="extype" name="com.eiipii.etcd.client.model.CompareAndSwapCondition">CompareAndSwapCondition</a>.
+                   Defaults to None.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdSetKeyResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdSetKeyResponse">EtcdSetKeyResponse</a> or <a href="model/EtcdRequestError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdRequestError">EtcdRequestError</a> extending <a href="model/EtcdSetKeyResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdSetKeyResult">EtcdSetKeyResult</a>.</p></dd></dl></div>
+    </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
+      <a id="synchronized[T0](⇒T0):T0"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="toString():String"></a>
+      <a id="toString():String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@toString():String" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait():Unit"></a>
+      <a id="wait():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@wait():Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait(x$1:Long,x$2:Int):Unit"></a>
+      <a id="wait(Long,Int):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait(x$1:Long):Unit"></a>
+      <a id="wait(Long):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#waitForKey" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="waitForKey(key:com.eiipii.etcd.client.model.EtcdKey,callback:com.eiipii.etcd.client.model.EtcdWaitCallback,modifiedIndexForWait:Option[com.eiipii.etcd.client.model.EtcdIndex],recursive:Boolean):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdWaitForKeyResult]"></a>
+      <a id="waitForKey(EtcdKey,EtcdWaitCallback,Option[EtcdIndex],Boolean):Future[EtcdWaitForKeyResult]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">waitForKey</span><span class="params">(<span name="key">key: <a href="model/EtcdKey.html" class="extype" name="com.eiipii.etcd.client.model.EtcdKey">EtcdKey</a></span>, <span name="callback">callback: <a href="model/EtcdWaitCallback.html" class="extype" name="com.eiipii.etcd.client.model.EtcdWaitCallback">EtcdWaitCallback</a></span>, <span name="modifiedIndexForWait">modifiedIndexForWait: <span class="extype" name="scala.Option">Option</span>[<a href="model/EtcdIndex.html" class="extype" name="com.eiipii.etcd.client.model.EtcdIndex">EtcdIndex</a>] = <span class="symbol">None</span></span>, <span name="recursive">recursive: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="model/EtcdWaitForKeyResult.html" class="extype" name="com.eiipii.etcd.client.model.EtcdWaitForKeyResult">EtcdWaitForKeyResult</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@waitForKey(key:com.eiipii.etcd.client.model.EtcdKey,callback:com.eiipii.etcd.client.model.EtcdWaitCallback,modifiedIndexForWait:Option[com.eiipii.etcd.client.model.EtcdIndex],recursive:Boolean):scala.concurrent.Future[com.eiipii.etcd.client.model.EtcdWaitForKeyResult]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Sets a watch, which returns a get response if there is a change in a key in etcd.</p><div class="fullcomment"><div class="comment cmt"><p>Sets a watch, which returns a get response if there is a change in a key in etcd.</p><h5>Key-Value Method</h5><p>Implemented according to etcd Client API: &quot;<a href="https://coreos.com/etcd/docs/latest/api.html#waiting-for-a-change" target="_blank">Waiting for a change</a>&quot;.</p><p>Use case of the waitForKey method:</p><p>Optionally, one can choose an etcd modified index for which the watch is being set.
+An etcd modified index is the integer associated to the operation modifying the state of a key in etcd.
+If an index <code>i</code> is chosen, such that there were subsequent changes in the state of the key after the operation associated to <code>i</code>, etcd returns an <a href="model/EtcdGetKeyResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetKeyResponse">EtcdGetKeyResponse</a> with the state of the key after the first change registered with indexe greater than <code>i</code>.</p><p>For an index <code>j</code> greater than the etcd index associated to the last operation performed, the watch will not return a response until a change with an index greater than <code>j</code> is made.</p><p>Also, one can choose to wait for changes in any of the subnodes of a given node.
+This can be achieved by setting the parameter recursive to true.
+This parameter defaults to false.
+</p></div><dl class="paramcmts block"><dt class="param">key</dt><dd class="cmt"><p><a href="model/EtcdKey.html" class="extype" name="com.eiipii.etcd.client.model.EtcdKey">EtcdKey</a> on watch.</p></dd><dt class="param">callback</dt><dd class="cmt"><p><a href="model/EtcdWaitCallback.html" class="extype" name="com.eiipii.etcd.client.model.EtcdWaitCallback">EtcdWaitCallback</a> which will return a <a href="model/EtcdGetKeyResponse.html" class="extype" name="com.eiipii.etcd.client.model.EtcdGetKeyResponse">EtcdGetKeyResponse</a> or a throwable once it is called upon.</p></dd><dt class="param">modifiedIndexForWait</dt><dd class="cmt"><p><a href="model/EtcdIndex.html" class="extype" name="com.eiipii.etcd.client.model.EtcdIndex">EtcdIndex</a> associated to an operation performed on a given key.</p></dd><dt class="param">recursive</dt><dd class="cmt"><p>waits on changes of subnoded of the specified key, when it is set to true.
+                            Defaults to false.</p></dd><dt>returns</dt><dd class="cmt"><p>A Future wrapped around either <a href="model/EtcdWaitForKeyAccepted.html" class="extype" name="com.eiipii.etcd.client.model.EtcdWaitForKeyAccepted">com.eiipii.etcd.client.model.EtcdWaitForKeyAccepted</a> containing the headers of the response  or <a href="model/EtcdRequestError.html" class="extype" name="com.eiipii.etcd.client.model.EtcdRequestError">EtcdRequestError</a>.</p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdClient#withAuthorization" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="withAuthorization(auth:com.eiipii.etcd.client.model.EtcdUserAuthenticationData):com.eiipii.etcd.client.EtcdClient"></a>
+      <a id="withAuthorization(EtcdUserAuthenticationData):EtcdClient"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">withAuthorization</span><span class="params">(<span name="auth">auth: <a href="model/EtcdUserAuthenticationData.html" class="extype" name="com.eiipii.etcd.client.model.EtcdUserAuthenticationData">EtcdUserAuthenticationData</a></span>)</span><span class="result">: <a href="" class="extype" name="com.eiipii.etcd.client.EtcdClient">EtcdClient</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdClient@withAuthorization(auth:com.eiipii.etcd.client.model.EtcdUserAuthenticationData):com.eiipii.etcd.client.EtcdClient" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Create a new EtcdClient instance with authorization configuration.</p><div class="fullcomment"><div class="comment cmt"><p>Create a new EtcdClient instance with authorization configuration.</p><p>Be aware that each EtcdClient instance must be closed after it is no longer used.
+</p></div><dl class="paramcmts block"><dt class="param">auth</dt><dd class="cmt"><p>Case class providing a login and a password used for authorization.</p></dd></dl></div>
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        <div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>

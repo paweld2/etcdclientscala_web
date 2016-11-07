@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Quickstart &mdash; EtcdClient 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/agogo.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="EtcdClient 1.0 documentation" href="../index.html" />
+    <link rel="next" title="Package Model" href="../Model/Model.html" />
+    <link rel="prev" title="Welcome to EtcdClient’s documentation!" href="../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="header-wrapper" role="banner">
+      <div class="header">
+        <div class="headertitle"><a
+          href="../index.html">EtcdClient 1.0 documentation</a></div>
+        <div class="rel" role="navigation" aria-label="related navigation">
+          <a href="../index.html" title="Welcome to EtcdClient’s documentation!"
+             accesskey="P">previous</a> |
+          <a href="../Model/Model.html" title="Package Model"
+             accesskey="N">next</a> |
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a>
+        </div>
+       </div>
+    </div>
+
+    <div class="content-wrapper">
+      <div class="content">
+        <div class="document">
+            
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="quickstart">
+<span id="id1"></span><h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="adding-the-library-to-your-project">
+<span id="id2"></span><h2>Adding the Library to Your Project<a class="headerlink" href="#adding-the-library-to-your-project" title="Permalink to this headline">¶</a></h2>
+<p>The first thing you need to do is to add the library to your sbt project.
+Adding the following lines to the <code class="docutils literal"><span class="pre">build.sbt</span></code> file should suffice:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.eiipii&quot;</span> <span class="o">%%</span> <span class="s">&quot;etcdclient&quot;</span> <span class="o">%</span> <span class="s">&quot;1.0.0&quot;</span>
+</pre></div>
+</div>
+<p>As for a Maven project, add these lines to your <code class="docutils literal"><span class="pre">pom.xml</span></code>:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">eiipii</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">etcdclient</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">1.0</span><span class="o">.</span><span class="mi">0</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="etcdclient-setup">
+<span id="id3"></span><h2>EtcdClient Setup:<a class="headerlink" href="#etcdclient-setup" title="Permalink to this headline">¶</a></h2>
+<p>Let us say that you want to use EtcdClient in your code. First, import the client and the DSL for its configuration:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">package</span> <span class="nn">yourpackage</span>
+
+<span class="k">import</span> <span class="nn">com.eiipii.etcd.client.</span><span class="o">{</span><span class="nc">EtcdClient</span><span class="o">,</span> <span class="nc">EtcdConfiguration</span><span class="o">,</span> <span class="nc">EtcdDSL</span><span class="o">}</span>
+</pre></div>
+</div>
+<p>You would probably also need to import <a class="reference external" href="http://docs.scala-lang.org/overviews/core/futures.html">Scala Futures</a>, and the <a class="reference internal" href="../Model/Model.html#model"><span>Model</span></a> package:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">import</span> <span class="nn">com.eiipii.etcd.client.model._</span>
+
+<span class="k">import</span> <span class="nn">scala.concurrent.Future</span>
+</pre></div>
+</div>
+<p>In your code, remember to add an execution context for Scala Futures to work:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">implicit</span> <span class="k">val</span> <span class="n">executionContext</span> <span class="k">=</span> <span class="nc">ExecutionContext</span><span class="o">.</span><span class="nc">Implicits</span><span class="o">.</span><span class="n">global</span>
+</pre></div>
+</div>
+<p>As for the tests, in addition to the previous imports, you might also need to set a patience configuration:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">implicit</span> <span class="k">val</span> <span class="n">pc</span> <span class="k">=</span> <span class="nc">PatienceConfig</span><span class="o">(</span><span class="nc">Span</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="nc">Seconds</span><span class="o">),</span> <span class="nc">Span</span><span class="o">(</span><span class="mi">1500</span><span class="o">,</span> <span class="nc">Milliseconds</span><span class="o">))</span>
+</pre></div>
+</div>
+<p>Both – the execution context and the patience configuration – are explained in the documentation for <a class="reference external" href="http://docs.scala-lang.org/overviews/core/futures.html">Scala Futures</a>.</p>
+<p>In order to configure the client for making requests to etcd, first you have to establish an entrypoint. This could be an IP address:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="c1">//For an instance of etcd in your localhost listening to the standard port</span>
+<span class="k">val</span> <span class="n">address</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;http://127.0.0.1:4001&quot;</span>
+
+<span class="k">val</span> <span class="n">etcdCli</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">EtcdClient</span><span class="o">(</span><span class="nc">EtcdDSL</span><span class="o">.</span><span class="n">config</span><span class="o">(</span><span class="n">address</span><span class="o">))</span>
+</pre></div>
+</div>
+<p>Or it could be a full domain:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">domain</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;http://www.mydomain.com&quot;</span>
+
+<span class="k">val</span> <span class="n">etcdCli</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">EtcdClient</span><span class="o">(</span><span class="nc">EtcdDSL</span><span class="o">.</span><span class="n">config</span><span class="o">(</span><span class="n">domain</span><span class="o">))</span>
+</pre></div>
+</div>
+<p>You could also enable other security features. Go to <a class="reference internal" href="../Client/Authentication Methods.html#authentication-methods"><span>Authentication Methods</span></a> in order to learn more.</p>
+</div>
+<div class="section" id="a-sample-request">
+<span id="id5"></span><h2>A Sample Request<a class="headerlink" href="#a-sample-request" title="Permalink to this headline">¶</a></h2>
+<p>Let us set a key in etcd:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">backend1</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="s">&quot;myloadbalancer&quot;</span><span class="o">,</span><span class="s">&quot;backends&quot;</span><span class="o">,</span><span class="s">&quot;b1&quot;</span><span class="o">,</span><span class="s">&quot;servers&quot;</span><span class="o">,</span><span class="s">&quot;httpd1&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">backendURL1</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;http://172.0.0.1:80&quot;</span>
+
+<span class="k">val</span> <span class="n">backend2</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="s">&quot;myloadbalancer&quot;</span><span class="o">,</span><span class="s">&quot;backends&quot;</span><span class="o">,</span><span class="s">&quot;b2&quot;</span><span class="o">,</span><span class="s">&quot;servers&quot;</span><span class="o">,</span><span class="s">&quot;httpd2&quot;</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">backendURL2</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">&quot;http://172.0.0.2:80&quot;</span>
+
+<span class="c1">//The EtcdModel object has methods for creating EtcdKey&#39;s and EtcdValue&#39;s.</span>
+<span class="c1">//These case classes are used as wrappers for the data used as input in requests.</span>
+<span class="c1">//There are many such classes in the Model package.</span>
+<span class="k">val</span> <span class="n">firstKey</span><span class="k">:</span> <span class="kt">EtcdKey</span> <span class="o">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">fromPath</span><span class="o">(</span><span class="n">backend1</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">firstValue</span><span class="k">:</span> <span class="kt">EtcdValue</span> <span class="o">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="s">&quot;foo&quot;</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">secondKey</span><span class="k">:</span> <span class="kt">EtcdKey</span> <span class="o">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">fromPath</span><span class="o">(</span><span class="n">backend2</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">secondValue</span><span class="k">:</span> <span class="kt">EtcdValue</span> <span class="o">=</span> <span class="nc">EtcdModel</span><span class="o">.</span><span class="n">value</span><span class="o">(</span><span class="s">&quot;bar&quot;</span><span class="o">)</span>
+
+<span class="c1">//etcdCli is an instance of EtcdClient configured as above.</span>
+<span class="c1">//The outcome of an operation is always a Result class wrapped around a future.</span>
+<span class="k">val</span> <span class="n">backend1Set</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdSetKeyResult</span><span class="o">]</span> <span class="k">=</span> <span class="n">etcdCli</span><span class="o">.</span><span class="n">setKey</span><span class="o">(</span><span class="n">firstKey</span><span class="o">,</span> <span class="n">firstValue</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">backend2Set</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdSetKeyResult</span><span class="o">]</span> <span class="k">=</span> <span class="n">etcdCli</span><span class="o">.</span><span class="n">setKey</span><span class="o">(</span><span class="n">secondKey</span><span class="o">,</span> <span class="n">secondValue</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>Remember that these are asynchronous operations, so they are not performed in order unless you compose them using the operations available in the <a class="reference external" href="http://docs.scala-lang.org/overviews/core/futures.html">Scala Futures</a> library.
+Some examples of such composition are available in this document in the subsection titled <a class="reference internal" href="../Client/Authentication Methods.html#a-possible-work-flow-authenticationdocs"><span>A Possible Work Flow</span></a>.</p>
+<p>Furthermore, accessing the fields of the response returned by etcd is also only a matter of using the methods of the <a class="reference external" href="http://docs.scala-lang.org/overviews/core/futures.html">Scala Futures</a> library, such as functional composition:</p>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">storedValue</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdValue</span><span class="o">]</span> <span class="k">=</span> <span class="n">backend1Set</span><span class="o">.</span><span class="n">map</span> <span class="o">{</span> <span class="n">response</span> <span class="k">=&gt;</span>
+  <span class="n">response</span> <span class="k">match</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">EtcdSetKeyResponse</span><span class="o">(</span><span class="n">headers</span><span class="o">,</span> <span class="n">body</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="n">body</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">value</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>All methods function similarly to the <code class="docutils literal"><span class="pre">setKey</span></code> method.
+Just input your data through the correct case class and make a request.
+Remember that most methods have some extra options.
+For instance, <code class="docutils literal"><span class="pre">setKey</span></code> allows you to set a &#8220;time to live&#8221; (TTL) span in seconds.
+The default option, however, is to set a key with no TTL (see <a class="reference internal" href="../Client/Key-Value Methods.html#etcdclient-setkey"><span>EtcdClient.setKey</span></a>).</p>
+<p>Go to <a class="reference internal" href="../Client/EtcdClient.html#etcdclient"><span>EtcdClient</span></a> in order to read all about supported methods and all the options they feature.</p>
+</div>
+<div class="section" id="further-information">
+<span id="id8"></span><h2>Further Information:<a class="headerlink" href="#further-information" title="Permalink to this headline">¶</a></h2>
+<p>We hope that this section helped you get started.
+For further details, see the rest of this document.
+Also, remember that there is a <a class="reference external" href="http://etcdscalaclient.eiipii.com/api/#package">scaladoc</a>, where you could get more details on the implementation.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+        </div>
+        <div class="sidebar">
+          <h3>Table Of Contents</h3>
+          <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#adding-the-library-to-your-project">Adding the Library to Your Project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#etcdclient-setup">EtcdClient Setup:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-sample-request">A Sample Request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#further-information">Further Information:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../Model/Model.html">Package Model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Client/EtcdClient.html">EtcdClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Client/Key-Value Methods.html">Key-Value Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Client/Statistics.html">Statistics Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Client/Authentication Methods.html">Authentication Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Client/Member Methods.html">Member Methods</a></li>
+</ul>
+
+          <div role="search">
+            <h3 style="margin-top: 1.5em;">Search</h3>
+            <form class="search" action="../search.html" method="get">
+                <input type="text" name="q" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+            </form>
+            <p class="searchtip" style="font-size: 90%">
+                Enter search terms or a module, class or function name.
+            </p>
+          </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+    <div class="footer-wrapper">
+      <div class="footer">
+        <div class="left">
+          <div role="navigation" aria-label="related navigaton">
+            <a href="../index.html" title="Welcome to EtcdClient’s documentation!"
+              >previous</a> |
+            <a href="../Model/Model.html" title="Package Model"
+              >next</a> |
+            <a href="../genindex.html" title="General Index"
+              >index</a>
+          </div>
+          <div role="note" aria-label="source link">
+              <br/>
+              <a href="../_sources/Quickstart/quickstart.txt"
+                rel="nofollow">Show Source</a>
+          </div>
+        </div>
+
+        <div class="right">
+          
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Antonio Maciej Matamoros Ochman, Paweł Cesar Sanjuan Sklarz.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+        </div>
+        <div class="clearer"></div>
+      </div>
+    </div>
+
+  </body>
+</html>
