@@ -5,7 +5,7 @@ Member Methods
 ==============
 
 They allow an administrator to configure a cluster, by changing the members of a cluster.
-The implementation for member methods follows the specification given in the `etcd members Api <https://coreos.com/etcd/docs/latest/members_api.html>`_.
+The implementation for member methods follows the specification given in the `etcd members Api <https://coreos.com/etcd/docs/latest/v2/members_api.html>`_.
 
 .. _getMembers:
 
@@ -16,7 +16,7 @@ Gets a list of members of an etcd cluster and their details::
 
   getMembers: Future[EtcdGetMembersResult]
 
-Implemented according to etcd Members API: "`List members <https://coreos.com/etcd/docs/latest/members_api.html#list-members>`_".
+Implemented according to etcd Members API: "`List members <https://coreos.com/etcd/docs/latest/v2/members_api.html#list-members>`_".
 
 **Returns** a Future wrapped around either EtcdGetMembersResponse or EtcdStandardError extending EtcdGetMembersResult.
 .. _addMembers:
@@ -28,7 +28,7 @@ Adds a member to an existing etcd cluster::
 
   addMember(peerURLs: EtcdMemberForm): Future[EtcdAddMemberResult]
 
-Implemented according to etcd Members API: "`Add a member <https://coreos.com/etcd/docs/latest/members_api.html#add-a-member>`_".
+Implemented according to etcd Members API: "`Add a member <https://coreos.com/etcd/docs/latest/v2/members_api.html#add-a-member>`_".
 
 Parameters:
 
@@ -45,7 +45,7 @@ Deletes a member form an etcd cluster::
 
   deleteMember(peerID: String): Future[EtcdDefaultResult]
 
-Implemented according to etcd Members API: "`Delete a member <https://coreos.com/etcd/docs/latest/members_api.html#delete-a-member>`_".
+Implemented according to etcd Members API: "`Delete a member <https://coreos.com/etcd/docs/latest/v2/members_api.html#delete-a-member>`_".
 
 Parameters:
 
@@ -61,7 +61,7 @@ Updates the peer URLs of a given member of an etcd cluster::
 
   changePeerURLs(peerID: String, peerURLs: EtcdMemberForm): Future[EtcdDefaultResult]
 
-Implemented according to etcd Members API: "`Change the peer urls of a member <https://coreos.com/etcd/docs/latest/members_api.html#change-the-peer-urls-of-a-member>`_".
+Implemented according to etcd Members API: "`Change the peer urls of a member <https://coreos.com/etcd/docs/latest/v2/members_api.html#change-the-peer-urls-of-a-member>`_".
 
 Parameters:
 

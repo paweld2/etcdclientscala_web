@@ -53,14 +53,14 @@
             
   <div class="section" id="statistics-methods">
 <span id="id1"></span><h1>Statistics Methods<a class="headerlink" href="#statistics-methods" title="Permalink to this headline">¶</a></h1>
-<p>The implementation of methods for retrieving etcd cluster statistics also follows the specification given in the <a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html">etcd API</a> and and <a class="reference external" href="https://coreos.com/etcd/docs/latest/other_apis.html">etcd Admin API</a>.</p>
+<p>The implementation of methods for retrieving etcd cluster statistics also follows the specification given in the <a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/api.html">etcd API</a> and and <a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/other_apis.html">etcd Admin API</a>.</p>
 <div class="section" id="getleaderstats">
 <span id="id2"></span><h2>getLeaderStats<a class="headerlink" href="#getleaderstats" title="Permalink to this headline">¶</a></h2>
 <p>Gets statistics from the leader of a cluster, which holds information of the whole cluster:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">getLeaderStats</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdLeaderStatsResult</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#leader-statistics">Leader Statistics</a>&#8221;.</p>
+<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/api.html#leader-statistics">Leader Statistics</a>&#8221;.</p>
 </div>
 <div class="section" id="gethealth">
 <span id="id3"></span><h2>getHealth<a class="headerlink" href="#gethealth" title="Permalink to this headline">¶</a></h2>
@@ -68,7 +68,7 @@
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">getHealth</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdHealthResponse</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Admin API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/other_apis.html#checking-health-of-an-etcd-member-node">Checking health of an etcd member node</a>&#8221;.</p>
+<p>Implemented according to etcd Admin API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/other_apis.html#checking-health-of-an-etcd-member-node">Checking health of an etcd member node</a>&#8221;.</p>
 <p>The following is a simple example of the usage of this method:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">etcdcli</span><span class="o">.</span><span class="n">getHealth</span> <span class="n">onSuccess</span> <span class="o">{</span>
   <span class="k">case</span> <span class="nc">EtcdGetHealthResponse</span><span class="o">(</span><span class="n">health</span><span class="o">)</span> <span class="k">=&gt;</span>
@@ -84,7 +84,7 @@
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">getSelfStats</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdSelfStatsResponse</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#self-statistics">Self Statistics</a>&#8221;.</p>
+<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/api.html#self-statistics">Self Statistics</a>&#8221;.</p>
 <p>The following is a simple example of the usage of this method:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">etcdcli</span><span class="o">.</span><span class="n">getSelfStats</span> <span class="n">onSuccess</span>  <span class="o">{</span>
   <span class="k">case</span> <span class="nc">EtcdGetSelfStatsResponse</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
@@ -108,7 +108,7 @@
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">getStoreStats</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdStoreStatsResponse</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#store-statistics">Store Statistics</a>&#8221;.</p>
+<p>Implemented according to etcd Client API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/api.html#store-statistics">Store Statistics</a>&#8221;.</p>
 <p>The following is a simple example of the usage of this method:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">etcdcli</span><span class="o">.</span><span class="n">getStoreStats</span> <span class="n">onSuccess</span> <span class="o">{</span>
   <span class="k">case</span> <span class="nc">EtcdGetStoreStatsResponse</span><span class="o">(</span><span class="n">compareAndSwapFail</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span>
@@ -137,7 +137,7 @@
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">getVersion</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdVersionResponse</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Admin API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/other_apis.html#getting-the-etcd-version">Getting the etcd version</a>&#8221;.</p>
+<p>Implemented according to etcd Admin API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/other_apis.html#getting-the-etcd-version">Getting the etcd version</a>&#8221;.</p>
 <p>The following is a simple example of the usage of this method:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">etcdcli</span><span class="o">.</span><span class="n">getVersion</span> <span class="n">onSuccess</span> <span class="o">{</span>
   <span class="k">case</span> <span class="nc">EtcdGetVersionResponse</span><span class="o">(</span><span class="n">etcdserver</span><span class="o">,</span> <span class="n">etcdcluster</span><span class="o">)</span> <span class="k">=&gt;</span>

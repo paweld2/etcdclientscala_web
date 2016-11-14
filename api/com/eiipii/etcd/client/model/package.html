@@ -1031,7 +1031,7 @@ For example <a href="EtcdGetKeyResponse.html" class="extype" name="com.eiipii.et
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">Index associated to the last operation performed in etcd.</p><div class="fullcomment"><div class="comment cmt"><p>Index associated to the last operation performed in etcd.</p><p>See <a href="https://coreos.com/etcd/docs/latest/api.html#response-headers" target="_blank">Response Headers</a>.
+      <p class="shortcomment cmt">Index associated to the last operation performed in etcd.</p><div class="fullcomment"><div class="comment cmt"><p>Index associated to the last operation performed in etcd.</p><p>See <a href="https://coreos.com/etcd/docs/latest/v2/api.html#response-headers" target="_blank">Response Headers</a>.
 </p></div></div>
     </li><li name="com.eiipii.etcd.client.model.EtcdKV" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="EtcdKVextendsProductwithSerializable"></a>
@@ -1574,7 +1574,7 @@ Put operation result.</p>
       </a>
     </span>
       <p class="shortcomment cmt">Response returned once the wait is accepted.</p><div class="fullcomment"><div class="comment cmt"><p>Response returned once the wait is accepted.</p><p>In the case there has not been any change in etcd since the watch has ben set, etcd returns a HTTP response with an empty body, but with headers confirming the wait has been set.
-See <a href="https://coreos.com/etcd/docs/latest/api.html#waiting-for-a-change" target="_blank">Waiting for a change</a>.
+See <a href="https://coreos.com/etcd/docs/latest/v2/api.html#waiting-for-a-change" target="_blank">Waiting for a change</a>.
 </p></div><dl class="paramcmts block"><dt class="param">headers</dt><dd class="cmt"><p>Headers returned as response to a request of an operation on the key space.</p></dd></dl></div>
     </li><li name="com.eiipii.etcd.client.model.EtcdWaitForKeyResult" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="EtcdWaitForKeyResultextendsAnyRef"></a>
@@ -1701,7 +1701,7 @@ then a IncorrectEtcdRequestFormatException is created
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">See <a href="https://coreos.com/etcd/docs/latest/api.html#response-headers" target="_blank">Response Headers</a>.</p>
+      <p class="shortcomment cmt">See <a href="https://coreos.com/etcd/docs/latest/v2/api.html#response-headers" target="_blank">Response Headers</a>.</p>
     </li><li name="com.eiipii.etcd.client.model.RaftTerm" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="RaftTermextendsAnyValwithProductwithSerializable"></a>
       <a id="RaftTerm:RaftTerm"></a>
@@ -1718,7 +1718,7 @@ then a IncorrectEtcdRequestFormatException is created
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <p class="shortcomment cmt">An integer that will increase whenever an etcd master election happens in the cluster.</p><div class="fullcomment"><div class="comment cmt"><p>An integer that will increase whenever an etcd master election happens in the cluster.</p><p>See <a href="https://coreos.com/etcd/docs/latest/api.html#response-headers" target="_blank">Response Headers</a>.
+      <p class="shortcomment cmt">An integer that will increase whenever an etcd master election happens in the cluster.</p><div class="fullcomment"><div class="comment cmt"><p>An integer that will increase whenever an etcd master election happens in the cluster.</p><p>See <a href="https://coreos.com/etcd/docs/latest/v2/api.html#response-headers" target="_blank">Response Headers</a>.
 </p></div></div>
     </li></ol>
             </div>
@@ -1795,7 +1795,7 @@ then a IncorrectEtcdRequestFormatException is created
       </a>
     </span>
       <p class="shortcomment cmt">Object extending JSON4S DefaultFormats with custom Serializer]]s.</p><div class="fullcomment"><div class="comment cmt"><p>Object extending JSON4S DefaultFormats with custom Serializer]]s.</p><p>All of them are defined in the <a href="" class="extype" name="com.eiipii.etcd.client.model">model</a> package.
-They are the following:</p><ul><li><a href="EtcdValueSerializer$.html" class="extype" name="com.eiipii.etcd.client.model.EtcdValueSerializer">EtcdValueSerializer</a>]],</li><li><span class="extype" name="com.eiipii.etcd.client..modelEtcdKeySerializer]">modelEtcdKeySerializer</span>,</li><li><a href="EtcdClusterIdSerializer$.html" class="extype" name="com.eiipii.etcd.client.model.EtcdClusterIdSerializer">EtcdClusterIdSerializer</a>,</li><li><a href="EtcdIndexSerializer$.html" class="extype" name="com.eiipii.etcd.client.model.EtcdIndexSerializer">EtcdIndexSerializer</a>,</li><li><a href="EtcdTTLSerializer$.html" class="extype" name="com.eiipii.etcd.client.model.EtcdTTLSerializer">EtcdTTLSerializer</a>,</li><li><a href="RaftIndexSerializer$.html" class="extype" name="com.eiipii.etcd.client.model.RaftIndexSerializer">RaftIndexSerializer</a>,</li><li><a href="RaftTermSerializer$.html" class="extype" name="com.eiipii.etcd.client.model.RaftTermSerializer">RaftTermSerializer</a>,</li><li><a href="EtcdMemberStatsSerialized$.html" class="extype" name="com.eiipii.etcd.client.model.EtcdMemberStatsSerialized">EtcdMemberStatsSerialized</a>,</li><li><a href="EtcdErrorMessageSerializer$.html" class="extype" name="com.eiipii.etcd.client.model.EtcdErrorMessageSerializer">EtcdErrorMessageSerializer</a>.</li></ul></div></div>
+They are the following:</p><ul><li><a href="EtcdValueSerializer$.html" class="extype" name="com.eiipii.etcd.client.model.EtcdValueSerializer">EtcdValueSerializer</a>]],</li><li><a href="EtcdKeySerializer$.html" class="extype" name="com.eiipii.etcd.client.model.EtcdKeySerializer">EtcdKeySerializer</a>,</li><li><a href="EtcdClusterIdSerializer$.html" class="extype" name="com.eiipii.etcd.client.model.EtcdClusterIdSerializer">EtcdClusterIdSerializer</a>,</li><li><a href="EtcdIndexSerializer$.html" class="extype" name="com.eiipii.etcd.client.model.EtcdIndexSerializer">EtcdIndexSerializer</a>,</li><li><a href="EtcdTTLSerializer$.html" class="extype" name="com.eiipii.etcd.client.model.EtcdTTLSerializer">EtcdTTLSerializer</a>,</li><li><a href="RaftIndexSerializer$.html" class="extype" name="com.eiipii.etcd.client.model.RaftIndexSerializer">RaftIndexSerializer</a>,</li><li><a href="RaftTermSerializer$.html" class="extype" name="com.eiipii.etcd.client.model.RaftTermSerializer">RaftTermSerializer</a>,</li><li><a href="EtcdMemberStatsSerialized$.html" class="extype" name="com.eiipii.etcd.client.model.EtcdMemberStatsSerialized">EtcdMemberStatsSerialized</a>,</li><li><a href="EtcdErrorMessageSerializer$.html" class="extype" name="com.eiipii.etcd.client.model.EtcdErrorMessageSerializer">EtcdErrorMessageSerializer</a>.</li></ul></div></div>
     </li><li name="com.eiipii.etcd.client.model.EtcdKeySerializer" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="EtcdKeySerializer"></a>
       <a id="EtcdKeySerializer:EtcdKeySerializer"></a>

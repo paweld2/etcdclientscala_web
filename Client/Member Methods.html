@@ -51,14 +51,14 @@
   <div class="section" id="member-methods">
 <span id="id1"></span><h1>Member Methods<a class="headerlink" href="#member-methods" title="Permalink to this headline">¶</a></h1>
 <p>They allow an administrator to configure a cluster, by changing the members of a cluster.
-The implementation for member methods follows the specification given in the <a class="reference external" href="https://coreos.com/etcd/docs/latest/members_api.html">etcd members Api</a>.</p>
+The implementation for member methods follows the specification given in the <a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/members_api.html">etcd members Api</a>.</p>
 <div class="section" id="getmembers">
 <span id="id2"></span><h2>getMembers<a class="headerlink" href="#getmembers" title="Permalink to this headline">¶</a></h2>
 <p>Gets a list of members of an etcd cluster and their details:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">getMembers</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdGetMembersResult</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Members API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/members_api.html#list-members">List members</a>&#8221;.</p>
+<p>Implemented according to etcd Members API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/members_api.html#list-members">List members</a>&#8221;.</p>
 <p><strong>Returns</strong> a Future wrapped around either EtcdGetMembersResponse or EtcdStandardError extending EtcdGetMembersResult.
 .. _addMembers:</p>
 </div>
@@ -68,7 +68,7 @@ The implementation for member methods follows the specification given in the <a 
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">addMember</span><span class="o">(</span><span class="n">peerURLs</span><span class="k">:</span> <span class="kt">EtcdMemberForm</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdAddMemberResult</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Members API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/members_api.html#add-a-member">Add a member</a>&#8221;.</p>
+<p>Implemented according to etcd Members API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/members_api.html#add-a-member">Add a member</a>&#8221;.</p>
 <p>Parameters:</p>
 <blockquote>
 <div><ul class="simple">
@@ -83,7 +83,7 @@ The implementation for member methods follows the specification given in the <a 
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">deleteMember</span><span class="o">(</span><span class="n">peerID</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdDefaultResult</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Members API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/members_api.html#delete-a-member">Delete a member</a>&#8221;.</p>
+<p>Implemented according to etcd Members API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/members_api.html#delete-a-member">Delete a member</a>&#8221;.</p>
 <p>Parameters:</p>
 <blockquote>
 <div><ul class="simple">
@@ -99,7 +99,7 @@ The implementation for member methods follows the specification given in the <a 
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">changePeerURLs</span><span class="o">(</span><span class="n">peerID</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">peerURLs</span><span class="k">:</span> <span class="kt">EtcdMemberForm</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdDefaultResult</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Members API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/members_api.html#change-the-peer-urls-of-a-member">Change the peer urls of a member</a>&#8221;.</p>
+<p>Implemented according to etcd Members API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/members_api.html#change-the-peer-urls-of-a-member">Change the peer urls of a member</a>&#8221;.</p>
 <p>Parameters:</p>
 <blockquote>
 <div><ul class="simple">

@@ -4,7 +4,7 @@
 Key-Value Methods
 =================
 
-The implementation of key-value methods follows the specification given in the `etcd Api <https://coreos.com/etcd/docs/latest/api.html>`_.
+The implementation of key-value methods follows the specification given in the `etcd Api <https://coreos.com/etcd/docs/latest/v2/api.html>`_.
 Their purpose is to set, retrieve, modify or delete keys, values and directories in etcd.
 It is also possible to set a watch (also known as wait) on etcd keys, so as to monitor changes in the server in real time and conditionally set operations depending on the response obtained once a change in the data is registered.
 
@@ -45,10 +45,10 @@ Parameters:
 
 **Returns** a Future wrapped around either EtcdSetKeyResponse or EtcdRequestError extending EtcdSetKeyResult.
 
-Implemented according to etcd Client API: `Setting the value of a key <https://coreos.com/etcd/docs/latest/api.html#setting-the-value-of-a-key>`_.
-See also `Using key TTL <https://coreos.com/etcd/docs/latest/api.html#using-key-ttl>`_,
-`Creating a hidden node <https://coreos.com/etcd/docs/latest/api.html#creating-a-hidden-node>`_
-and `Atomic Compare-and-Swap <https://coreos.com/etcd/docs/latest/api.html#atomic-compare-and-swap>`_.
+Implemented according to etcd Client API: `Setting the value of a key <https://coreos.com/etcd/docs/latest/v2/api.html#setting-the-value-of-a-key>`_.
+See also `Using key TTL <https://coreos.com/etcd/docs/latest/v2/api.html#using-key-ttl>`_,
+`Creating a hidden node <https://coreos.com/etcd/docs/latest/v2/api.html#creating-a-hidden-node>`_
+and `Atomic Compare-and-Swap <https://coreos.com/etcd/docs/latest/v2/api.html#atomic-compare-and-swap>`_.
 
 .. _first setKey example:
 
@@ -213,7 +213,7 @@ Parameters:
 
 **Returns** a Future wrapped around either :ref:`EtcdWaitAccepted  <EtcdWaitForKeyResult>` containing the headers of the response or EtcdRequestError extending EtcdWaitForKeyResult.
 
-Implemented according to etcd Client API: "`Waiting for a change <https://coreos.com/etcd/docs/latest/api.html#waiting-for-a-change>`_".
+Implemented according to etcd Client API: "`Waiting for a change <https://coreos.com/etcd/docs/latest/v2/api.html#waiting-for-a-change>`_".
 
 The following code snippets illustrate a possible use case of this method.
 They are a continuation of the :ref:`first three examples of the EtcdClient.setKey method <first setKey example>`::
@@ -336,7 +336,7 @@ Parameters:
 
 **Returns** a Future wrapped around either an instance of EtcdGetKeyResponse containing the state of the key or an instance of EtcdRequestError extending EtcdSetKeyResult.
 
-Implemented according to etcd Client API: "`Get the value of a key <https://coreos.com/etcd/docs/latest/api.html#get-the-value-of-a-key>`_".
+Implemented according to etcd Client API: "`Get the value of a key <https://coreos.com/etcd/docs/latest/v2/api.html#get-the-value-of-a-key>`_".
 
 .. _EtcdClient.getKey examples:
 
@@ -388,8 +388,8 @@ Parameters:
 
 **Returns** a Future wrapped around either EtcdDeleteKeyResponse or EtcdRequestError extending EtcdDeleteKeyResult.
 
-Implemented according to etcd Client API: "`Deleting a key <https://coreos.com/etcd/docs/latest/api.html#deleting-a-key>`_".
-See also "`Atomic Compare-and-Delete <https://coreos.com/etcd/docs/latest/api.html#atomic-compare-and-delete>`_".
+Implemented according to etcd Client API: "`Deleting a key <https://coreos.com/etcd/docs/latest/v2/api.html#deleting-a-key>`_".
+See also "`Atomic Compare-and-Delete <https://coreos.com/etcd/docs/latest/v2/api.html#atomic-compare-and-delete>`_".
 
 To delete a key, just input the key to be deleted through an instance of :ref:`EtcdKey  <EtcdKey>`.
 Consider the code snippet from the :ref:`EtcdClient.getKey examples  <EtcdClient.getKey examples>`.
@@ -468,8 +468,8 @@ Parameters:
 
 **Returns** a Future wrapped around either EtcdCreateDirResponse or EtcdRequestError extending EtcdCreateDirResult.
 
-Implemented according to etcd Client API: "`Creating Directories <https://coreos.com/etcd/docs/latest/api.html#creating-directories>`_".
-See also "`Using a directory TTL <https://coreos.com/etcd/docs/latest/api.html#using-a-directory-ttl>`_".
+Implemented according to etcd Client API: "`Creating Directories <https://coreos.com/etcd/docs/latest/v2/api.html#creating-directories>`_".
+See also "`Using a directory TTL <https://coreos.com/etcd/docs/latest/v2/api.html#using-a-directory-ttl>`_".
 
 .. _first EtcdClient.createDir example:
 
@@ -533,7 +533,7 @@ Parameters:
 
 **Returns** a Future wrapped around either EtcdCreateDirResponse or EtcdRequestError extending EtcdCreateDirResult.
 
-Implemented according to etcd Client API: "`Deleting a Directory <https://coreos.com/etcd/docs/latest/api.html#deleting-a-directory>`_".
+Implemented according to etcd Client API: "`Deleting a Directory <https://coreos.com/etcd/docs/latest/v2/api.html#deleting-a-directory>`_".
 
 An empty directory can be deleted form etcd by simply specifying :ref:`EtcdDirectory  <EtcdDirectory>` leading to the directory in etcd.
 
@@ -574,8 +574,8 @@ Parameters:
 
 **Returns** a Future wrapped around either EtcdListDirResponse or EtcdRequestError extending EtcdListDirResult.
 
-Implemented according to etcd Client API: "`Listing a directory <https://coreos.com/etcd/docs/latest/api.html#listing-a-directory>`_".
-See also "`Atomically Creating In-Order Keys <https://coreos.com/etcd/docs/latest/api.html#atomically-creating-in-order-keys>`_" for information on the sorted parameter.
+Implemented according to etcd Client API: "`Listing a directory <https://coreos.com/etcd/docs/latest/v2/api.html#listing-a-directory>`_".
+See also "`Atomically Creating In-Order Keys <https://coreos.com/etcd/docs/latest/v2/api.html#atomically-creating-in-order-keys>`_" for information on the sorted parameter.
 
 When the field recursive is set to false (as it is by default), it lists the immediate children of the given node.
 When it is set to true, it also recursively lists subnodes of the directory.
@@ -607,7 +607,7 @@ Parameters:
 
 **Returns** a Future wrapped around either EtcdSetKeyResponse or EtcdRequestError extending EtcdSetKeyResult.
 
-Implemented according to etcd Client API: "`Refreshing key TTL <https://coreos.com/etcd/docs/latest/api.html#refreshing-key-ttl>`_".
+Implemented according to etcd Client API: "`Refreshing key TTL <https://coreos.com/etcd/docs/latest/v2/api.html#refreshing-key-ttl>`_".
 
 When a watch is set, and a key is updated using :ref:`EtcdClient.setKey <EtcdClient.setKey>`, watchers are notified, triggering any operation conditionally set to follow given a particular response.
 This includes updates to its TTL.
@@ -660,7 +660,7 @@ Parameters:
 
 **Returns** a Future wrapped around either EtcdCreateDirResponse or EtcdRequestError extending EtcdCreateDirResult.
 
-Implemented according to etcd Client API: "`Using a directory TTL <https://coreos.com/etcd/docs/latest/api.html#using-a-directory-ttl>`_".
+Implemented according to etcd Client API: "`Using a directory TTL <https://coreos.com/etcd/docs/latest/v2/api.html#using-a-directory-ttl>`_".
 
 Sets a lifespan in seconds for an existing directory.
 Once it expires, the directory is deleted.
@@ -717,7 +717,7 @@ Parameters:
 
 **Returns** a Future wrapped around either EtcdSetKeyResponse or EtcdRequestError extending EtcdSetKeyResult.
 
-Implemented according to etcd Client API: "`Atomically Creating In-Order Keys <https://coreos.com/etcd/docs/latest/api.html#atomically-creating-in-order-keys>`_".
+Implemented according to etcd Client API: "`Atomically Creating In-Order Keys <https://coreos.com/etcd/docs/latest/v2/api.html#atomically-creating-in-order-keys>`_".
 
 etcd keeps a counter for every operation performed.
 The etcd index keeps track of this counter, that is, it is the integer associated to the last opeartion performed in etcd.

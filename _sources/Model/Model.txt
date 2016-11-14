@@ -196,7 +196,7 @@ It is implemented using a callback.
 Therefore, instead of returning **Response** case class whenever the request sent is valid, it returns a **EtcdWaitForKeyAccepted** containing the headers of the response.
 **EtcdWaitForKeyAccepted** also overrides **EtcdWaitForKeyResult**'s accepted method, setting it to true.
 In the case there has not been any change in etcd since the watch has been set, etcd returns a HTTP response with an empty body, but with headers confirming the wait has been set
-(see `Waiting for a change <https://coreos.com/etcd/docs/latest/api.html#waiting-for-a-change>`_).
+(see `Waiting for a change <https://coreos.com/etcd/docs/latest/v2/api.html#waiting-for-a-change>`_).
 
 The callback is implemented using a trait (**EtcdWaitCallback**) and a class extending it (**FutureBasedEtcdWaitCallback**).
 **FutureBasedEtcdWaitCallback** has a method (.future) for returning a Future wrapped around a **EtcdGetKeyResponse** if the request is valid.
@@ -338,7 +338,7 @@ EtcdIndex
 ---------
 Index associated to the last operation performed in etcd.
 
-See "`Response Headers <https://coreos.com/etcd/docs/latest/api.html#response-headers>`_".
+See "`Response Headers <https://coreos.com/etcd/docs/latest/v2/api.html#response-headers>`_".
 
 Parameters:
 
@@ -369,7 +369,7 @@ RaftTerm
 
 An integer that will increase whenever an etcd master election happens in the cluster.
 
-See "`Response Headers <https://coreos.com/etcd/docs/latest/api.html#response-headers>`_".
+See "`Response Headers <https://coreos.com/etcd/docs/latest/v2/api.html#response-headers>`_".
 
 
 Parameters:
@@ -379,7 +379,7 @@ Parameters:
 RaftIndex
 ---------
 
-See "`Response Headers <https://coreos.com/etcd/docs/latest/api.html#response-headers>`_".
+See "`Response Headers <https://coreos.com/etcd/docs/latest/v2/api.html#response-headers>`_".
 
 
 Parameters:
@@ -620,7 +620,7 @@ A hidden node is an :ref:`EtcdKey  <EtcdKey>` which will not be shown when a dir
 It can be set, updated and deleted like any other :ref:`EtcdKey  <EtcdKey>`.
 It is possible to retrieve its value when the :ref:`EtcdClient.getKey  <EtcdClient.getKey>` method is called.
 However it will not be included in the list of keys returned by :ref:`EtcdClient.listDir  <EtcdClient.listDir>`.
-For more information on hidden nodes see "`Creating a hidden node <https://coreos.com/etcd/docs/latest/api.html#creating-a-hidden-node>`_".
+For more information on hidden nodes see "`Creating a hidden node <https://coreos.com/etcd/docs/latest/v2/api.html#creating-a-hidden-node>`_".
 
 The following examples show the outcome of some operations using this method::
 

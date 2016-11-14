@@ -34,7 +34,7 @@ Configuration Methods
 
 The following are methods used by EtcdClient for its configuration.
 
-One of Etcd Client's features is that it allows you to use etcd's `Auth and Security API <https://coreos.com/etcd/docs/latest/auth_api.html>`_.
+One of Etcd Client's features is that it allows you to use etcd's `Auth and Security API <https://coreos.com/etcd/docs/latest/v2/auth_api.html>`_.
 Once authentication is enabled, users must authenticate if they want to access some of the resources etcd has to offer.
 To do so, user the with authorization method.
 
@@ -63,10 +63,11 @@ This must be done with every instance of EtcdClient used, in order to close all 
 EtcdConfiguration
 =================
 
-Configures the EtcdClient with information about an endpoint to which requests will be sent and optional authorization data::
+Configures the EtcdClient with information about an endpoint to which requests will be sent. You can also add optional authorization data and an SslContext::
 
     case class EtcdConfiguration(conn: String,
-                                authorization: Option[EtcdUserAuthenticationData] = None
+                                authorization: Option[EtcdUserAuthenticationData] = None,
+                                optContext: Option[SslContext] = None
                                 )
 
 Parameters:
@@ -74,6 +75,8 @@ Parameters:
 * **conn**: String representing an HTTP endpoint composed of an IP address and a port.
 
 * **authorization**:  Optional :ref:`EtcdUserAuthenticationData <EtcdUserAuthenticationData>` that will be used to get authorization.
+
+* **optContext**: Look for io.netty.handler.ssl.SslContext in the `Netty Javadoc <http://netty.io/4.0/api/index.html>`_.
 
 .. _withAuthorization:
 
@@ -86,13 +89,25 @@ Parameters:
 
 * **auth**: A login and a password used for authorization.
 
+The withTLS method
+----------------------------
+
+Creates a new EtcdClient instance with support for TLS.
+
+See the `V2 Security Model <https://coreos.com/etcd/docs/latest/v2/security.html>`_ documentation in order to learn about the possible use cases of etcd with TLS.
+Make sure to fill in the details for properly configuring the TLS protocol according to your needs.
+
+Parameters:
+
+* **nettySslContext** Look for io.netty.handler.ssl.SslContext in the `Netty Javadoc <http://netty.io/4.0/api/index.html>`_.
+
 
 .. _EtcdDSL:
 
 The EtcdDSL Object
 ==================
 
-Returns an instance of [[eu.pmsoft.etcd.client.EtcdConfiguration EtcdConfiguration]] using the parameter conn as input.
+Returns an instance of :ref:`EtcdConfiguration <EtcdConfiguration>` using the parameter conn as input.
 
 Parameters:
 

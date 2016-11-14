@@ -77,7 +77,7 @@ For now, it suffices to say that there are four types of methods implemented:</p
 <div class="section" id="configuration-methods">
 <h2>Configuration Methods<a class="headerlink" href="#configuration-methods" title="Permalink to this headline">¶</a></h2>
 <p>The following are methods used by EtcdClient for its configuration.</p>
-<p>One of Etcd Client&#8217;s features is that it allows you to use etcd&#8217;s <a class="reference external" href="https://coreos.com/etcd/docs/latest/auth_api.html">Auth and Security API</a>.
+<p>One of Etcd Client&#8217;s features is that it allows you to use etcd&#8217;s <a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/auth_api.html">Auth and Security API</a>.
 Once authentication is enabled, users must authenticate if they want to access some of the resources etcd has to offer.
 To do so, user the with authorization method.</p>
 <p>Also, be aware that each EtcdClient instance must be closed after it is no longer used.
@@ -100,9 +100,10 @@ This must be done with every instance of EtcdClient used, in order to close all 
 </div>
 <div class="section" id="etcdconfiguration">
 <span id="id3"></span><h2>EtcdConfiguration<a class="headerlink" href="#etcdconfiguration" title="Permalink to this headline">¶</a></h2>
-<p>Configures the EtcdClient with information about an endpoint to which requests will be sent and optional authorization data:</p>
+<p>Configures the EtcdClient with information about an endpoint to which requests will be sent. You can also add optional authorization data and an SslContext:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">case</span> <span class="k">class</span> <span class="nc">EtcdConfiguration</span><span class="o">(</span><span class="n">conn</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span>
-                            <span class="n">authorization</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">EtcdUserAuthenticationData</span><span class="o">]</span> <span class="k">=</span> <span class="nc">None</span>
+                            <span class="n">authorization</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">EtcdUserAuthenticationData</span><span class="o">]</span> <span class="k">=</span> <span class="nc">None</span><span class="o">,</span>
+                            <span class="n">optContext</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">SslContext</span><span class="o">]</span> <span class="k">=</span> <span class="nc">None</span>
                             <span class="o">)</span>
 </pre></div>
 </div>
@@ -110,6 +111,7 @@ This must be done with every instance of EtcdClient used, in order to close all 
 <ul class="simple">
 <li><strong>conn</strong>: String representing an HTTP endpoint composed of an IP address and a port.</li>
 <li><strong>authorization</strong>:  Optional <a class="reference internal" href="../Model/Model.html#etcduserauthenticationdata"><span>EtcdUserAuthenticationData</span></a> that will be used to get authorization.</li>
+<li><strong>optContext</strong>: Look for io.netty.handler.ssl.SslContext in the <a class="reference external" href="http://netty.io/4.0/api/index.html">Netty Javadoc</a>.</li>
 </ul>
 <div class="section" id="the-withauthorization-method">
 <span id="id4"></span><h3>The withAuthorization method<a class="headerlink" href="#the-withauthorization-method" title="Permalink to this headline">¶</a></h3>
@@ -119,10 +121,20 @@ This must be done with every instance of EtcdClient used, in order to close all 
 <li><strong>auth</strong>: A login and a password used for authorization.</li>
 </ul>
 </div>
+<div class="section" id="the-withtls-method">
+<h3>The withTLS method<a class="headerlink" href="#the-withtls-method" title="Permalink to this headline">¶</a></h3>
+<p>Creates a new EtcdClient instance with support for TLS.</p>
+<p>See the <a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/security.html">V2 Security Model</a> documentation in order to learn about the possible use cases of etcd with TLS.
+Make sure to fill in the details for properly configuring the TLS protocol according to your needs.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><strong>nettySslContext</strong> Look for io.netty.handler.ssl.SslContext in the <a class="reference external" href="http://netty.io/4.0/api/index.html">Netty Javadoc</a>.</li>
+</ul>
+</div>
 </div>
 <div class="section" id="the-etcddsl-object">
 <span id="etcddsl"></span><h2>The EtcdDSL Object<a class="headerlink" href="#the-etcddsl-object" title="Permalink to this headline">¶</a></h2>
-<p>Returns an instance of [[eu.pmsoft.etcd.client.EtcdConfiguration EtcdConfiguration]] using the parameter conn as input.</p>
+<p>Returns an instance of <a class="reference internal" href="#etcdconfiguration"><span>EtcdConfiguration</span></a> using the parameter conn as input.</p>
 <p>Parameters:</p>
 <ul class="simple">
 <li><strong>conn</strong>: String representing an HTTP endpoint composed of an IP address and a port.</li>

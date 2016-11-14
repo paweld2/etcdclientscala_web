@@ -10,7 +10,8 @@ EtcdClient is an asynchronous etcd client library with key-value methods, suppor
 EtcdClient is built on top of `Scala Futures and Promises <http://docs.scala-lang.org/overviews/core/futures.html>`_,
 `AsyncHttpClient <https://github.com/AsyncHttpClient/async-http-client/>`_, `Netty <http://netty.io/>`_  and `JSON4S <https://github.com/json4s/json4s>`_.
 
-Complete etcd server api information can be found on the `etcd documentation <https://coreos.com/etcd/docs/latest/api.html>`_.
+It is implemented according to version 2 of the Etcd API.
+The complete etcd API information can be found on the `etcd documentation <https://coreos.com/etcd/docs/latest/>`_.
 
 The following is a document explaining how to use EtcdClient, in order to get you started as quickly as possible.
 There is also a `scaladoc <http://etcdscalaclient.eiipii.com/api/#package>`_ with more information about the implementation.

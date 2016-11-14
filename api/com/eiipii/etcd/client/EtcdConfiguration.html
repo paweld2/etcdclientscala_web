@@ -45,7 +45,7 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">EtcdConfiguration</span><span class="params">(<span name="conn">conn: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="authorization">authorization: <span class="extype" name="scala.Option">Option</span>[<a href="model/EtcdUserAuthenticationData.html" class="extype" name="com.eiipii.etcd.client.model.EtcdUserAuthenticationData">EtcdUserAuthenticationData</a>] = <span class="symbol">None</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">EtcdConfiguration</span><span class="params">(<span name="conn">conn: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="authorization">authorization: <span class="extype" name="scala.Option">Option</span>[<a href="model/EtcdUserAuthenticationData.html" class="extype" name="com.eiipii.etcd.client.model.EtcdUserAuthenticationData">EtcdUserAuthenticationData</a>] = <span class="symbol">None</span></span>, <span name="optContext">optContext: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="io.netty.handler.ssl.SslContext">SslContext</span>] = <span class="symbol">None</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
@@ -90,7 +90,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.eiipii.etcd.client.EtcdConfiguration#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(conn:String,authorization:Option[com.eiipii.etcd.client.model.EtcdUserAuthenticationData]):com.eiipii.etcd.client.EtcdConfiguration"></a>
+      <a id="&lt;init&gt;(conn:String,authorization:Option[com.eiipii.etcd.client.model.EtcdUserAuthenticationData],optContext:Option[io.netty.handler.ssl.SslContext]):com.eiipii.etcd.client.EtcdConfiguration"></a>
       <a id="&lt;init&gt;:EtcdConfiguration"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -98,10 +98,10 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">EtcdConfiguration</span><span class="params">(<span name="conn">conn: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="authorization">authorization: <span class="extype" name="scala.Option">Option</span>[<a href="model/EtcdUserAuthenticationData.html" class="extype" name="com.eiipii.etcd.client.model.EtcdUserAuthenticationData">EtcdUserAuthenticationData</a>] = <span class="symbol">None</span></span>)</span>
+        <span class="name">EtcdConfiguration</span><span class="params">(<span name="conn">conn: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="authorization">authorization: <span class="extype" name="scala.Option">Option</span>[<a href="model/EtcdUserAuthenticationData.html" class="extype" name="com.eiipii.etcd.client.model.EtcdUserAuthenticationData">EtcdUserAuthenticationData</a>] = <span class="symbol">None</span></span>, <span name="optContext">optContext: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="io.netty.handler.ssl.SslContext">SslContext</span>] = <span class="symbol">None</span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdConfiguration@&lt;init&gt;(conn:String,authorization:Option[com.eiipii.etcd.client.model.EtcdUserAuthenticationData]):com.eiipii.etcd.client.EtcdConfiguration" title="Permalink" target="_top">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdConfiguration@&lt;init&gt;(conn:String,authorization:Option[com.eiipii.etcd.client.model.EtcdUserAuthenticationData],optContext:Option[io.netty.handler.ssl.SslContext]):com.eiipii.etcd.client.EtcdConfiguration" title="Permalink" target="_top">
         <img src="../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -365,6 +365,23 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdConfiguration#optContext" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="optContext:Option[io.netty.handler.ssl.SslContext]"></a>
+      <a id="optContext:Option[SslContext]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">optContext</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="io.netty.handler.ssl.SslContext">SslContext</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdConfiguration@optContext:Option[io.netty.handler.ssl.SslContext]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
@@ -468,7 +485,25 @@
       </a>
     </span>
       <p class="shortcomment cmt">Adds data for authorization when authentication is enabled.</p><div class="fullcomment"><div class="comment cmt"><p>Adds data for authorization when authentication is enabled.
-</p></div><dl class="paramcmts block"><dt class="param">auth</dt><dd class="cmt"><p>a login and a password used for authorization.</p></dd></dl></div>
+</p></div><dl class="paramcmts block"><dt class="param">auth</dt><dd class="cmt"><p>a login and a password used for authorization.</p></dd><dt>returns</dt><dd class="cmt"><p><a href="" class="extype" name="com.eiipii.etcd.client.EtcdConfiguration">EtcdConfiguration</a></p></dd></dl></div>
+    </li><li name="com.eiipii.etcd.client.EtcdConfiguration#withTLS" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="withTLS(nettySslContext:io.netty.handler.ssl.SslContext):com.eiipii.etcd.client.EtcdConfiguration"></a>
+      <a id="withTLS(SslContext):EtcdConfiguration"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">withTLS</span><span class="params">(<span name="nettySslContext">nettySslContext: <span class="extype" name="io.netty.handler.ssl.SslContext">SslContext</span></span>)</span><span class="result">: <a href="" class="extype" name="com.eiipii.etcd.client.EtcdConfiguration">EtcdConfiguration</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#com.eiipii.etcd.client.EtcdConfiguration@withTLS(nettySslContext:io.netty.handler.ssl.SslContext):com.eiipii.etcd.client.EtcdConfiguration" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Adds an SSL Context necessary for adding the necessary certificates and key to use TLS.</p><div class="fullcomment"><div class="comment cmt"><p>Adds an SSL Context necessary for adding the necessary certificates and key to use TLS.
+</p></div><dl class="paramcmts block"><dt class="param">nettySslContext</dt><dd class="cmt"><p>Look for io.netty.handler.ssl.SslContext in the <a href="http://netty.io/4.0/api/index.html" target="_blank">Netty Javadoc</a>.</p></dd><dt>returns</dt><dd class="cmt"><p><a href="" class="extype" name="com.eiipii.etcd.client.EtcdConfiguration">EtcdConfiguration</a></p></dd></dl></div>
     </li></ol>
             </div>
 

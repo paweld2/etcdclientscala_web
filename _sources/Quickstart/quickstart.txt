@@ -30,7 +30,7 @@ As for a Maven project, add these lines to your ``pom.xml``::
 .. _EtcdClient Setup:
 
 EtcdClient Setup:
-==================
+=================
 
 Let us say that you want to use EtcdClient in your code. First, import the client and the DSL for its configuration::
 
@@ -54,6 +54,9 @@ As for the tests, in addition to the previous imports, you might also need to se
 
 Both – the execution context and the patience configuration – are explained in the documentation for `Scala Futures <http://docs.scala-lang.org/overviews/core/futures.html>`_.
 
+Simple Configuration
+--------------------
+
 In order to configure the client for making requests to etcd, first you have to establish an entrypoint. This could be an IP address::
 
  //For an instance of etcd in your localhost listening to the standard port
@@ -67,7 +70,40 @@ Or it could be a full domain::
 
  val etcdCli = new EtcdClient(EtcdDSL.config(domain))
 
+Configuration wit Basic Authentication
+--------------------------------------
+
 You could also enable other security features. Go to :ref:`Authentication Methods <Authentication Methods>` in order to learn more.
+
+Configuration with TLS
+----------------------
+
+The TLS security protocol is supported in etcd.
+See the `V2 Security Model <https://coreos.com/etcd/docs/latest/v2/security.html>`_ documentation in order to learn about the possible use cases of etcd with TLS.
+The following is an example of a possible configuration with TLS taken from our tests::
+
+ //Input a the certificates' and key's files as an InputStream
+ val clientCert = this.getClass.getResourceAsStream("/ssl/client.crt")
+ val keyFile = this.getClass.getResourceAsStream("/ssl/client_nopass.PKCS8")
+ val caCert = this.getClass.getResourceAsStream("/ssl/dev-ca.crt")
+
+ //Build an SslContext using an SslContextBuilder
+ val sslContext: = SslContextBuilder.forClient()
+ trustManager(caCert)
+ .keyManager(clientCert, keyFile)
+ .build()
+
+ //endpoint of an instance of etcd in the localhost listening to the standard port
+ val endpoint: String = s"https://localhost:4001"
+ //insecure client configured for requests to etcd
+ val etcdCli = new EtcdClient(EtcdDSL.config(endpoint))
+ //new client using loaded certificates and keys
+ val secureCli: EtcdClient = etcdCli.withTLS(sslContext)
+
+This is just an example which works with a certain etcd configuration.
+Since this depends on how etcd is configured, each client setup for TLS will differ.
+Make sure to fill in the details for properly configuring the TLS protocol according to your needs.
+Also, look for io.netty.handler.ssl.SslContext in the `Netty Javadoc <http://netty.io/4.0/api/index.html>`_ and import the packages you need from that library.
 
 .. _A Sample Request:
 

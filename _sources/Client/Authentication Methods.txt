@@ -4,7 +4,7 @@
 Authentication Methods
 ======================
 
-The implementation of authentication methods follows the specification given in the `etcd authentication and security API <https://coreos.com/etcd/docs/latest/auth_api.html>`_.
+The implementation of authentication methods follows the specification given in the `etcd authentication and security API <https://coreos.com/etcd/docs/latest/v2/auth_api.html>`_.
 etcd permits the use of authentication only on authentication and key-value methods.
 
 There are three types of authentication resources in etcd. Users, roles and permissions.
@@ -30,7 +30,7 @@ Checks whether authentication is enabled or disabled::
 
   getAuthenticationStatus: Future[EtcdGetAuthenticationStatusResult]
 
-Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints>`_ ".
 
 **Returns** a Future wrapped around either **EtcdGetAuthenticationStatusResponse** or **EtcdStandardError** extending **EtcdGetAuthenticationStatusResult**.
 
@@ -43,7 +43,7 @@ Enables authentication::
 
   enableAuthentication(): Future[EtcdDefaultResult]
 
-Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints>`_ ".
 
 In order to enable authentication, the root user must be created first using :ref:`addUpdateUser <addUpdateUser>`.
 After authentication only the root user or users with root rights (for example, with the root role) can access and modify permission resources.
@@ -59,7 +59,7 @@ Disables authentication::
 
   disableAuthentication(): Future[EtcdDefaultResult]
 
-Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints>`_ ".
 
 **Returns** a Future wrapped around either **EtcdConfirmationResponse** or **EtcdStandardError** extending **EtcdConfirmationResult**.
 
@@ -72,7 +72,7 @@ Creates an user or updates the details of an existing one::
 
   addUpdateUser(user: EtcdUserRequestForm): Future[EtcdAddUpdateUserResult]
 
-Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints>`_ ".
 
 In order to add a new user, one must fill a :ref:`EtcdUserRequestForm <EtcdUserRequestForm>` and pass it as an argument to this method.
 
@@ -91,7 +91,7 @@ Deletes an existing user::
 
   deleteUser(user: EtcdUserRequestForm): Future[EtcdDefaultResult]
 
-Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints>`_ ".
 
 Parameters:
 
@@ -108,7 +108,7 @@ Gets a list of users and their details::
 
   getUsers(): Future[EtcdGetUsersResult]
 
-Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints>`_ ".
 
 **Returns** a Future wrapped around either **EtcdGetUsersResponse** or **EtcdStandardError** extending **EtcdGetUsersResult**.
 
@@ -121,7 +121,7 @@ Gets the details of a user::
 
   getUserDetails(user: EtcdUserRequestForm): Future[EtcdGetUserDetailsResult]
 
-Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints>`_ ".
 
 In this case, it suffices to provide the user field in the :ref:`EtcdUserRequestForm <EtcdUserRequestForm>`.
 
@@ -140,7 +140,7 @@ Creates a role or updates an existing one::
 
   addUpdateRole(role: EtcdRole): Future[EtcdCreateUpdateRoleResult]
 
-Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints>`_ ".
 
 Parameters:
 
@@ -157,7 +157,7 @@ Deletes a role::
 
   deleteRole(role: EtcdRole): Future[EtcdDefaultResult]
 
-Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints>`_ ".
 
 In this case, it suffices to provide the role field in the :ref:`EtcdRole <EtcdRole>`.
 
@@ -176,7 +176,7 @@ Gets a list of the existing roles and their details::
 
   getRoles(): Future[EtcdGetRolesResult]
 
-Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints>`_ ".
 
 **Returns** a Future wrapped around either **EtcdGetRolesResponse** or **EtcdStandardError** extending **EtcdGetRolesResult**.
 
@@ -189,7 +189,7 @@ Lists the details of a role::
 
   getRoleDetails(role: EtcdRole): Future[EtcdGetRoleDetailsResult]
 
-Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints>`_ ".
+Implemented according to etcd Auth and Security API: "`API endpoints <https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints>`_ ".
 
 In this case, it suffices to provide the role field in the :ref:`EtcdRole <EtcdRole>`.
 

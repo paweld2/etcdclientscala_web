@@ -280,7 +280,7 @@ It is implemented using a callback.
 Therefore, instead of returning <strong>Response</strong> case class whenever the request sent is valid, it returns a <strong>EtcdWaitForKeyAccepted</strong> containing the headers of the response.
 <strong>EtcdWaitForKeyAccepted</strong> also overrides <strong>EtcdWaitForKeyResult</strong>&#8216;s accepted method, setting it to true.
 In the case there has not been any change in etcd since the watch has been set, etcd returns a HTTP response with an empty body, but with headers confirming the wait has been set
-(see <a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#waiting-for-a-change">Waiting for a change</a>).</p>
+(see <a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/api.html#waiting-for-a-change">Waiting for a change</a>).</p>
 <p>The callback is implemented using a trait (<strong>EtcdWaitCallback</strong>) and a class extending it (<strong>FutureBasedEtcdWaitCallback</strong>).
 <strong>FutureBasedEtcdWaitCallback</strong> has a method (.future) for returning a Future wrapped around a <strong>EtcdGetKeyResponse</strong> if the request is valid.
 It also has a method (.isCompleted) which returns a Boolean.
@@ -390,7 +390,7 @@ Finally, the last node should contain &#8216;/&#8217;.</p>
 <div class="section" id="etcdindex">
 <span id="id12"></span><h3>EtcdIndex<a class="headerlink" href="#etcdindex" title="Permalink to this headline">¶</a></h3>
 <p>Index associated to the last operation performed in etcd.</p>
-<p>See &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#response-headers">Response Headers</a>&#8221;.</p>
+<p>See &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/api.html#response-headers">Response Headers</a>&#8221;.</p>
 <p>Parameters:</p>
 <ul class="simple">
 <li><strong>index</strong>: Integer representation of the etcd index.</li>
@@ -415,7 +415,7 @@ Finally, the last node should contain &#8216;/&#8217;.</p>
 <div class="section" id="raftterm">
 <h3>RaftTerm<a class="headerlink" href="#raftterm" title="Permalink to this headline">¶</a></h3>
 <p>An integer that will increase whenever an etcd master election happens in the cluster.</p>
-<p>See &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#response-headers">Response Headers</a>&#8221;.</p>
+<p>See &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/api.html#response-headers">Response Headers</a>&#8221;.</p>
 <p>Parameters:</p>
 <ul class="simple">
 <li><strong>term</strong>: Integer representation of the raft term.</li>
@@ -423,7 +423,7 @@ Finally, the last node should contain &#8216;/&#8217;.</p>
 </div>
 <div class="section" id="raftindex">
 <h3>RaftIndex<a class="headerlink" href="#raftindex" title="Permalink to this headline">¶</a></h3>
-<p>See &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#response-headers">Response Headers</a>&#8221;.</p>
+<p>See &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/api.html#response-headers">Response Headers</a>&#8221;.</p>
 <p>Parameters:</p>
 <ul class="simple">
 <li><strong>rIndex</strong>: Integer representation of the etcd index.</li>
@@ -618,7 +618,7 @@ It creates instances of directories that conform to the description of keys give
 It can be set, updated and deleted like any other <a class="reference internal" href="#etcdkey"><span>EtcdKey</span></a>.
 It is possible to retrieve its value when the <a class="reference internal" href="../Client/Key-Value Methods.html#etcdclient-getkey"><span>EtcdClient.getKey</span></a> method is called.
 However it will not be included in the list of keys returned by <a class="reference internal" href="../Client/Key-Value Methods.html#etcdclient-listdir"><span>EtcdClient.listDir</span></a>.
-For more information on hidden nodes see &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/api.html#creating-a-hidden-node">Creating a hidden node</a>&#8221;.</p>
+For more information on hidden nodes see &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/api.html#creating-a-hidden-node">Creating a hidden node</a>&#8221;.</p>
 <p>The following examples show the outcome of some operations using this method:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="k">val</span> <span class="n">someDirName</span> <span class="k">=</span> <span class="s">&quot;/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj/&quot;</span>
 <span class="k">val</span> <span class="n">someKeyName</span> <span class="k">=</span> <span class="s">&quot;/model/k1/rprpxoyqupvqyxg/iaqzqj/sIbn3vouscjabdtgh/v9elcFp0ySUykKa0yhkj&quot;</span>

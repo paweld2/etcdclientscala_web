@@ -53,7 +53,7 @@
             
   <div class="section" id="authentication-methods">
 <span id="id1"></span><h1>Authentication Methods<a class="headerlink" href="#authentication-methods" title="Permalink to this headline">¶</a></h1>
-<p>The implementation of authentication methods follows the specification given in the <a class="reference external" href="https://coreos.com/etcd/docs/latest/auth_api.html">etcd authentication and security API</a>.
+<p>The implementation of authentication methods follows the specification given in the <a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/auth_api.html">etcd authentication and security API</a>.
 etcd permits the use of authentication only on authentication and key-value methods.</p>
 <p>There are three types of authentication resources in etcd. Users, roles and permissions.</p>
 <ol class="arabic simple">
@@ -72,7 +72,7 @@ Once authentication is enabled, users must get authorization in order to get or 
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">getAuthenticationStatus</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdGetAuthenticationStatusResult</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
+<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
 <p><strong>Returns</strong> a Future wrapped around either <strong>EtcdGetAuthenticationStatusResponse</strong> or <strong>EtcdStandardError</strong> extending <strong>EtcdGetAuthenticationStatusResult</strong>.</p>
 </div>
 <div class="section" id="enableauthentication">
@@ -81,7 +81,7 @@ Once authentication is enabled, users must get authorization in order to get or 
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">enableAuthentication</span><span class="o">()</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdDefaultResult</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
+<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
 <p>In order to enable authentication, the root user must be created first using <a class="reference internal" href="#addupdateuser"><span>addUpdateUser</span></a>.
 After authentication only the root user or users with root rights (for example, with the root role) can access and modify permission resources.</p>
 <p><strong>Returns</strong> a Future wrapped around either <strong>EtcdConfirmationResponse</strong> or <strong>EtcdStandardError</strong> extending <strong>EtcdConfirmationResult</strong>.</p>
@@ -92,7 +92,7 @@ After authentication only the root user or users with root rights (for example, 
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">disableAuthentication</span><span class="o">()</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdDefaultResult</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
+<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
 <p><strong>Returns</strong> a Future wrapped around either <strong>EtcdConfirmationResponse</strong> or <strong>EtcdStandardError</strong> extending <strong>EtcdConfirmationResult</strong>.</p>
 </div>
 <div class="section" id="addupdateuser">
@@ -101,7 +101,7 @@ After authentication only the root user or users with root rights (for example, 
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">addUpdateUser</span><span class="o">(</span><span class="n">user</span><span class="k">:</span> <span class="kt">EtcdUserRequestForm</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdAddUpdateUserResult</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
+<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
 <p>In order to add a new user, one must fill a <a class="reference internal" href="../Model/Model.html#etcduserrequestform"><span>EtcdUserRequestForm</span></a> and pass it as an argument to this method.</p>
 <p>Parameters:</p>
 <blockquote>
@@ -117,7 +117,7 @@ After authentication only the root user or users with root rights (for example, 
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">deleteUser</span><span class="o">(</span><span class="n">user</span><span class="k">:</span> <span class="kt">EtcdUserRequestForm</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdDefaultResult</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
+<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
 <p>Parameters:</p>
 <blockquote>
 <div><ul class="simple">
@@ -132,7 +132,7 @@ After authentication only the root user or users with root rights (for example, 
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">getUsers</span><span class="o">()</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdGetUsersResult</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
+<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
 <p><strong>Returns</strong> a Future wrapped around either <strong>EtcdGetUsersResponse</strong> or <strong>EtcdStandardError</strong> extending <strong>EtcdGetUsersResult</strong>.</p>
 </div>
 <div class="section" id="getuserdetails">
@@ -141,7 +141,7 @@ After authentication only the root user or users with root rights (for example, 
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">getUserDetails</span><span class="o">(</span><span class="n">user</span><span class="k">:</span> <span class="kt">EtcdUserRequestForm</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdGetUserDetailsResult</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
+<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
 <p>In this case, it suffices to provide the user field in the <a class="reference internal" href="../Model/Model.html#etcduserrequestform"><span>EtcdUserRequestForm</span></a>.</p>
 <p>Parameters:</p>
 <blockquote>
@@ -157,7 +157,7 @@ After authentication only the root user or users with root rights (for example, 
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">addUpdateRole</span><span class="o">(</span><span class="n">role</span><span class="k">:</span> <span class="kt">EtcdRole</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdCreateUpdateRoleResult</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
+<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
 <p>Parameters:</p>
 <blockquote>
 <div><ul class="simple">
@@ -172,7 +172,7 @@ After authentication only the root user or users with root rights (for example, 
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">deleteRole</span><span class="o">(</span><span class="n">role</span><span class="k">:</span> <span class="kt">EtcdRole</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdDefaultResult</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
+<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
 <p>In this case, it suffices to provide the role field in the <a class="reference internal" href="../Model/Model.html#etcdrole"><span>EtcdRole</span></a>.</p>
 <p>Parameters:</p>
 <blockquote>
@@ -188,7 +188,7 @@ After authentication only the root user or users with root rights (for example, 
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">getRoles</span><span class="o">()</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdGetRolesResult</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
+<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
 <p><strong>Returns</strong> a Future wrapped around either <strong>EtcdGetRolesResponse</strong> or <strong>EtcdStandardError</strong> extending <strong>EtcdGetRolesResult</strong>.</p>
 </div>
 <div class="section" id="getroledetails">
@@ -197,7 +197,7 @@ After authentication only the root user or users with root rights (for example, 
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">getRoleDetails</span><span class="o">(</span><span class="n">role</span><span class="k">:</span> <span class="kt">EtcdRole</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">EtcdGetRoleDetailsResult</span><span class="o">]</span>
 </pre></div>
 </div>
-<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
+<p>Implemented according to etcd Auth and Security API: &#8220;<a class="reference external" href="https://coreos.com/etcd/docs/latest/v2/auth_api.html#api-endpoints">API endpoints</a> &#8221;.</p>
 <p>In this case, it suffices to provide the role field in the <a class="reference internal" href="../Model/Model.html#etcdrole"><span>EtcdRole</span></a>.</p>
 <p>Parameters:</p>
 <blockquote>
