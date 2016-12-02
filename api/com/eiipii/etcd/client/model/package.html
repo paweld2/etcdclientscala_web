@@ -1621,7 +1621,7 @@ It should be used as input for <a href="../EtcdClient.html#waitForKey(key:com.ei
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="IncorrectEtcdRequestFormatException.html"><span class="name">IncorrectEtcdRequestFormatException</span></a><span class="params">(<span name="handler">handler: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="responseCode">responseCode: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Int">Int</span>]</span>, <span name="responseBody">responseBody: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="clustedIdHeader">clustedIdHeader: <span class="extype" name="scala.Option">Option</span>[<a href="EtcdClusterId.html" class="extype" name="com.eiipii.etcd.client.model.EtcdClusterId">EtcdClusterId</a>]</span>, <span name="headers">headers: <span class="extype" name="scala.Option">Option</span>[<a href="EtcdHeaders.html" class="extype" name="com.eiipii.etcd.client.model.EtcdHeaders">EtcdHeaders</a>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="IncorrectEtcdRequestFormatException.html"><span class="name">IncorrectEtcdRequestFormatException</span></a><span class="params">(<span name="handler">handler: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="responseCode">responseCode: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Int">Int</span>]</span>, <span name="responseBody">responseBody: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="headers">headers: <span class="extype" name="scala.Option">Option</span>[<a href="EtcdHeaders.html" class="extype" name="com.eiipii.etcd.client.model.EtcdHeaders">EtcdHeaders</a>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
       <a href="../../../../../index.html#com.eiipii.etcd.client.model.package@IncorrectEtcdRequestFormatExceptionextendsExceptionwithProductwithSerializable" title="Permalink" target="_top">
@@ -1631,6 +1631,23 @@ It should be used as input for <a href="../EtcdClient.html#waitForKey(key:com.ei
       <p class="shortcomment cmt">If HTTP request information do not match the etcd format,
 then a IncorrectEtcdRequestFormatException is created
 </p>
+    </li><li name="com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="IncorrectSimpleEtcdRequestFormatExceptionextendsExceptionwithProductwithSerializable"></a>
+      <a id="IncorrectSimpleEtcdRequestFormatException:IncorrectSimpleEtcdRequestFormatException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="IncorrectSimpleEtcdRequestFormatException.html"><span class="name">IncorrectSimpleEtcdRequestFormatException</span></a><span class="params">(<span name="handler">handler: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="responseCode">responseCode: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Int">Int</span>]</span>, <span name="responseBody">responseBody: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="clustedIdHeader">clustedIdHeader: <span class="extype" name="scala.Option">Option</span>[<a href="EtcdClusterId.html" class="extype" name="com.eiipii.etcd.client.model.EtcdClusterId">EtcdClusterId</a>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.package@IncorrectSimpleEtcdRequestFormatExceptionextendsExceptionwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A simple version of IncorrectEtcdRequestFormatException when only ClusterId is provided on headers.</p>
     </li><li name="com.eiipii.etcd.client.model.KeyMustExist" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="KeyMustExistextendsCompareAndSwapConditionwithProductwithSerializable"></a>
       <a id="KeyMustExist:KeyMustExist"></a>

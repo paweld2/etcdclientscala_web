@@ -1,9 +1,9 @@
 <!DOCTYPE html >
 <html>
         <head>
-          <title>IncorrectEtcdRequestFormatException - com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException</title>
-          <meta name="description" content="IncorrectEtcdRequestFormatException - com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException" />
-          <meta name="keywords" content="IncorrectEtcdRequestFormatException com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException" />
+          <title>IncorrectSimpleEtcdRequestFormatException - com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException</title>
+          <meta name="description" content="IncorrectSimpleEtcdRequestFormatException - com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException" />
+          <meta name="keywords" content="IncorrectSimpleEtcdRequestFormatException com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
       <link href="../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
@@ -16,7 +16,7 @@
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../../../index.html';
-            var hash = 'com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException';
+            var hash = 'com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException';
             var anchor = window.location.hash;
             var anchor_opt = '';
             if (anchor.length >= 1)
@@ -30,10 +30,10 @@
       <div id="definition">
         <img alt="Class" src="../../../../../lib/class_big.png" />
         <p id="owner"><a href="../../../../package.html" class="extype" name="com">com</a>.<a href="../../../package.html" class="extype" name="com.eiipii">eiipii</a>.<a href="../../package.html" class="extype" name="com.eiipii.etcd">etcd</a>.<a href="../package.html" class="extype" name="com.eiipii.etcd.client">client</a>.<a href="package.html" class="extype" name="com.eiipii.etcd.client.model">model</a></p>
-        <h1>IncorrectEtcdRequestFormatException</h1><h3><span class="morelinks"><div>Related Doc:
+        <h1>IncorrectSimpleEtcdRequestFormatException</h1><h3><span class="morelinks"><div>Related Doc:
             <a href="package.html" class="extype" name="com.eiipii.etcd.client.model">package model</a>
           </div></span></h3><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -45,12 +45,11 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">IncorrectEtcdRequestFormatException</span><span class="params">(<span name="handler">handler: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="responseCode">responseCode: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Int">Int</span>]</span>, <span name="responseBody">responseBody: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="headers">headers: <span class="extype" name="scala.Option">Option</span>[<a href="EtcdHeaders.html" class="extype" name="com.eiipii.etcd.client.model.EtcdHeaders">EtcdHeaders</a>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">IncorrectSimpleEtcdRequestFormatException</span><span class="params">(<span name="handler">handler: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="responseCode">responseCode: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Int">Int</span>]</span>, <span name="responseBody">responseBody: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="clustedIdHeader">clustedIdHeader: <span class="extype" name="scala.Option">Option</span>[<a href="EtcdClusterId.html" class="extype" name="com.eiipii.etcd.client.model.EtcdClusterId">EtcdClusterId</a>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
       
-          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>If HTTP request information do not match the etcd format,
-then a IncorrectEtcdRequestFormatException is created
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A simple version of IncorrectEtcdRequestFormatException when only ClusterId is provided on headers.
 </p></div><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="scala.Serializable">Serializable</span>, <span class="extype" name="scala.Product">Product</span>, <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="java.lang.Exception">Exception</span>, <span class="extype" name="java.lang.Throwable">Throwable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
@@ -71,7 +70,7 @@ then a IncorrectEtcdRequestFormatException is created
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException"><span>IncorrectEtcdRequestFormatException</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="java.lang.Exception"><span>Exception</span></li><li class="in" name="java.lang.Throwable"><span>Throwable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException"><span>IncorrectSimpleEtcdRequestFormatException</span></li><li class="in" name="scala.Serializable"><span>Serializable</span></li><li class="in" name="scala.Product"><span>Product</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="java.lang.Exception"><span>Exception</span></li><li class="in" name="java.lang.Throwable"><span>Throwable</span></li><li class="in" name="java.io.Serializable"><span>Serializable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -90,19 +89,19 @@ then a IncorrectEtcdRequestFormatException is created
         <div id="allMembers">
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
-              <ol><li name="com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(handler:String,responseCode:Option[Int],responseBody:Option[String],headers:Option[com.eiipii.etcd.client.model.EtcdHeaders]):com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException"></a>
-      <a id="&lt;init&gt;:IncorrectEtcdRequestFormatException"></a>
+              <ol><li name="com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="&lt;init&gt;(handler:String,responseCode:Option[Int],responseBody:Option[String],clustedIdHeader:Option[com.eiipii.etcd.client.model.EtcdClusterId]):com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException"></a>
+      <a id="&lt;init&gt;:IncorrectSimpleEtcdRequestFormatException"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">IncorrectEtcdRequestFormatException</span><span class="params">(<span name="handler">handler: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="responseCode">responseCode: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Int">Int</span>]</span>, <span name="responseBody">responseBody: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="headers">headers: <span class="extype" name="scala.Option">Option</span>[<a href="EtcdHeaders.html" class="extype" name="com.eiipii.etcd.client.model.EtcdHeaders">EtcdHeaders</a>]</span>)</span>
+        <span class="name">IncorrectSimpleEtcdRequestFormatException</span><span class="params">(<span name="handler">handler: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="responseCode">responseCode: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Int">Int</span>]</span>, <span name="responseBody">responseBody: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="clustedIdHeader">clustedIdHeader: <span class="extype" name="scala.Option">Option</span>[<a href="EtcdClusterId.html" class="extype" name="com.eiipii.etcd.client.model.EtcdClusterId">EtcdClusterId</a>]</span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@&lt;init&gt;(handler:String,responseCode:Option[Int],responseBody:Option[String],headers:Option[com.eiipii.etcd.client.model.EtcdHeaders]):com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@&lt;init&gt;(handler:String,responseCode:Option[Int],responseBody:Option[String],clustedIdHeader:Option[com.eiipii.etcd.client.model.EtcdClusterId]):com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -128,7 +127,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@!=(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -145,7 +144,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@##():Int" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@##():Int" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -162,7 +161,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@==(x$1:Any):Boolean" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@==(x$1:Any):Boolean" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -179,7 +178,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">addSuppressed</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.lang.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@addSuppressed(x$1:Throwable):Unit" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@addSuppressed(x$1:Throwable):Unit" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -196,7 +195,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@asInstanceOf[T0]:T0" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -213,7 +212,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@clone():Object" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@clone():Object" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -224,19 +223,19 @@ then a IncorrectEtcdRequestFormatException is created
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException#clustedIdHeader" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException#clustedIdHeader" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="clustedIdHeader:Option[com.eiipii.etcd.client.model.EtcdClusterId]"></a>
       <a id="clustedIdHeader:Option[EtcdClusterId]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">lazy val</span>
+        <span class="kind">val</span>
       </span>
       <span class="symbol">
         <span class="name">clustedIdHeader</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="EtcdClusterId.html" class="extype" name="com.eiipii.etcd.client.model.EtcdClusterId">EtcdClusterId</a>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@clustedIdHeader:Option[com.eiipii.etcd.client.model.EtcdClusterId]" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@clustedIdHeader:Option[com.eiipii.etcd.client.model.EtcdClusterId]" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -253,7 +252,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -270,7 +269,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">fillInStackTrace</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Throwable">Throwable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@fillInStackTrace():Throwable" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@fillInStackTrace():Throwable" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -287,7 +286,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@finalize():Unit" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@finalize():Unit" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -310,7 +309,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">getCause</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Throwable">Throwable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@getCause():Throwable" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@getCause():Throwable" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -327,7 +326,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@getClass():Class[_]" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@getClass():Class[_]" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -344,7 +343,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">getLocalizedMessage</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@getLocalizedMessage():String" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@getLocalizedMessage():String" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -361,7 +360,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">getMessage</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@getMessage():String" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@getMessage():String" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -378,7 +377,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">getStackTrace</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="java.lang.StackTraceElement">StackTraceElement</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@getStackTrace():Array[StackTraceElement]" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@getStackTrace():Array[StackTraceElement]" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -395,12 +394,12 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">getSuppressed</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="java.lang.Throwable">Throwable</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@getSuppressed():Array[Throwable]" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@getSuppressed():Array[Throwable]" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Throwable</dd></dl></div>
-    </li><li name="com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException#handler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException#handler" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="handler:String"></a>
       <a id="handler:String"></a>
       <h4 class="signature">
@@ -412,24 +411,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">handler</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@handler:String" title="Permalink" target="_top">
-        <img src="../../../../../lib/permalink.png" alt="Permalink" />
-      </a>
-    </span>
-      
-    </li><li name="com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException#headers" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="headers:Option[com.eiipii.etcd.client.model.EtcdHeaders]"></a>
-      <a id="headers:Option[EtcdHeaders]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">headers</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="EtcdHeaders.html" class="extype" name="com.eiipii.etcd.client.model.EtcdHeaders">EtcdHeaders</a>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@headers:Option[com.eiipii.etcd.client.model.EtcdHeaders]" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@handler:String" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -446,7 +428,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">initCause</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.lang.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="java.lang.Throwable">Throwable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@initCause(x$1:Throwable):Throwable" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@initCause(x$1:Throwable):Throwable" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -463,7 +445,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -480,7 +462,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -497,7 +479,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@notify():Unit" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@notify():Unit" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -514,7 +496,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@notifyAll():Unit" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@notifyAll():Unit" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -531,7 +513,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">printStackTrace</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.io.PrintWriter">PrintWriter</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@printStackTrace(x$1:java.io.PrintWriter):Unit" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@printStackTrace(x$1:java.io.PrintWriter):Unit" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -548,7 +530,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">printStackTrace</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.io.PrintStream">PrintStream</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@printStackTrace(x$1:java.io.PrintStream):Unit" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@printStackTrace(x$1:java.io.PrintStream):Unit" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -565,12 +547,12 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">printStackTrace</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@printStackTrace():Unit" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@printStackTrace():Unit" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Throwable</dd></dl></div>
-    </li><li name="com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException#responseBody" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException#responseBody" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="responseBody:Option[String]"></a>
       <a id="responseBody:Option[String]"></a>
       <h4 class="signature">
@@ -582,12 +564,12 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">responseBody</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@responseBody:Option[String]" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@responseBody:Option[String]" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       
-    </li><li name="com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException#responseCode" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException#responseCode" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="responseCode:Option[Int]"></a>
       <a id="responseCode:Option[Int]"></a>
       <h4 class="signature">
@@ -599,7 +581,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">responseCode</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Int">Int</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@responseCode:Option[Int]" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@responseCode:Option[Int]" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -616,7 +598,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">setStackTrace</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="java.lang.StackTraceElement">StackTraceElement</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@setStackTrace(x$1:Array[StackTraceElement]):Unit" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@setStackTrace(x$1:Array[StackTraceElement]):Unit" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -633,12 +615,12 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
       <h4 class="signature">
@@ -650,11 +632,11 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@toString():String" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@toString():String" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException">IncorrectEtcdRequestFormatException</a> → Throwable → AnyRef → Any</dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException">IncorrectSimpleEtcdRequestFormatException</a> → Throwable → AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -667,7 +649,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@wait():Unit" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@wait():Unit" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -690,7 +672,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>
@@ -713,7 +695,7 @@ then a IncorrectEtcdRequestFormatException is created
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException@wait(x$1:Long):Unit" title="Permalink" target="_top">
+      <a href="../../../../../index.html#com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException@wait(x$1:Long):Unit" title="Permalink" target="_top">
         <img src="../../../../../lib/permalink.png" alt="Permalink" />
       </a>
     </span>

@@ -4,6 +4,41 @@
 Quickstart
 ==========
 
+.. _Creating a New Project form the Giter8 Template:
+
+Creating a New Project form the Giter8 Template
+===============================================
+
+We have created an template project so you can test our etcd client in a convenient manner.
+
+If you want to use this template, firts install `Conscript <http://www.foundweekends.org/conscript/setup.html>`_ following the instructions in their official page.
+Next, install `Giter8 <http://www.foundweekends.org/giter8/Combined+Pages.html#Giter8>`_.
+Once Giter8 has been successfully installed, use the following command to call it::
+
+    g8 https://bitbucket.org/eiipii/scalaetcdhttpclienttemplate.g8
+
+Call the command from the directory in which you wish to place the project.
+
+There are two parameters that you can change in order to make things easier.
+The ``package`` parameter will be used to place your organization's name in the project.
+The ``name`` parameter will name the project.
+This last parameter will also be used to name a couple of sample classes inside the template.
+You will be prompted for the values.
+Hitting enter will yield the default values.
+Also, if you wish to input the values of the variables through the commandline, use the following command::
+
+    g8 https://bitbucket.org/eiipii/scalaetcdhttpclienttemplate.g8 \
+    --name="the name of the project" --package="org.yourorganization"
+
+By introducing a name using separate words you will get a project in which the sample classes have camel cased names, as in ``TheNameOfTheProjectSampleClass``.
+
+One of the classes is a test which returns the version of the etcd API.
+It uses a Docker container, so you will have to have `Docker <https://www.docker.com/>`_ in order to run it.
+Also, you have to keep ports ``4001`` and ``2380`` free in order for the container to run properly.
+
+If you want to build your own project on that template project, you are free to do so.
+Just add and remove the dependencies as you find most convenient.
+
 .. _Adding the library to your project:
 
 Adding the Library to Your Project
@@ -12,20 +47,15 @@ Adding the Library to Your Project
 The first thing you need to do is to add the library to your sbt project.
 Adding the following lines to the ``build.sbt`` file should suffice::
 
- libraryDependencies += "com.eiipii" %% "etcdclient" % "1.0.0"
-
-.. TODO: Add information about sbt resolvers, if needed.
+ libraryDependencies += "com.eiipii" %% "etcdhttpclient" % "0.1.0"
 
 As for a Maven project, add these lines to your ``pom.xml``::
 
- <dependency>
-   <groupId>com.eiipii</groupId>
-   <artifactId>etcdclient</artifactId>
-   <version>1.0.0</version>
- </dependency>
-
-.. TODO: Change these code to the actual versions once the client is in Maven.
-
+  <dependency>
+    <groupId>com.eiipii</groupId>
+    <artifactId>etcdhttpclient_2.11</artifactId>
+    <version>0.1.0</version>
+  </dependency>
 
 .. _EtcdClient Setup:
 
@@ -70,8 +100,8 @@ Or it could be a full domain::
 
  val etcdCli = new EtcdClient(EtcdDSL.config(domain))
 
-Configuration wit Basic Authentication
---------------------------------------
+Configuration with Basic Authentication
+---------------------------------------
 
 You could also enable other security features. Go to :ref:`Authentication Methods <Authentication Methods>` in order to learn more.
 
@@ -161,3 +191,11 @@ Further Information:
 We hope that this section helped you get started.
 For further details, see the rest of this document.
 Also, remember that there is a `scaladoc <http://etcdscalaclient.eiipii.com/api/#package>`_, where you could get more details on the implementation.
+
+If you wish to report a bug, go to our `Open Support Repository <https://github.com/eiipii/openSupportRepo>`_ and create an issue.
+This is a centralized repo for tracking issues over all of our open source projects.
+Also, take a look at the `Open Support Repository in Waffle <https://waffle.io/eiipii/openSupportRepo>`_ for a different interface.
+Don't forget to use the ``etcdhttpclient`` label to help us keep things organized.
+Before adding an issue, please make sure that it is a new one.
+
+You can also take advantage of our `mailing list <https://groups.google.com/forum/#!forum/etcdhttpclient>`_: ``etcdhttpclient@googlegroups.com``.
