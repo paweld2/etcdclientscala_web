@@ -9,12 +9,17 @@ Welcome to EtcdClient's documentation!
 EtcdClient is an asynchronous etcd client library with key-value methods, support for authentication and methods for retrieving statistics and managing members of etcd clusters.
 EtcdClient is built on top of `Scala Futures and Promises <http://docs.scala-lang.org/overviews/core/futures.html>`_,
 `AsyncHttpClient <https://github.com/AsyncHttpClient/async-http-client/>`_, `Netty <http://netty.io/>`_  and `JSON4S <https://github.com/json4s/json4s>`_.
+EtcdClient tests provide 100% `code coverage <http://etcdscalaclient.eiipii.com/scoverage-report/index.html>`_.
 
 It is implemented according to **version 2** of the Etcd API.
 The complete etcd API information can be found on the `etcd documentation <https://coreos.com/etcd/docs/latest/>`_.
 
 The following is a document explaining how to use EtcdClient, in order to get you started as quickly as possible.
 There is also a `scaladoc <http://etcdscalaclient.eiipii.com/api/#package>`_ with more information about the implementation.
+
+
+
+.. TODO: change the link so that it links to the new domain (eiipii) once the documentation is migrated to that domain
 
 Both documents are supposed to complement each other.
 We recommend reading this document first, and referring to the scaladoc for any doubts on implementation that are not covered here.
@@ -23,7 +28,7 @@ However, it is only a matter of searching in the scaladoc for the selected case 
 The implementation is straightforward.
 
 The first part of the document is a quickstart for those who wish to quickly test the client.
-Next, we briefly explain the model used in order to render responses to HTTP requests made to etcd servers.
+Next, we briefly explains the model used in order to render responses to HTTP requests made to etcd servers.
 Then we proceed to list all methods implemented by EtcdClient and examples to illustrate possible use cases.
 We hope that a few examples will suffice to get most users started.
 
