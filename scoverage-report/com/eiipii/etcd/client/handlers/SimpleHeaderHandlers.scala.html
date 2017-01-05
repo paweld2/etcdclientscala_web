@@ -1,0 +1,1488 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          com/eiipii/etcd/client/handlers/SimpleHeaderHandlers.scala.html
+        </title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>package com.eiipii.etcd.client.handlers
+</span>2 <span style=''>
+</span>3 <span style=''>import com.eiipii.etcd.client.model.EtcdJsonFormat._
+</span>4 <span style=''>import com.eiipii.etcd.client.model._
+</span>5 <span style=''>import org.json4s.native.JsonMethods
+</span>6 <span style=''>
+</span>7 <span style=''>import scala.concurrent.Promise
+</span>8 <span style=''>
+</span>9 <span style=''>class EtcdAddMemberAsyncHandler(val promise: Promise[EtcdAddMemberResult]) extends AbstractEtcdHandlerWithSimpleClusterIdHeader[EtcdAddMemberResult] {
+</span>10 <span style=''>
+</span>11 <span style=''>  override def createResponse(status: Int, xEtcdClusterId: EtcdClusterId, json: String): Option[EtcdAddMemberResult] = </span><span style='background: #AEF1AE'>for {
+</span>12 <span style=''></span><span style='background: #AEF1AE'>    body <- JsonMethods.parse(json).extractOpt[EtcdMember]
+</span>13 <span style=''></span><span style='background: #AEF1AE'>  } yield EtcdAddMemberResponse(xEtcdClusterId, body)</span><span style=''>
+</span>14 <span style=''>}
+</span>15 <span style=''>
+</span>16 <span style=''>class EtcdAddUserAsyncHandler(val promise: Promise[EtcdAddUpdateUserResult]) extends AbstractEtcdHandlerWithSimpleClusterIdHeader[EtcdAddUpdateUserResult] {
+</span>17 <span style=''>
+</span>18 <span style=''>  override def createResponse(status: Int, xEtcdClusterId: EtcdClusterId, json: String): Option[EtcdAddUpdateUserResult] = </span><span style='background: #AEF1AE'>for {
+</span>19 <span style=''></span><span style='background: #AEF1AE'>    body <- JsonMethods.parse(json).extractOpt[EtcdAddUpdateUserResponseBody]
+</span>20 <span style=''></span><span style='background: #AEF1AE'>  } yield EtcdAddUpdateUserResponse(xEtcdClusterId, body)</span><span style=''>
+</span>21 <span style=''>
+</span>22 <span style=''>}
+</span>23 <span style=''>
+</span>24 <span style=''>class EtcdCreateRoleAsyncHandler(val promise: Promise[EtcdAddUpdateRoleResult]) extends AbstractEtcdHandlerWithSimpleClusterIdHeader[EtcdAddUpdateRoleResult] {
+</span>25 <span style=''>
+</span>26 <span style=''>  override def createResponse(status: Int, xEtcdClusterId: EtcdClusterId, json: String): Option[EtcdAddUpdateRoleResult] = </span><span style='background: #AEF1AE'>for {
+</span>27 <span style=''></span><span style='background: #AEF1AE'>    body <- JsonMethods.parse(json).extractOpt[EtcdRole]
+</span>28 <span style=''></span><span style='background: #AEF1AE'>  } yield EtcdAddUpdateRoleResponse(xEtcdClusterId, body)</span><span style=''>
+</span>29 <span style=''>}
+</span>30 <span style=''>
+</span>31 <span style=''>class EtcdGetRolesAsyncHandler(val promise: Promise[EtcdGetRolesResult]) extends AbstractEtcdHandlerWithSimpleClusterIdHeader[EtcdGetRolesResult] {
+</span>32 <span style=''>
+</span>33 <span style=''>  override def createResponse(status: Int, xEtcdClusterId: EtcdClusterId, json: String): Option[EtcdGetRolesResult] = </span><span style='background: #AEF1AE'>for {
+</span>34 <span style=''></span><span style='background: #AEF1AE'>    users <- JsonMethods.parse(json).extractOpt[EtcdGetRolesBody]
+</span>35 <span style=''></span><span style='background: #AEF1AE'>  } yield EtcdGetRolesResponse(xEtcdClusterId, users)</span><span style=''>
+</span>36 <span style=''>
+</span>37 <span style=''>}
+</span>38 <span style=''>
+</span>39 <span style=''>class EtcdGetRoleDetailsAsyncHandler(val promise: Promise[EtcdGetRoleDetailsResult]) extends AbstractEtcdHandlerWithSimpleClusterIdHeader[EtcdGetRoleDetailsResult] {
+</span>40 <span style=''>
+</span>41 <span style=''>  override def createResponse(status: Int, xEtcdClusterId: EtcdClusterId, json: String): Option[EtcdGetRoleDetailsResult] = </span><span style='background: #AEF1AE'>for {
+</span>42 <span style=''></span><span style='background: #AEF1AE'>    body <- JsonMethods.parse(json).extractOpt[EtcdRole]
+</span>43 <span style=''></span><span style='background: #AEF1AE'>  } yield EtcdGetRoleDetailsResponse(xEtcdClusterId, body)</span><span style=''>
+</span>44 <span style=''>}
+</span>45 <span style=''>
+</span>46 <span style=''>class EtcdGetMembersAsyncHandler(val promise: Promise[EtcdGetMembersResult]) extends AbstractEtcdHandlerWithSimpleClusterIdHeader[EtcdGetMembersResult] {
+</span>47 <span style=''>
+</span>48 <span style=''>  override def createResponse(status: Int, xEtcdClusterId: EtcdClusterId, json: String): Option[EtcdGetMembersResult] = </span><span style='background: #AEF1AE'>for {
+</span>49 <span style=''></span><span style='background: #AEF1AE'>    body <- JsonMethods.parse(json).extractOpt[EtcdGetMembersBody]
+</span>50 <span style=''></span><span style='background: #AEF1AE'>  } yield EtcdGetMembersResponse(xEtcdClusterId, body)</span><span style=''>
+</span>51 <span style=''>}
+</span>52 <span style=''>
+</span>53 <span style=''>class EtcdGetUserDetailsAsyncHandler(val promise: Promise[EtcdGetUserDetailsResult]) extends AbstractEtcdHandlerWithSimpleClusterIdHeader[EtcdGetUserDetailsResult] {
+</span>54 <span style=''>
+</span>55 <span style=''>  override def createResponse(status: Int, xEtcdClusterId: EtcdClusterId, json: String): Option[EtcdGetUserDetailsResult] = </span><span style='background: #AEF1AE'>for {
+</span>56 <span style=''></span><span style='background: #AEF1AE'>    body <- JsonMethods.parse(json).extractOpt[EtcdUser]
+</span>57 <span style=''></span><span style='background: #AEF1AE'>  } yield EtcdGetUserDetailsResponse(xEtcdClusterId, body)</span><span style=''>
+</span>58 <span style=''>
+</span>59 <span style=''>}
+</span>60 <span style=''>
+</span>61 <span style=''>class EtcdDefaultResponseAsyncHandler(val promise: Promise[EtcdConfirmationResult]) extends AbstractEtcdHandlerWithSimpleClusterIdHeader[EtcdConfirmationResult] {
+</span>62 <span style=''>
+</span>63 <span style=''>  override def createResponse(status: Int, xEtcdClusterId: EtcdClusterId, json: String): Option[EtcdConfirmationResult] =
+</span>64 <span style=''>    </span><span style='background: #AEF1AE'>Some(EtcdConfirmationResponse(xEtcdClusterId))</span><span style=''>
+</span>65 <span style=''>
+</span>66 <span style=''>}
+</span>67 <span style=''>
+</span>68 <span style=''>class EtcdGetAuthenticationStatusAsyncHandler(val promise: Promise[EtcdGetAuthenticationStatusResult]) extends AbstractEtcdHandlerWithSimpleClusterIdHeader[EtcdGetAuthenticationStatusResult] {
+</span>69 <span style=''>
+</span>70 <span style=''>  override def createResponse(status: Int, xEtcdClusterId: EtcdClusterId, json: String): Option[EtcdGetAuthenticationStatusResult] = </span><span style='background: #AEF1AE'>for {
+</span>71 <span style=''></span><span style='background: #AEF1AE'>    body <- JsonMethods.parse(json).extractOpt[EtcdEnableAuthentication]
+</span>72 <span style=''></span><span style='background: #AEF1AE'>  } yield EtcdGetAuthenticationStatusResponse(xEtcdClusterId, body)</span><span style=''>
+</span>73 <span style=''>
+</span>74 <span style=''>}
+</span>75 <span style=''>
+</span>76 <span style=''>class EtcdGetUsersAsyncHandler(val promise: Promise[EtcdGetUsersResult]) extends AbstractEtcdHandlerWithSimpleClusterIdHeader[EtcdGetUsersResult] {
+</span>77 <span style=''>
+</span>78 <span style=''>  override def createResponse(status: Int, xEtcdClusterId: EtcdClusterId, json: String): Option[EtcdGetUsersResult] = </span><span style='background: #AEF1AE'>for {
+</span>79 <span style=''></span><span style='background: #AEF1AE'>    users <- JsonMethods.parse(json).extractOpt[EtcdGetUsersBody]
+</span>80 <span style=''></span><span style='background: #AEF1AE'>  } yield EtcdGetUsersResponse(xEtcdClusterId, users)</span><span style=''>
+</span>81 <span style=''>
+</span>82 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          525
+        </td>
+        <td>
+          504
+          -
+          504
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          528
+        </td>
+        <td>
+          526
+          -
+          526
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.reflect.ManifestFactory.classType
+        </td>
+        <td style="background: #AEF1AE">
+          reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdMember](classOf[com.eiipii.etcd.client.model.EtcdMember])
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          530
+        </td>
+        <td>
+          474
+          -
+          592
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdMember](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdMember](classOf[com.eiipii.etcd.client.model.EtcdMember])).map[com.eiipii.etcd.client.model.EtcdAddMemberResponse](((body: com.eiipii.etcd.client.model.EtcdMember) =&gt; com.eiipii.etcd.client.model.EtcdAddMemberResponse.apply(xEtcdClusterId, body)))
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          524
+        </td>
+        <td>
+          510
+          -
+          514
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          org.json4s.string2JsonInput
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.string2JsonInput(json)
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          527
+        </td>
+        <td>
+          492
+          -
+          515
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)
+        </td>
+      </tr><tr>
+        <td>
+          12
+        </td>
+        <td>
+          526
+        </td>
+        <td>
+          504
+          -
+          504
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+      </tr><tr>
+        <td>
+          13
+        </td>
+        <td>
+          529
+        </td>
+        <td>
+          549
+          -
+          592
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdAddMemberResponse.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdAddMemberResponse.apply(xEtcdClusterId, body)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          532
+        </td>
+        <td>
+          907
+          -
+          907
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          534
+        </td>
+        <td>
+          895
+          -
+          918
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          537
+        </td>
+        <td>
+          877
+          -
+          1018
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdAddUpdateUserResponseBody](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdAddUpdateUserResponseBody](classOf[com.eiipii.etcd.client.model.EtcdAddUpdateUserResponseBody])).map[com.eiipii.etcd.client.model.EtcdAddUpdateUserResponse](((body: com.eiipii.etcd.client.model.EtcdAddUpdateUserResponseBody) =&gt; com.eiipii.etcd.client.model.EtcdAddUpdateUserResponse.apply(xEtcdClusterId, body)))
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          531
+        </td>
+        <td>
+          913
+          -
+          917
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          org.json4s.string2JsonInput
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.string2JsonInput(json)
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          533
+        </td>
+        <td>
+          907
+          -
+          907
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+      </tr><tr>
+        <td>
+          19
+        </td>
+        <td>
+          535
+        </td>
+        <td>
+          929
+          -
+          929
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.reflect.ManifestFactory.classType
+        </td>
+        <td style="background: #AEF1AE">
+          reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdAddUpdateUserResponseBody](classOf[com.eiipii.etcd.client.model.EtcdAddUpdateUserResponseBody])
+        </td>
+      </tr><tr>
+        <td>
+          20
+        </td>
+        <td>
+          536
+        </td>
+        <td>
+          971
+          -
+          1018
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdAddUpdateUserResponse.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdAddUpdateUserResponse.apply(xEtcdClusterId, body)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          541
+        </td>
+        <td>
+          1325
+          -
+          1348
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          540
+        </td>
+        <td>
+          1337
+          -
+          1337
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          539
+        </td>
+        <td>
+          1337
+          -
+          1337
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          542
+        </td>
+        <td>
+          1359
+          -
+          1359
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.reflect.ManifestFactory.classType
+        </td>
+        <td style="background: #AEF1AE">
+          reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdRole](classOf[com.eiipii.etcd.client.model.EtcdRole])
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          544
+        </td>
+        <td>
+          1307
+          -
+          1427
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdRole](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdRole](classOf[com.eiipii.etcd.client.model.EtcdRole])).map[com.eiipii.etcd.client.model.EtcdAddUpdateRoleResponse](((body: com.eiipii.etcd.client.model.EtcdRole) =&gt; com.eiipii.etcd.client.model.EtcdAddUpdateRoleResponse.apply(xEtcdClusterId, body)))
+        </td>
+      </tr><tr>
+        <td>
+          27
+        </td>
+        <td>
+          538
+        </td>
+        <td>
+          1343
+          -
+          1347
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          org.json4s.string2JsonInput
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.string2JsonInput(json)
+        </td>
+      </tr><tr>
+        <td>
+          28
+        </td>
+        <td>
+          543
+        </td>
+        <td>
+          1380
+          -
+          1427
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdAddUpdateRoleResponse.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdAddUpdateRoleResponse.apply(xEtcdClusterId, body)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          549
+        </td>
+        <td>
+          1751
+          -
+          1751
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.reflect.ManifestFactory.classType
+        </td>
+        <td style="background: #AEF1AE">
+          reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdGetRolesBody](classOf[com.eiipii.etcd.client.model.EtcdGetRolesBody])
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          546
+        </td>
+        <td>
+          1729
+          -
+          1729
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          548
+        </td>
+        <td>
+          1717
+          -
+          1740
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          551
+        </td>
+        <td>
+          1698
+          -
+          1823
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdGetRolesBody](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdGetRolesBody](classOf[com.eiipii.etcd.client.model.EtcdGetRolesBody])).map[com.eiipii.etcd.client.model.EtcdGetRolesResponse](((users: com.eiipii.etcd.client.model.EtcdGetRolesBody) =&gt; com.eiipii.etcd.client.model.EtcdGetRolesResponse.apply(xEtcdClusterId, users)))
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          545
+        </td>
+        <td>
+          1735
+          -
+          1739
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          org.json4s.string2JsonInput
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.string2JsonInput(json)
+        </td>
+      </tr><tr>
+        <td>
+          34
+        </td>
+        <td>
+          547
+        </td>
+        <td>
+          1729
+          -
+          1729
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+      </tr><tr>
+        <td>
+          35
+        </td>
+        <td>
+          550
+        </td>
+        <td>
+          1780
+          -
+          1823
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdGetRolesResponse.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdGetRolesResponse.apply(xEtcdClusterId, users)
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          558
+        </td>
+        <td>
+          2119
+          -
+          2240
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdRole](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdRole](classOf[com.eiipii.etcd.client.model.EtcdRole])).map[com.eiipii.etcd.client.model.EtcdGetRoleDetailsResponse](((body: com.eiipii.etcd.client.model.EtcdRole) =&gt; com.eiipii.etcd.client.model.EtcdGetRoleDetailsResponse.apply(xEtcdClusterId, body)))
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          552
+        </td>
+        <td>
+          2155
+          -
+          2159
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          org.json4s.string2JsonInput
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.string2JsonInput(json)
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          555
+        </td>
+        <td>
+          2137
+          -
+          2160
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          554
+        </td>
+        <td>
+          2149
+          -
+          2149
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          553
+        </td>
+        <td>
+          2149
+          -
+          2149
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          556
+        </td>
+        <td>
+          2171
+          -
+          2171
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.reflect.ManifestFactory.classType
+        </td>
+        <td style="background: #AEF1AE">
+          reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdRole](classOf[com.eiipii.etcd.client.model.EtcdRole])
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          557
+        </td>
+        <td>
+          2192
+          -
+          2240
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdGetRoleDetailsResponse.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdGetRoleDetailsResponse.apply(xEtcdClusterId, body)
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          559
+        </td>
+        <td>
+          2555
+          -
+          2559
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          org.json4s.string2JsonInput
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.string2JsonInput(json)
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          561
+        </td>
+        <td>
+          2549
+          -
+          2549
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          563
+        </td>
+        <td>
+          2571
+          -
+          2571
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.reflect.ManifestFactory.classType
+        </td>
+        <td style="background: #AEF1AE">
+          reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdGetMembersBody](classOf[com.eiipii.etcd.client.model.EtcdGetMembersBody])
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          560
+        </td>
+        <td>
+          2549
+          -
+          2549
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          562
+        </td>
+        <td>
+          2537
+          -
+          2560
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          565
+        </td>
+        <td>
+          2519
+          -
+          2646
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdGetMembersBody](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdGetMembersBody](classOf[com.eiipii.etcd.client.model.EtcdGetMembersBody])).map[com.eiipii.etcd.client.model.EtcdGetMembersResponse](((body: com.eiipii.etcd.client.model.EtcdGetMembersBody) =&gt; com.eiipii.etcd.client.model.EtcdGetMembersResponse.apply(xEtcdClusterId, body)))
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          564
+        </td>
+        <td>
+          2602
+          -
+          2646
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdGetMembersResponse.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdGetMembersResponse.apply(xEtcdClusterId, body)
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          568
+        </td>
+        <td>
+          2971
+          -
+          2971
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          567
+        </td>
+        <td>
+          2971
+          -
+          2971
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          570
+        </td>
+        <td>
+          2993
+          -
+          2993
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.reflect.ManifestFactory.classType
+        </td>
+        <td style="background: #AEF1AE">
+          reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdUser](classOf[com.eiipii.etcd.client.model.EtcdUser])
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          572
+        </td>
+        <td>
+          2941
+          -
+          3062
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdUser](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdUser](classOf[com.eiipii.etcd.client.model.EtcdUser])).map[com.eiipii.etcd.client.model.EtcdGetUserDetailsResponse](((body: com.eiipii.etcd.client.model.EtcdUser) =&gt; com.eiipii.etcd.client.model.EtcdGetUserDetailsResponse.apply(xEtcdClusterId, body)))
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          566
+        </td>
+        <td>
+          2977
+          -
+          2981
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          org.json4s.string2JsonInput
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.string2JsonInput(json)
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          569
+        </td>
+        <td>
+          2959
+          -
+          2982
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)
+        </td>
+      </tr><tr>
+        <td>
+          57
+        </td>
+        <td>
+          571
+        </td>
+        <td>
+          3014
+          -
+          3062
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdGetUserDetailsResponse.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdGetUserDetailsResponse.apply(xEtcdClusterId, body)
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          573
+        </td>
+        <td>
+          3362
+          -
+          3402
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdConfirmationResponse.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdConfirmationResponse.apply(xEtcdClusterId)
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          574
+        </td>
+        <td>
+          3357
+          -
+          3403
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[com.eiipii.etcd.client.model.EtcdConfirmationResponse](com.eiipii.etcd.client.model.EtcdConfirmationResponse.apply(xEtcdClusterId))
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          577
+        </td>
+        <td>
+          3765
+          -
+          3765
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          576
+        </td>
+        <td>
+          3765
+          -
+          3765
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          579
+        </td>
+        <td>
+          3787
+          -
+          3787
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.reflect.ManifestFactory.classType
+        </td>
+        <td style="background: #AEF1AE">
+          reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdEnableAuthentication](classOf[com.eiipii.etcd.client.model.EtcdEnableAuthentication])
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          581
+        </td>
+        <td>
+          3735
+          -
+          3881
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdEnableAuthentication](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdEnableAuthentication](classOf[com.eiipii.etcd.client.model.EtcdEnableAuthentication])).map[com.eiipii.etcd.client.model.EtcdGetAuthenticationStatusResponse](((body: com.eiipii.etcd.client.model.EtcdEnableAuthentication) =&gt; com.eiipii.etcd.client.model.EtcdGetAuthenticationStatusResponse.apply(xEtcdClusterId, body)))
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          575
+        </td>
+        <td>
+          3771
+          -
+          3775
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          org.json4s.string2JsonInput
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.string2JsonInput(json)
+        </td>
+      </tr><tr>
+        <td>
+          71
+        </td>
+        <td>
+          578
+        </td>
+        <td>
+          3753
+          -
+          3776
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)
+        </td>
+      </tr><tr>
+        <td>
+          72
+        </td>
+        <td>
+          580
+        </td>
+        <td>
+          3824
+          -
+          3881
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdGetAuthenticationStatusResponse.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdGetAuthenticationStatusResponse.apply(xEtcdClusterId, body)
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          585
+        </td>
+        <td>
+          4172
+          -
+          4195
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          588
+        </td>
+        <td>
+          4153
+          -
+          4278
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdGetUsersBody](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdGetUsersBody](classOf[com.eiipii.etcd.client.model.EtcdGetUsersBody])).map[com.eiipii.etcd.client.model.EtcdGetUsersResponse](((users: com.eiipii.etcd.client.model.EtcdGetUsersBody) =&gt; com.eiipii.etcd.client.model.EtcdGetUsersResponse.apply(xEtcdClusterId, users)))
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          582
+        </td>
+        <td>
+          4190
+          -
+          4194
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          org.json4s.string2JsonInput
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.string2JsonInput(json)
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          584
+        </td>
+        <td>
+          4184
+          -
+          4184
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          586
+        </td>
+        <td>
+          4206
+          -
+          4206
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.reflect.ManifestFactory.classType
+        </td>
+        <td style="background: #AEF1AE">
+          reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdGetUsersBody](classOf[com.eiipii.etcd.client.model.EtcdGetUsersBody])
+        </td>
+      </tr><tr>
+        <td>
+          79
+        </td>
+        <td>
+          583
+        </td>
+        <td>
+          4184
+          -
+          4184
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+      </tr><tr>
+        <td>
+          80
+        </td>
+        <td>
+          587
+        </td>
+        <td>
+          4235
+          -
+          4278
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdGetUsersResponse.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdGetUsersResponse.apply(xEtcdClusterId, users)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

@@ -1,0 +1,295 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          com/eiipii/etcd/client/model/EtcdJsonFormat.scala.html
+        </title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>/*
+</span>2 <span style=''> * Copyright (c) 2016 Paweł Cesar Sanjuan Szklarz.
+</span>3 <span style=''> *
+</span>4 <span style=''> * Licensed under the Apache License, Version 2.0 (the "License");
+</span>5 <span style=''> * you may not use this file except in compliance with the License.
+</span>6 <span style=''> * You may obtain a copy of the License at
+</span>7 <span style=''> *
+</span>8 <span style=''> * http://www.apache.org/licenses/LICENSE-2.0
+</span>9 <span style=''> *
+</span>10 <span style=''> * Unless required by applicable law or agreed to in writing, software
+</span>11 <span style=''> * distributed under the License is distributed on an "AS IS" BASIS,
+</span>12 <span style=''> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+</span>13 <span style=''> * See the License for the specific language governing permissions and
+</span>14 <span style=''> * limitations under the License.
+</span>15 <span style=''> */
+</span>16 <span style=''>
+</span>17 <span style=''>package com.eiipii.etcd.client.model
+</span>18 <span style=''>
+</span>19 <span style=''>import org.json4s.JsonAST._
+</span>20 <span style=''>import org.json4s.{ CustomSerializer, DefaultFormats }
+</span>21 <span style=''>
+</span>22 <span style=''>/**
+</span>23 <span style=''> * Object extending JSON4S DefaultFormats with custom Serializer]]s.
+</span>24 <span style=''> *
+</span>25 <span style=''> * All of them are defined in the [[com.eiipii.etcd.client.model model]] package.
+</span>26 <span style=''> * They are the following:
+</span>27 <span style=''> *
+</span>28 <span style=''> *  - [[com.eiipii.etcd.client.model.EtcdValueSerializer EtcdValueSerializer]]]],
+</span>29 <span style=''> *  - [[com.eiipii.etcd.client.model.EtcdKeySerializer EtcdKeySerializer]],
+</span>30 <span style=''> *  - [[com.eiipii.etcd.client.model.EtcdClusterIdSerializer EtcdClusterIdSerializer]],
+</span>31 <span style=''> *  - [[com.eiipii.etcd.client.model.EtcdIndexSerializer EtcdIndexSerializer]],
+</span>32 <span style=''> *  - [[com.eiipii.etcd.client.model.EtcdTTLSerializer EtcdTTLSerializer]],
+</span>33 <span style=''> *  - [[com.eiipii.etcd.client.model.RaftIndexSerializer RaftIndexSerializer]],
+</span>34 <span style=''> *  - [[com.eiipii.etcd.client.model.RaftTermSerializer RaftTermSerializer]],
+</span>35 <span style=''> *  - [[com.eiipii.etcd.client.model.EtcdMemberStatsSerialized EtcdMemberStatsSerialized]],
+</span>36 <span style=''> *  - [[com.eiipii.etcd.client.model.EtcdErrorMessageSerializer EtcdErrorMessageSerializer]].
+</span>37 <span style=''> *
+</span>38 <span style=''> */
+</span>39 <span style=''>object EtcdJsonFormat {
+</span>40 <span style=''>
+</span>41 <span style=''>  implicit lazy val format = </span><span style='background: #AEF1AE'>DefaultFormats ++ Seq(
+</span>42 <span style=''></span><span style='background: #AEF1AE'>    EtcdValueSerializer,
+</span>43 <span style=''></span><span style='background: #AEF1AE'>    EtcdKeySerializer,
+</span>44 <span style=''></span><span style='background: #AEF1AE'>    EtcdClusterIdSerializer,
+</span>45 <span style=''></span><span style='background: #AEF1AE'>    EtcdIndexSerializer,
+</span>46 <span style=''></span><span style='background: #AEF1AE'>    EtcdTTLSerializer,
+</span>47 <span style=''></span><span style='background: #AEF1AE'>    RaftIndexSerializer,
+</span>48 <span style=''></span><span style='background: #AEF1AE'>    RaftTermSerializer,
+</span>49 <span style=''></span><span style='background: #AEF1AE'>    EtcdMemberStatsSerialized,
+</span>50 <span style=''></span><span style='background: #AEF1AE'>    EtcdErrorMessageSerializer,
+</span>51 <span style=''></span><span style='background: #AEF1AE'>    EtcdListDirNodeSerializer
+</span>52 <span style=''></span><span style='background: #AEF1AE'>  )</span><span style=''>
+</span>53 <span style=''>
+</span>54 <span style=''>}
+</span>55 <span style=''>import org.json4s.JsonDSL._
+</span>56 <span style=''>
+</span>57 <span style=''>case object EtcdListDirNodeSerializer extends CustomSerializer[EtcdListDirNode](
+</span>58 <span style=''>  implicit format => ({
+</span>59 <span style=''>    case rootNode: JValue =>
+</span>60 <span style=''>      (rootNode \ "dir") match {
+</span>61 <span style=''>        case JBool(true) =>
+</span>62 <span style=''>          EtcdListDirectory(
+</span>63 <span style=''>            true,
+</span>64 <span style=''>            (rootNode \ "key").extract[EtcdKey],
+</span>65 <span style=''>            (rootNode \ "nodes").extract[List[EtcdListDirNode]],
+</span>66 <span style=''>            (rootNode \ "modifiedIndex").extract[EtcdIndex],
+</span>67 <span style=''>            (rootNode \ "createdIndex").extract[EtcdIndex]
+</span>68 <span style=''>          )
+</span>69 <span style=''>        case _ => EtcdListValue(
+</span>70 <span style=''>          false,
+</span>71 <span style=''>          (rootNode \ "key").extract[EtcdKey],
+</span>72 <span style=''>          (rootNode \ "value").extract[EtcdValue],
+</span>73 <span style=''>          (rootNode \ "modifiedIndex").extract[EtcdIndex],
+</span>74 <span style=''>          (rootNode \ "createdIndex").extract[EtcdIndex]
+</span>75 <span style=''>        )
+</span>76 <span style=''>      }
+</span>77 <span style=''>  }, {
+</span>78 <span style=''>    case value: EtcdErrorMessage => value match {
+</span>79 <span style=''>      case EtcdError(cause, errorCode, index, message) =>
+</span>80 <span style=''>        ("cause", cause) ~
+</span>81 <span style=''>          ("errorCode", errorCode) ~
+</span>82 <span style=''>          ("index", index) ~
+</span>83 <span style=''>          ("message", message)
+</span>84 <span style=''>      case EtcdSimpleError(message) =>
+</span>85 <span style=''>        ("message", message)
+</span>86 <span style=''>    }
+</span>87 <span style=''>  })
+</span>88 <span style=''>)
+</span>89 <span style=''>
+</span>90 <span style=''>case object EtcdErrorMessageSerializer extends CustomSerializer[EtcdErrorMessage](
+</span>91 <span style=''>  implicit format => ({
+</span>92 <span style=''>    case rootNode: JValue =>
+</span>93 <span style=''>      (rootNode \ "errorCode") match {
+</span>94 <span style=''>        case JInt(errorCode) =>
+</span>95 <span style=''>          EtcdError(
+</span>96 <span style=''>            (rootNode \ "cause").extract[String],
+</span>97 <span style=''>            errorCode.intValue(),
+</span>98 <span style=''>            (rootNode \ "index").extract[Int],
+</span>99 <span style=''>            (rootNode \ "message").extract[String]
+</span>100 <span style=''>
+</span>101 <span style=''>          )
+</span>102 <span style=''>        case _ => EtcdSimpleError((rootNode \ "message").extract[String])
+</span>103 <span style=''>      }
+</span>104 <span style=''>  }, {
+</span>105 <span style=''>    case value: EtcdErrorMessage => value match {
+</span>106 <span style=''>      case EtcdError(cause, errorCode, index, message) =>
+</span>107 <span style=''>        ("cause", cause) ~
+</span>108 <span style=''>          ("errorCode", errorCode) ~
+</span>109 <span style=''>          ("index", index) ~
+</span>110 <span style=''>          ("message", message)
+</span>111 <span style=''>      case EtcdSimpleError(message) =>
+</span>112 <span style=''>        ("message", message)
+</span>113 <span style=''>    }
+</span>114 <span style=''>  })
+</span>115 <span style=''>)
+</span>116 <span style=''>
+</span>117 <span style=''>case object EtcdMemberStatsSerialized extends CustomSerializer[EtcdGetLeaderStatsResponse](
+</span>118 <span style=''>  implicit format => ({
+</span>119 <span style=''>    case rootNode: JValue =>
+</span>120 <span style=''>      val members = (rootNode \ "followers") match {
+</span>121 <span style=''>        case JObject(members) =>
+</span>122 <span style=''>          members.map {
+</span>123 <span style=''>            case (id, json) =>
+</span>124 <span style=''>              val counts = (json \ "counts").extract[EtcdCounts]
+</span>125 <span style=''>              val latency = (json \ "latency").extract[EtcdLatency]
+</span>126 <span style=''>              EtcdMemberStats(
+</span>127 <span style=''>                id,
+</span>128 <span style=''>                counts,
+</span>129 <span style=''>                latency
+</span>130 <span style=''>              )
+</span>131 <span style=''>          }
+</span>132 <span style=''>        case _ => List[EtcdMemberStats]()
+</span>133 <span style=''>      }
+</span>134 <span style=''>      EtcdGetLeaderStatsResponse((rootNode \ "leader").extract[String], members)
+</span>135 <span style=''>  }, {
+</span>136 <span style=''>    case value: EtcdGetLeaderStatsResponse =>
+</span>137 <span style=''>      val followersJ: JObject = (JObject() /: value.followers) {
+</span>138 <span style=''>        case (jsonPart, member) =>
+</span>139 <span style=''>          jsonPart ~ (
+</span>140 <span style=''>            member.memberId,
+</span>141 <span style=''>            ("counts",
+</span>142 <span style=''>              ("fail", member.counts.fail) ~ ("success", member.counts.success)) ~ ("latency",
+</span>143 <span style=''>                ("average", member.latency.average) ~
+</span>144 <span style=''>                ("current", member.latency.current) ~
+</span>145 <span style=''>                ("maximum", member.latency.maximum) ~
+</span>146 <span style=''>                ("minimum", member.latency.minimum) ~
+</span>147 <span style=''>                ("standardDeviation", member.latency.standardDeviation))
+</span>148 <span style=''>          )
+</span>149 <span style=''>      }
+</span>150 <span style=''>      ("leader", value.leader) ~ ("followers", followersJ)
+</span>151 <span style=''>      JObject(List(
+</span>152 <span style=''>        "leader" -> JString(value.leader),
+</span>153 <span style=''>        "followers" -> followersJ
+</span>154 <span style=''>      ))
+</span>155 <span style=''>  })
+</span>156 <span style=''>)
+</span>157 <span style=''>
+</span>158 <span style=''>case object EtcdValueSerializer extends CustomSerializer[EtcdValue](
+</span>159 <span style=''>  format => ({
+</span>160 <span style=''>    case JString(s) => EtcdValue(s)
+</span>161 <span style=''>  }, {
+</span>162 <span style=''>    case value: EtcdValue => JString(value.value)
+</span>163 <span style=''>  })
+</span>164 <span style=''>)
+</span>165 <span style=''>
+</span>166 <span style=''>case object EtcdKeySerializer extends CustomSerializer[EtcdKey](
+</span>167 <span style=''>  format => ({
+</span>168 <span style=''>    case JString(s) => EtcdKey(s)
+</span>169 <span style=''>  }, {
+</span>170 <span style=''>    case key: EtcdKey => JString(key.key)
+</span>171 <span style=''>  })
+</span>172 <span style=''>)
+</span>173 <span style=''>
+</span>174 <span style=''>case object EtcdClusterIdSerializer extends CustomSerializer[EtcdClusterId](
+</span>175 <span style=''>  format => ({
+</span>176 <span style=''>    case JString(s) => EtcdClusterId(s)
+</span>177 <span style=''>  }, {
+</span>178 <span style=''>    case v: EtcdClusterId => JString(v.id)
+</span>179 <span style=''>  })
+</span>180 <span style=''>)
+</span>181 <span style=''>
+</span>182 <span style=''>case object EtcdIndexSerializer extends CustomSerializer[EtcdIndex](
+</span>183 <span style=''>  format => ({
+</span>184 <span style=''>    case JInt(s) => EtcdIndex(s.intValue())
+</span>185 <span style=''>  }, {
+</span>186 <span style=''>    case v: EtcdIndex => JInt(v.index)
+</span>187 <span style=''>  })
+</span>188 <span style=''>)
+</span>189 <span style=''>
+</span>190 <span style=''>case object RaftIndexSerializer extends CustomSerializer[RaftIndex](
+</span>191 <span style=''>  format => ({
+</span>192 <span style=''>    case JInt(s) => RaftIndex(s.intValue())
+</span>193 <span style=''>  }, {
+</span>194 <span style=''>    case v: RaftIndex => JInt(v.rIndex)
+</span>195 <span style=''>  })
+</span>196 <span style=''>)
+</span>197 <span style=''>
+</span>198 <span style=''>case object RaftTermSerializer extends CustomSerializer[RaftTerm](
+</span>199 <span style=''>  format => ({
+</span>200 <span style=''>    case JInt(s) => RaftTerm(s.intValue())
+</span>201 <span style=''>  }, {
+</span>202 <span style=''>    case v: RaftTerm => JInt(v.term)
+</span>203 <span style=''>  })
+</span>204 <span style=''>)
+</span>205 <span style=''>
+</span>206 <span style=''>case object EtcdTTLSerializer extends CustomSerializer[EtcdTTL](
+</span>207 <span style=''>  format => ({
+</span>208 <span style=''>    case JInt(s) => EtcdTTL(s.intValue())
+</span>209 <span style=''>  }, {
+</span>210 <span style=''>    case v: EtcdTTL => JInt(v.ttl)
+</span>211 <span style=''>  })
+</span>212 <span style=''>)
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          590
+        </td>
+        <td>
+          1730
+          -
+          2023
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          org.json4s.Formats.++
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.DefaultFormats.++(collection.this.Seq.apply[org.json4s.CustomSerializer[_ &gt;: com.eiipii.etcd.client.model.EtcdListDirNode with com.eiipii.etcd.client.model.EtcdErrorMessage with com.eiipii.etcd.client.model.EtcdGetLeaderStatsResponse with com.eiipii.etcd.client.model.RaftTerm with com.eiipii.etcd.client.model.RaftIndex with com.eiipii.etcd.client.model.EtcdTTL with com.eiipii.etcd.client.model.EtcdIndex with com.eiipii.etcd.client.model.EtcdClusterId with com.eiipii.etcd.client.model.EtcdKey with com.eiipii.etcd.client.model.EtcdValue] with Product with Serializable](EtcdValueSerializer, EtcdKeySerializer, EtcdClusterIdSerializer, EtcdIndexSerializer, EtcdTTLSerializer, RaftIndexSerializer, RaftTermSerializer, EtcdMemberStatsSerialized, EtcdErrorMessageSerializer, EtcdListDirNodeSerializer))
+        </td>
+      </tr><tr>
+        <td>
+          41
+        </td>
+        <td>
+          589
+        </td>
+        <td>
+          1748
+          -
+          2023
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.generic.GenericCompanion.apply
+        </td>
+        <td style="background: #AEF1AE">
+          collection.this.Seq.apply[org.json4s.CustomSerializer[_ &gt;: com.eiipii.etcd.client.model.EtcdListDirNode with com.eiipii.etcd.client.model.EtcdErrorMessage with com.eiipii.etcd.client.model.EtcdGetLeaderStatsResponse with com.eiipii.etcd.client.model.RaftTerm with com.eiipii.etcd.client.model.RaftIndex with com.eiipii.etcd.client.model.EtcdTTL with com.eiipii.etcd.client.model.EtcdIndex with com.eiipii.etcd.client.model.EtcdClusterId with com.eiipii.etcd.client.model.EtcdKey with com.eiipii.etcd.client.model.EtcdValue] with Product with Serializable](EtcdValueSerializer, EtcdKeySerializer, EtcdClusterIdSerializer, EtcdIndexSerializer, EtcdTTLSerializer, RaftIndexSerializer, RaftTermSerializer, EtcdMemberStatsSerialized, EtcdErrorMessageSerializer, EtcdListDirNodeSerializer)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

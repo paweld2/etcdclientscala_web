@@ -1,0 +1,2784 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          com/eiipii/etcd/client/handlers/AbstractEtcdHandler.scala.html
+        </title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>/*
+</span>2 <span style=''> * Copyright (c) 2016 Paweł Cesar Sanjuan Szklarz.
+</span>3 <span style=''> *
+</span>4 <span style=''> * Licensed under the Apache License, Version 2.0 (the "License");
+</span>5 <span style=''> * you may not use this file except in compliance with the License.
+</span>6 <span style=''> * You may obtain a copy of the License at
+</span>7 <span style=''> *
+</span>8 <span style=''> * http://www.apache.org/licenses/LICENSE-2.0
+</span>9 <span style=''> *
+</span>10 <span style=''> * Unless required by applicable law or agreed to in writing, software
+</span>11 <span style=''> * distributed under the License is distributed on an "AS IS" BASIS,
+</span>12 <span style=''> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+</span>13 <span style=''> * See the License for the specific language governing permissions and
+</span>14 <span style=''> * limitations under the License.
+</span>15 <span style=''> */
+</span>16 <span style=''>
+</span>17 <span style=''>package com.eiipii.etcd.client.handlers
+</span>18 <span style=''>
+</span>19 <span style=''>import java.io.ByteArrayOutputStream
+</span>20 <span style=''>
+</span>21 <span style=''>import com.eiipii.etcd.client.model.EtcdJsonFormat._
+</span>22 <span style=''>import com.eiipii.etcd.client.model._
+</span>23 <span style=''>import org.asynchttpclient.AsyncHandler.State
+</span>24 <span style=''>import org.asynchttpclient._
+</span>25 <span style=''>import org.json4s.native.JsonMethods
+</span>26 <span style=''>import org.slf4j.{ Logger, LoggerFactory }
+</span>27 <span style=''>
+</span>28 <span style=''>import scala.concurrent.Promise
+</span>29 <span style=''>
+</span>30 <span style=''>abstract class AbstractEtcdHandler[T] extends AsyncHandler[Unit] {
+</span>31 <span style=''>
+</span>32 <span style=''>  protected[this] var statusCodeOp: Option[Int] = </span><span style='background: #AEF1AE'>None</span><span style=''>
+</span>33 <span style=''>  protected[this] val bytes: ByteArrayOutputStream = </span><span style='background: #AEF1AE'>new ByteArrayOutputStream()</span><span style=''>
+</span>34 <span style=''>
+</span>35 <span style=''>  def promise: Promise[T]
+</span>36 <span style=''>
+</span>37 <span style=''>  private lazy val logger: Logger = </span><span style='background: #AEF1AE'>LoggerFactory.getLogger(this.getClass)</span><span style=''>
+</span>38 <span style=''>
+</span>39 <span style=''>  def handlerName: String = </span><span style='background: #AEF1AE'>this.getClass.getSimpleName</span><span style=''>
+</span>40 <span style=''>
+</span>41 <span style=''>  override def onCompleted(): Unit = {
+</span>42 <span style=''>    val result: Option[T] = </span><span style='background: #AEF1AE'>statusCodeOp</span><span style=''> match {
+</span>43 <span style=''>      case Some(ok) if </span><span style='background: #AEF1AE'>ok < 300</span><span style=''> => </span><span style='background: #AEF1AE'>buildResponse()</span><span style=''>
+</span>44 <span style=''>      case Some(error) => </span><span style='background: #AEF1AE'>buildError()</span><span style=''>
+</span>45 <span style=''>      case None => </span><span style='background: #AEF1AE'>None</span><span style=''> //will result on a exception
+</span>46 <span style=''>    }
+</span>47 <span style=''>    result match {
+</span>48 <span style=''>      case Some(res) => </span><span style='background: #AEF1AE'>promise.success(res)</span><span style=''>
+</span>49 <span style=''>      case None => </span><span style='background: #AEF1AE'>failPromise()</span><span style=''>
+</span>50 <span style=''>    }
+</span>51 <span style=''>  }
+</span>52 <span style=''>
+</span>53 <span style=''>  override def onThrowable(t: Throwable): Unit = {
+</span>54 <span style=''>    </span><span style='background: #AEF1AE'>promise.failure(t)</span><span style=''>
+</span>55 <span style=''>    </span><span style='background: #AEF1AE'>logger.debug(t.getMessage(), t)</span><span style=''>
+</span>56 <span style=''>  }
+</span>57 <span style=''>
+</span>58 <span style=''>  override def onBodyPartReceived(bodyPart: HttpResponseBodyPart): State = {
+</span>59 <span style=''>    </span><span style='background: #AEF1AE'>bytes.write(bodyPart.getBodyPartBytes())</span><span style=''>
+</span>60 <span style=''>    </span><span style='background: #AEF1AE'>State.CONTINUE</span><span style=''>
+</span>61 <span style=''>  }
+</span>62 <span style=''>
+</span>63 <span style=''>  override def onStatusReceived(responseStatus: HttpResponseStatus): State = {
+</span>64 <span style=''>    val code: Int = </span><span style='background: #AEF1AE'>responseStatus.getStatusCode</span><span style=''>
+</span>65 <span style=''>    </span><span style='background: #AEF1AE'>statusCodeOp = Some(code)</span><span style=''>
+</span>66 <span style=''>    </span><span style='background: #AEF1AE'>State.CONTINUE</span><span style=''>
+</span>67 <span style=''>  }
+</span>68 <span style=''>
+</span>69 <span style=''>  protected def buildResponse(): Option[T]
+</span>70 <span style=''>
+</span>71 <span style=''>  def failPromise(): Unit
+</span>72 <span style=''>
+</span>73 <span style=''>  def buildError(): Option[T]
+</span>74 <span style=''>
+</span>75 <span style=''>}
+</span>76 <span style=''>
+</span>77 <span style=''>abstract class AbstractEtcdHandlerWithoutHeader[T >: EtcdStandardError] extends AbstractEtcdHandler[T] {
+</span>78 <span style=''>
+</span>79 <span style=''>  def createResponse(status: Int, json: String): Option[T]
+</span>80 <span style=''>
+</span>81 <span style=''>  override def failPromise(): Unit = </span><span style='background: #AEF1AE'>promise.failure(
+</span>82 <span style=''></span><span style='background: #AEF1AE'>    IncorrectEtcdRequestFormatException(
+</span>83 <span style=''></span><span style='background: #AEF1AE'>      handlerName,
+</span>84 <span style=''></span><span style='background: #AEF1AE'>      statusCodeOp,
+</span>85 <span style=''></span><span style='background: #AEF1AE'>      Some(bytes.toString("UTF-8")),
+</span>86 <span style=''></span><span style='background: #AEF1AE'>      None
+</span>87 <span style=''></span><span style='background: #AEF1AE'>    )
+</span>88 <span style=''></span><span style='background: #AEF1AE'>  )</span><span style=''>
+</span>89 <span style=''>
+</span>90 <span style=''>  override def onHeadersReceived(headers: HttpResponseHeaders): State = {
+</span>91 <span style=''>    </span><span style='background: #AEF1AE'>State.CONTINUE</span><span style=''>
+</span>92 <span style=''>  }
+</span>93 <span style=''>
+</span>94 <span style=''>  def buildResponse(): Option[T] = </span><span style='background: #AEF1AE'>for {
+</span>95 <span style=''></span><span style='background: #AEF1AE'>    status <- statusCodeOp
+</span>96 <span style=''></span><span style='background: #AEF1AE'>    t <- createResponse(status, bytes.toString("UTF-8"))
+</span>97 <span style=''></span><span style='background: #AEF1AE'>  } yield t</span><span style=''>
+</span>98 <span style=''>
+</span>99 <span style=''>  override def buildError(): Option[T] = </span><span style='background: #AEF1AE'>buildStandardError()</span><span style=''>
+</span>100 <span style=''>
+</span>101 <span style=''>  protected def buildStandardError(): Option[EtcdStandardError] = </span><span style='background: #AEF1AE'>for {
+</span>102 <span style=''></span><span style='background: #AEF1AE'>    status <- statusCodeOp if status >= 400
+</span>103 <span style=''></span><span style='background: #AEF1AE'>    body <- JsonMethods.parse(bytes.toString("UTF-8")).extractOpt[EtcdErrorMessage]
+</span>104 <span style=''></span><span style='background: #AEF1AE'>  } yield EtcdStandardError(EtcdResponseCode(status), None, body)</span><span style=''>
+</span>105 <span style=''>
+</span>106 <span style=''>}
+</span>107 <span style=''>
+</span>108 <span style=''>abstract class AbstractEtcdHandlerWithSimpleClusterIdHeader[T >: EtcdStandardError] extends AbstractEtcdHandler[T] {
+</span>109 <span style=''>
+</span>110 <span style=''>  def createResponse(status: Int, xEtcdClusterId: EtcdClusterId, json: String): Option[T]
+</span>111 <span style=''>
+</span>112 <span style=''>  override def failPromise(): Unit = </span><span style='background: #AEF1AE'>promise.failure(
+</span>113 <span style=''></span><span style='background: #AEF1AE'>    IncorrectSimpleEtcdRequestFormatException(
+</span>114 <span style=''></span><span style='background: #AEF1AE'>      handlerName,
+</span>115 <span style=''></span><span style='background: #AEF1AE'>      statusCodeOp,
+</span>116 <span style=''></span><span style='background: #AEF1AE'>      Some(bytes.toString("UTF-8")),
+</span>117 <span style=''></span><span style='background: #AEF1AE'>      xEtcdClusterIdOp
+</span>118 <span style=''></span><span style='background: #AEF1AE'>    )
+</span>119 <span style=''></span><span style='background: #AEF1AE'>  )</span><span style=''>
+</span>120 <span style=''>
+</span>121 <span style=''>  private[this] var xEtcdClusterIdOp: Option[EtcdClusterId] = </span><span style='background: #AEF1AE'>None</span><span style=''>
+</span>122 <span style=''>
+</span>123 <span style=''>  override def onHeadersReceived(headers: HttpResponseHeaders): State = {
+</span>124 <span style=''>    xEtcdClusterIdOp = </span><span style='background: #AEF1AE'>Option(headers.getHeaders.get("X-Etcd-Cluster-Id")).map(EtcdClusterId)</span><span style=''>
+</span>125 <span style=''>    </span><span style='background: #AEF1AE'>State.CONTINUE</span><span style=''>
+</span>126 <span style=''>  }
+</span>127 <span style=''>
+</span>128 <span style=''>  def buildResponse(): Option[T] = </span><span style='background: #AEF1AE'>for {
+</span>129 <span style=''></span><span style='background: #AEF1AE'>    status <- statusCodeOp
+</span>130 <span style=''></span><span style='background: #AEF1AE'>    xEtcdClusterId <- xEtcdClusterIdOp
+</span>131 <span style=''></span><span style='background: #AEF1AE'>    t <- createResponse(status, xEtcdClusterId, bytes.toString("UTF-8"))
+</span>132 <span style=''></span><span style='background: #AEF1AE'>  } yield t</span><span style=''>
+</span>133 <span style=''>
+</span>134 <span style=''>  override final def buildError(): Option[T] = </span><span style='background: #AEF1AE'>buildStandardError()</span><span style=''>
+</span>135 <span style=''>
+</span>136 <span style=''>  protected def buildStandardError(): Option[EtcdStandardError] = </span><span style='background: #AEF1AE'>for {
+</span>137 <span style=''></span><span style='background: #AEF1AE'>    status <- statusCodeOp if status >= 400
+</span>138 <span style=''></span><span style='background: #AEF1AE'>    body <- JsonMethods.parse(bytes.toString("UTF-8")).extractOpt[EtcdErrorMessage]
+</span>139 <span style=''></span><span style='background: #AEF1AE'>  } yield EtcdStandardError(EtcdResponseCode(status), xEtcdClusterIdOp, body)</span><span style=''>
+</span>140 <span style=''>
+</span>141 <span style=''>}
+</span>142 <span style=''>
+</span>143 <span style=''>abstract class AbstractEtcdHandlerWithCompleteEtcdHeader[T >: EtcdRequestError] extends AbstractEtcdHandler[T] {
+</span>144 <span style=''>
+</span>145 <span style=''>  def createResponse(status: Int, header: EtcdHeaders, json: String): Option[T]
+</span>146 <span style=''>
+</span>147 <span style=''>  override def failPromise(): Unit = </span><span style='background: #AEF1AE'>promise.failure(
+</span>148 <span style=''></span><span style='background: #AEF1AE'>    IncorrectEtcdRequestFormatException(
+</span>149 <span style=''></span><span style='background: #AEF1AE'>      handlerName,
+</span>150 <span style=''></span><span style='background: #AEF1AE'>      statusCodeOp,
+</span>151 <span style=''></span><span style='background: #AEF1AE'>      Some(bytes.toString("UTF-8")),
+</span>152 <span style=''></span><span style='background: #AEF1AE'>      headsOp
+</span>153 <span style=''></span><span style='background: #AEF1AE'>    )
+</span>154 <span style=''></span><span style='background: #AEF1AE'>  )</span><span style=''>
+</span>155 <span style=''>
+</span>156 <span style=''>  protected var headsOp: Option[EtcdHeaders] = </span><span style='background: #AEF1AE'>None</span><span style=''>
+</span>157 <span style=''>
+</span>158 <span style=''>  override def onHeadersReceived(headers: HttpResponseHeaders): State = {
+</span>159 <span style=''>    </span><span style='background: #AEF1AE'>headsOp = for {
+</span>160 <span style=''></span><span style='background: #AEF1AE'>      clusterId <- Option(headers.getHeaders.get("X-Etcd-Cluster-Id")).map(EtcdClusterId)
+</span>161 <span style=''></span><span style='background: #AEF1AE'>      etcdIndex <- Option(headers.getHeaders.get("X-Etcd-Index")).map(_.toInt).map(EtcdIndex)
+</span>162 <span style=''></span><span style='background: #AEF1AE'>      raftIndex <- Option(headers.getHeaders.get("X-Raft-Index")).map(_.toInt).map(RaftIndex)
+</span>163 <span style=''></span><span style='background: #AEF1AE'>      raftTerm <- Option(headers.getHeaders.get("X-Raft-Term")).map(_.toInt).map(RaftTerm)
+</span>164 <span style=''></span><span style='background: #AEF1AE'>    } yield EtcdHeaders(clusterId, etcdIndex, raftIndex, raftTerm)</span><span style=''>
+</span>165 <span style=''>    </span><span style='background: #AEF1AE'>State.CONTINUE</span><span style=''>
+</span>166 <span style=''>  }
+</span>167 <span style=''>
+</span>168 <span style=''>  def buildResponse(): Option[T] = </span><span style='background: #AEF1AE'>for {
+</span>169 <span style=''></span><span style='background: #AEF1AE'>    status <- statusCodeOp
+</span>170 <span style=''></span><span style='background: #AEF1AE'>    header <- headsOp
+</span>171 <span style=''></span><span style='background: #AEF1AE'>    t <- createResponse(status, header, bytes.toString("UTF-8"))
+</span>172 <span style=''></span><span style='background: #AEF1AE'>  } yield t</span><span style=''>
+</span>173 <span style=''>
+</span>174 <span style=''>  override final def buildError(): Option[T] = </span><span style='background: #AEF1AE'>buildErrorResult()</span><span style=''>
+</span>175 <span style=''>
+</span>176 <span style=''>  def buildErrorResult(): Option[EtcdRequestError] = </span><span style='background: #AEF1AE'>for {
+</span>177 <span style=''></span><span style='background: #AEF1AE'>    status <- statusCodeOp if status >= 400
+</span>178 <span style=''></span><span style='background: #AEF1AE'>    body <- JsonMethods.parse(bytes.toString("UTF-8")).extractOpt[EtcdErrorMessage]
+</span>179 <span style=''></span><span style='background: #AEF1AE'>  } yield EtcdRequestError(EtcdResponseCode(status), headsOp, body)</span><span style=''>
+</span>180 <span style=''>
+</span>181 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          282
+        </td>
+        <td>
+          1090
+          -
+          1094
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #AEF1AE">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          33
+        </td>
+        <td>
+          283
+        </td>
+        <td>
+          1148
+          -
+          1175
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.io.ByteArrayOutputStream.&lt;init&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          new java.io.ByteArrayOutputStream()
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          285
+        </td>
+        <td>
+          1240
+          -
+          1278
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          org.slf4j.LoggerFactory.getLogger
+        </td>
+        <td style="background: #AEF1AE">
+          org.slf4j.LoggerFactory.getLogger(this.getClass())
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          284
+        </td>
+        <td>
+          1264
+          -
+          1277
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.getClass
+        </td>
+        <td style="background: #AEF1AE">
+          this.getClass()
+        </td>
+      </tr><tr>
+        <td>
+          39
+        </td>
+        <td>
+          286
+        </td>
+        <td>
+          1308
+          -
+          1335
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Class.getSimpleName
+        </td>
+        <td style="background: #AEF1AE">
+          this.getClass().getSimpleName()
+        </td>
+      </tr><tr>
+        <td>
+          42
+        </td>
+        <td>
+          287
+        </td>
+        <td>
+          1404
+          -
+          1416
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandler.statusCodeOp
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandler.this.statusCodeOp
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          289
+        </td>
+        <td>
+          1460
+          -
+          1475
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandler.buildResponse
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandler.this.buildResponse()
+        </td>
+      </tr><tr>
+        <td>
+          43
+        </td>
+        <td>
+          288
+        </td>
+        <td>
+          1448
+          -
+          1456
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.&lt;
+        </td>
+        <td style="background: #AEF1AE">
+          ok.&lt;(300)
+        </td>
+      </tr><tr>
+        <td>
+          44
+        </td>
+        <td>
+          290
+        </td>
+        <td>
+          1502
+          -
+          1514
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandler.buildError
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandler.this.buildError()
+        </td>
+      </tr><tr>
+        <td>
+          45
+        </td>
+        <td>
+          291
+        </td>
+        <td>
+          1534
+          -
+          1538
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #AEF1AE">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          292
+        </td>
+        <td>
+          1617
+          -
+          1637
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.concurrent.Promise.success
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandler.this.promise.success(res)
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          293
+        </td>
+        <td>
+          1632
+          -
+          1632
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          49
+        </td>
+        <td>
+          294
+        </td>
+        <td>
+          1657
+          -
+          1670
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandler.failPromise
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandler.this.failPromise()
+        </td>
+      </tr><tr>
+        <td>
+          54
+        </td>
+        <td>
+          295
+        </td>
+        <td>
+          1737
+          -
+          1755
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.concurrent.Promise.failure
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandler.this.promise.failure(t)
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          297
+        </td>
+        <td>
+          1760
+          -
+          1791
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          org.slf4j.Logger.debug
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandler.this.logger.debug(t.getMessage(), t)
+        </td>
+      </tr><tr>
+        <td>
+          55
+        </td>
+        <td>
+          296
+        </td>
+        <td>
+          1773
+          -
+          1787
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Throwable.getMessage
+        </td>
+        <td style="background: #AEF1AE">
+          t.getMessage()
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          298
+        </td>
+        <td>
+          1890
+          -
+          1917
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          org.asynchttpclient.HttpResponseBodyPart.getBodyPartBytes
+        </td>
+        <td style="background: #AEF1AE">
+          bodyPart.getBodyPartBytes()
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          299
+        </td>
+        <td>
+          1878
+          -
+          1918
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.io.OutputStream.write
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandler.this.bytes.write(bodyPart.getBodyPartBytes())
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          300
+        </td>
+        <td>
+          1923
+          -
+          1937
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          CONTINUE
+        </td>
+      </tr><tr>
+        <td>
+          64
+        </td>
+        <td>
+          301
+        </td>
+        <td>
+          2042
+          -
+          2070
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          org.asynchttpclient.HttpResponseStatus.getStatusCode
+        </td>
+        <td style="background: #AEF1AE">
+          responseStatus.getStatusCode()
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          303
+        </td>
+        <td>
+          2075
+          -
+          2100
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandler.statusCodeOp_=
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandler.this.statusCodeOp_=(scala.Some.apply[Int](code))
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          302
+        </td>
+        <td>
+          2090
+          -
+          2100
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[Int](code)
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          304
+        </td>
+        <td>
+          2105
+          -
+          2119
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          CONTINUE
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          312
+        </td>
+        <td>
+          2448
+          -
+          2448
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          81
+        </td>
+        <td>
+          311
+        </td>
+        <td>
+          2433
+          -
+          2587
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.concurrent.Promise.failure
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithoutHeader.this.promise.failure(com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException.apply(AbstractEtcdHandlerWithoutHeader.this.handlerName, AbstractEtcdHandlerWithoutHeader.this.statusCodeOp, scala.Some.apply[String](AbstractEtcdHandlerWithoutHeader.this.bytes.toString(&quot;UTF-8&quot;)), scala.None))
+        </td>
+      </tr><tr>
+        <td>
+          82
+        </td>
+        <td>
+          310
+        </td>
+        <td>
+          2454
+          -
+          2583
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException.apply(AbstractEtcdHandlerWithoutHeader.this.handlerName, AbstractEtcdHandlerWithoutHeader.this.statusCodeOp, scala.Some.apply[String](AbstractEtcdHandlerWithoutHeader.this.bytes.toString(&quot;UTF-8&quot;)), scala.None)
+        </td>
+      </tr><tr>
+        <td>
+          83
+        </td>
+        <td>
+          305
+        </td>
+        <td>
+          2497
+          -
+          2508
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandler.handlerName
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithoutHeader.this.handlerName
+        </td>
+      </tr><tr>
+        <td>
+          84
+        </td>
+        <td>
+          306
+        </td>
+        <td>
+          2516
+          -
+          2528
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandler.statusCodeOp
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithoutHeader.this.statusCodeOp
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          307
+        </td>
+        <td>
+          2541
+          -
+          2564
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.io.ByteArrayOutputStream.toString
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithoutHeader.this.bytes.toString(&quot;UTF-8&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          308
+        </td>
+        <td>
+          2536
+          -
+          2565
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[String](AbstractEtcdHandlerWithoutHeader.this.bytes.toString(&quot;UTF-8&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          309
+        </td>
+        <td>
+          2573
+          -
+          2577
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #AEF1AE">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          313
+        </td>
+        <td>
+          2667
+          -
+          2681
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          CONTINUE
+        </td>
+      </tr><tr>
+        <td>
+          95
+        </td>
+        <td>
+          316
+        </td>
+        <td>
+          2722
+          -
+          2823
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithoutHeader.this.statusCodeOp.flatMap[T](((status: Int) =&gt; AbstractEtcdHandlerWithoutHeader.this.createResponse(status, AbstractEtcdHandlerWithoutHeader.this.bytes.toString(&quot;UTF-8&quot;)).map[T](((t: T) =&gt; t))))
+        </td>
+      </tr><tr>
+        <td>
+          96
+        </td>
+        <td>
+          315
+        </td>
+        <td>
+          2759
+          -
+          2823
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithoutHeader.this.createResponse(status, AbstractEtcdHandlerWithoutHeader.this.bytes.toString(&quot;UTF-8&quot;)).map[T](((t: T) =&gt; t))
+        </td>
+      </tr><tr>
+        <td>
+          96
+        </td>
+        <td>
+          314
+        </td>
+        <td>
+          2787
+          -
+          2810
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.io.ByteArrayOutputStream.toString
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithoutHeader.this.bytes.toString(&quot;UTF-8&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          99
+        </td>
+        <td>
+          317
+        </td>
+        <td>
+          2866
+          -
+          2886
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandlerWithoutHeader.buildStandardError
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithoutHeader.this.buildStandardError()
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          318
+        </td>
+        <td>
+          2990
+          -
+          3003
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.&gt;=
+        </td>
+        <td style="background: #AEF1AE">
+          status.&gt;=(400)
+        </td>
+      </tr><tr>
+        <td>
+          102
+        </td>
+        <td>
+          329
+        </td>
+        <td>
+          2954
+          -
+          3153
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.WithFilter.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithoutHeader.this.statusCodeOp.withFilter(((status: Int) =&gt; status.&gt;=(400))).flatMap[com.eiipii.etcd.client.model.EtcdStandardError](((status: Int) =&gt; org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(AbstractEtcdHandlerWithoutHeader.this.bytes.toString(&quot;UTF-8&quot;)), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdErrorMessage](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdErrorMessage](classOf[com.eiipii.etcd.client.model.EtcdErrorMessage])).map[com.eiipii.etcd.client.model.EtcdStandardError](((body: com.eiipii.etcd.client.model.EtcdErrorMessage) =&gt; com.eiipii.etcd.client.model.EtcdStandardError.apply(com.eiipii.etcd.client.model.EtcdResponseCode.apply(status), scala.None, body)))))
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          322
+        </td>
+        <td>
+          3028
+          -
+          3028
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          319
+        </td>
+        <td>
+          3034
+          -
+          3057
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.io.ByteArrayOutputStream.toString
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithoutHeader.this.bytes.toString(&quot;UTF-8&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          328
+        </td>
+        <td>
+          3008
+          -
+          3153
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(AbstractEtcdHandlerWithoutHeader.this.bytes.toString(&quot;UTF-8&quot;)), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdErrorMessage](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdErrorMessage](classOf[com.eiipii.etcd.client.model.EtcdErrorMessage])).map[com.eiipii.etcd.client.model.EtcdStandardError](((body: com.eiipii.etcd.client.model.EtcdErrorMessage) =&gt; com.eiipii.etcd.client.model.EtcdStandardError.apply(com.eiipii.etcd.client.model.EtcdResponseCode.apply(status), scala.None, body)))
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          321
+        </td>
+        <td>
+          3028
+          -
+          3028
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          324
+        </td>
+        <td>
+          3069
+          -
+          3069
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.reflect.ManifestFactory.classType
+        </td>
+        <td style="background: #AEF1AE">
+          reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdErrorMessage](classOf[com.eiipii.etcd.client.model.EtcdErrorMessage])
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          323
+        </td>
+        <td>
+          3016
+          -
+          3058
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(AbstractEtcdHandlerWithoutHeader.this.bytes.toString(&quot;UTF-8&quot;)), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)
+        </td>
+      </tr><tr>
+        <td>
+          103
+        </td>
+        <td>
+          320
+        </td>
+        <td>
+          3034
+          -
+          3057
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          org.json4s.string2JsonInput
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.string2JsonInput(AbstractEtcdHandlerWithoutHeader.this.bytes.toString(&quot;UTF-8&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          104
+        </td>
+        <td>
+          325
+        </td>
+        <td>
+          3116
+          -
+          3140
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdResponseCode.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdResponseCode.apply(status)
+        </td>
+      </tr><tr>
+        <td>
+          104
+        </td>
+        <td>
+          327
+        </td>
+        <td>
+          3098
+          -
+          3153
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdStandardError.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdStandardError.apply(com.eiipii.etcd.client.model.EtcdResponseCode.apply(status), scala.None, body)
+        </td>
+      </tr><tr>
+        <td>
+          104
+        </td>
+        <td>
+          326
+        </td>
+        <td>
+          3142
+          -
+          3146
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #AEF1AE">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          112
+        </td>
+        <td>
+          337
+        </td>
+        <td>
+          3419
+          -
+          3419
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          112
+        </td>
+        <td>
+          336
+        </td>
+        <td>
+          3404
+          -
+          3576
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.concurrent.Promise.failure
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithSimpleClusterIdHeader.this.promise.failure(com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException.apply(AbstractEtcdHandlerWithSimpleClusterIdHeader.this.handlerName, AbstractEtcdHandlerWithSimpleClusterIdHeader.this.statusCodeOp, scala.Some.apply[String](AbstractEtcdHandlerWithSimpleClusterIdHeader.this.bytes.toString(&quot;UTF-8&quot;)), AbstractEtcdHandlerWithSimpleClusterIdHeader.this.xEtcdClusterIdOp))
+        </td>
+      </tr><tr>
+        <td>
+          113
+        </td>
+        <td>
+          335
+        </td>
+        <td>
+          3425
+          -
+          3572
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException.apply(AbstractEtcdHandlerWithSimpleClusterIdHeader.this.handlerName, AbstractEtcdHandlerWithSimpleClusterIdHeader.this.statusCodeOp, scala.Some.apply[String](AbstractEtcdHandlerWithSimpleClusterIdHeader.this.bytes.toString(&quot;UTF-8&quot;)), AbstractEtcdHandlerWithSimpleClusterIdHeader.this.xEtcdClusterIdOp)
+        </td>
+      </tr><tr>
+        <td>
+          114
+        </td>
+        <td>
+          330
+        </td>
+        <td>
+          3474
+          -
+          3485
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandler.handlerName
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithSimpleClusterIdHeader.this.handlerName
+        </td>
+      </tr><tr>
+        <td>
+          115
+        </td>
+        <td>
+          331
+        </td>
+        <td>
+          3493
+          -
+          3505
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandler.statusCodeOp
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithSimpleClusterIdHeader.this.statusCodeOp
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          333
+        </td>
+        <td>
+          3513
+          -
+          3542
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[String](AbstractEtcdHandlerWithSimpleClusterIdHeader.this.bytes.toString(&quot;UTF-8&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          332
+        </td>
+        <td>
+          3518
+          -
+          3541
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.io.ByteArrayOutputStream.toString
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithSimpleClusterIdHeader.this.bytes.toString(&quot;UTF-8&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          117
+        </td>
+        <td>
+          334
+        </td>
+        <td>
+          3550
+          -
+          3566
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandlerWithSimpleClusterIdHeader.xEtcdClusterIdOp
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithSimpleClusterIdHeader.this.xEtcdClusterIdOp
+        </td>
+      </tr><tr>
+        <td>
+          121
+        </td>
+        <td>
+          338
+        </td>
+        <td>
+          3640
+          -
+          3644
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #AEF1AE">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          124
+        </td>
+        <td>
+          340
+        </td>
+        <td>
+          3799
+          -
+          3812
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdClusterId
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdClusterId
+        </td>
+      </tr><tr>
+        <td>
+          124
+        </td>
+        <td>
+          339
+        </td>
+        <td>
+          3750
+          -
+          3793
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          io.netty.handler.codec.http.HttpHeaders.get
+        </td>
+        <td style="background: #AEF1AE">
+          headers.getHeaders().get(&quot;X-Etcd-Cluster-Id&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          124
+        </td>
+        <td>
+          341
+        </td>
+        <td>
+          3743
+          -
+          3813
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Option.apply[String](headers.getHeaders().get(&quot;X-Etcd-Cluster-Id&quot;)).map[com.eiipii.etcd.client.model.EtcdClusterId](com.eiipii.etcd.client.model.EtcdClusterId)
+        </td>
+      </tr><tr>
+        <td>
+          125
+        </td>
+        <td>
+          342
+        </td>
+        <td>
+          3818
+          -
+          3832
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          CONTINUE
+        </td>
+      </tr><tr>
+        <td>
+          129
+        </td>
+        <td>
+          346
+        </td>
+        <td>
+          3873
+          -
+          4029
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithSimpleClusterIdHeader.this.statusCodeOp.flatMap[T](((status: Int) =&gt; AbstractEtcdHandlerWithSimpleClusterIdHeader.this.xEtcdClusterIdOp.flatMap[T](((xEtcdClusterId: com.eiipii.etcd.client.model.EtcdClusterId) =&gt; AbstractEtcdHandlerWithSimpleClusterIdHeader.this.createResponse(status, xEtcdClusterId, AbstractEtcdHandlerWithSimpleClusterIdHeader.this.bytes.toString(&quot;UTF-8&quot;)).map[T](((t: T) =&gt; t))))))
+        </td>
+      </tr><tr>
+        <td>
+          130
+        </td>
+        <td>
+          345
+        </td>
+        <td>
+          3910
+          -
+          4029
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithSimpleClusterIdHeader.this.xEtcdClusterIdOp.flatMap[T](((xEtcdClusterId: com.eiipii.etcd.client.model.EtcdClusterId) =&gt; AbstractEtcdHandlerWithSimpleClusterIdHeader.this.createResponse(status, xEtcdClusterId, AbstractEtcdHandlerWithSimpleClusterIdHeader.this.bytes.toString(&quot;UTF-8&quot;)).map[T](((t: T) =&gt; t))))
+        </td>
+      </tr><tr>
+        <td>
+          131
+        </td>
+        <td>
+          343
+        </td>
+        <td>
+          3993
+          -
+          4016
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.io.ByteArrayOutputStream.toString
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithSimpleClusterIdHeader.this.bytes.toString(&quot;UTF-8&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          131
+        </td>
+        <td>
+          344
+        </td>
+        <td>
+          3949
+          -
+          4029
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithSimpleClusterIdHeader.this.createResponse(status, xEtcdClusterId, AbstractEtcdHandlerWithSimpleClusterIdHeader.this.bytes.toString(&quot;UTF-8&quot;)).map[T](((t: T) =&gt; t))
+        </td>
+      </tr><tr>
+        <td>
+          134
+        </td>
+        <td>
+          347
+        </td>
+        <td>
+          4078
+          -
+          4098
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandlerWithSimpleClusterIdHeader.buildStandardError
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithSimpleClusterIdHeader.this.buildStandardError()
+        </td>
+      </tr><tr>
+        <td>
+          137
+        </td>
+        <td>
+          348
+        </td>
+        <td>
+          4202
+          -
+          4215
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.&gt;=
+        </td>
+        <td style="background: #AEF1AE">
+          status.&gt;=(400)
+        </td>
+      </tr><tr>
+        <td>
+          137
+        </td>
+        <td>
+          359
+        </td>
+        <td>
+          4166
+          -
+          4377
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.WithFilter.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithSimpleClusterIdHeader.this.statusCodeOp.withFilter(((status: Int) =&gt; status.&gt;=(400))).flatMap[com.eiipii.etcd.client.model.EtcdStandardError](((status: Int) =&gt; org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(AbstractEtcdHandlerWithSimpleClusterIdHeader.this.bytes.toString(&quot;UTF-8&quot;)), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdErrorMessage](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdErrorMessage](classOf[com.eiipii.etcd.client.model.EtcdErrorMessage])).map[com.eiipii.etcd.client.model.EtcdStandardError](((body: com.eiipii.etcd.client.model.EtcdErrorMessage) =&gt; com.eiipii.etcd.client.model.EtcdStandardError.apply(com.eiipii.etcd.client.model.EtcdResponseCode.apply(status), AbstractEtcdHandlerWithSimpleClusterIdHeader.this.xEtcdClusterIdOp, body)))))
+        </td>
+      </tr><tr>
+        <td>
+          138
+        </td>
+        <td>
+          349
+        </td>
+        <td>
+          4246
+          -
+          4269
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.io.ByteArrayOutputStream.toString
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithSimpleClusterIdHeader.this.bytes.toString(&quot;UTF-8&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          138
+        </td>
+        <td>
+          358
+        </td>
+        <td>
+          4220
+          -
+          4377
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(AbstractEtcdHandlerWithSimpleClusterIdHeader.this.bytes.toString(&quot;UTF-8&quot;)), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdErrorMessage](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdErrorMessage](classOf[com.eiipii.etcd.client.model.EtcdErrorMessage])).map[com.eiipii.etcd.client.model.EtcdStandardError](((body: com.eiipii.etcd.client.model.EtcdErrorMessage) =&gt; com.eiipii.etcd.client.model.EtcdStandardError.apply(com.eiipii.etcd.client.model.EtcdResponseCode.apply(status), AbstractEtcdHandlerWithSimpleClusterIdHeader.this.xEtcdClusterIdOp, body)))
+        </td>
+      </tr><tr>
+        <td>
+          138
+        </td>
+        <td>
+          352
+        </td>
+        <td>
+          4240
+          -
+          4240
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+      </tr><tr>
+        <td>
+          138
+        </td>
+        <td>
+          354
+        </td>
+        <td>
+          4281
+          -
+          4281
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.reflect.ManifestFactory.classType
+        </td>
+        <td style="background: #AEF1AE">
+          reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdErrorMessage](classOf[com.eiipii.etcd.client.model.EtcdErrorMessage])
+        </td>
+      </tr><tr>
+        <td>
+          138
+        </td>
+        <td>
+          351
+        </td>
+        <td>
+          4240
+          -
+          4240
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+      </tr><tr>
+        <td>
+          138
+        </td>
+        <td>
+          350
+        </td>
+        <td>
+          4246
+          -
+          4269
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          org.json4s.string2JsonInput
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.string2JsonInput(AbstractEtcdHandlerWithSimpleClusterIdHeader.this.bytes.toString(&quot;UTF-8&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          138
+        </td>
+        <td>
+          353
+        </td>
+        <td>
+          4228
+          -
+          4270
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(AbstractEtcdHandlerWithSimpleClusterIdHeader.this.bytes.toString(&quot;UTF-8&quot;)), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)
+        </td>
+      </tr><tr>
+        <td>
+          139
+        </td>
+        <td>
+          355
+        </td>
+        <td>
+          4328
+          -
+          4352
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdResponseCode.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdResponseCode.apply(status)
+        </td>
+      </tr><tr>
+        <td>
+          139
+        </td>
+        <td>
+          357
+        </td>
+        <td>
+          4310
+          -
+          4377
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdStandardError.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdStandardError.apply(com.eiipii.etcd.client.model.EtcdResponseCode.apply(status), AbstractEtcdHandlerWithSimpleClusterIdHeader.this.xEtcdClusterIdOp, body)
+        </td>
+      </tr><tr>
+        <td>
+          139
+        </td>
+        <td>
+          356
+        </td>
+        <td>
+          4354
+          -
+          4370
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandlerWithSimpleClusterIdHeader.xEtcdClusterIdOp
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithSimpleClusterIdHeader.this.xEtcdClusterIdOp
+        </td>
+      </tr><tr>
+        <td>
+          147
+        </td>
+        <td>
+          367
+        </td>
+        <td>
+          4629
+          -
+          4629
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          147
+        </td>
+        <td>
+          366
+        </td>
+        <td>
+          4614
+          -
+          4771
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.concurrent.Promise.failure
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithCompleteEtcdHeader.this.promise.failure(com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException.apply(AbstractEtcdHandlerWithCompleteEtcdHeader.this.handlerName, AbstractEtcdHandlerWithCompleteEtcdHeader.this.statusCodeOp, scala.Some.apply[String](AbstractEtcdHandlerWithCompleteEtcdHeader.this.bytes.toString(&quot;UTF-8&quot;)), AbstractEtcdHandlerWithCompleteEtcdHeader.this.headsOp))
+        </td>
+      </tr><tr>
+        <td>
+          148
+        </td>
+        <td>
+          365
+        </td>
+        <td>
+          4635
+          -
+          4767
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException.apply(AbstractEtcdHandlerWithCompleteEtcdHeader.this.handlerName, AbstractEtcdHandlerWithCompleteEtcdHeader.this.statusCodeOp, scala.Some.apply[String](AbstractEtcdHandlerWithCompleteEtcdHeader.this.bytes.toString(&quot;UTF-8&quot;)), AbstractEtcdHandlerWithCompleteEtcdHeader.this.headsOp)
+        </td>
+      </tr><tr>
+        <td>
+          149
+        </td>
+        <td>
+          360
+        </td>
+        <td>
+          4678
+          -
+          4689
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandler.handlerName
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithCompleteEtcdHeader.this.handlerName
+        </td>
+      </tr><tr>
+        <td>
+          150
+        </td>
+        <td>
+          361
+        </td>
+        <td>
+          4697
+          -
+          4709
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandler.statusCodeOp
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithCompleteEtcdHeader.this.statusCodeOp
+        </td>
+      </tr><tr>
+        <td>
+          151
+        </td>
+        <td>
+          363
+        </td>
+        <td>
+          4717
+          -
+          4746
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Some.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Some.apply[String](AbstractEtcdHandlerWithCompleteEtcdHeader.this.bytes.toString(&quot;UTF-8&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          151
+        </td>
+        <td>
+          362
+        </td>
+        <td>
+          4722
+          -
+          4745
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.io.ByteArrayOutputStream.toString
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithCompleteEtcdHeader.this.bytes.toString(&quot;UTF-8&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          152
+        </td>
+        <td>
+          364
+        </td>
+        <td>
+          4754
+          -
+          4761
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandlerWithCompleteEtcdHeader.headsOp
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithCompleteEtcdHeader.this.headsOp
+        </td>
+      </tr><tr>
+        <td>
+          156
+        </td>
+        <td>
+          368
+        </td>
+        <td>
+          4820
+          -
+          4824
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.None
+        </td>
+        <td style="background: #AEF1AE">
+          scala.None
+        </td>
+      </tr><tr>
+        <td>
+          159
+        </td>
+        <td>
+          385
+        </td>
+        <td>
+          4904
+          -
+          5355
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandlerWithCompleteEtcdHeader.headsOp_=
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithCompleteEtcdHeader.this.headsOp_=(scala.Option.apply[String](headers.getHeaders().get(&quot;X-Etcd-Cluster-Id&quot;)).map[com.eiipii.etcd.client.model.EtcdClusterId](com.eiipii.etcd.client.model.EtcdClusterId).flatMap[com.eiipii.etcd.client.model.EtcdHeaders](((clusterId: com.eiipii.etcd.client.model.EtcdClusterId) =&gt; scala.Option.apply[String](headers.getHeaders().get(&quot;X-Etcd-Index&quot;)).map[Int](((x$1: String) =&gt; scala.this.Predef.augmentString(x$1).toInt)).map[com.eiipii.etcd.client.model.EtcdIndex](com.eiipii.etcd.client.model.EtcdIndex).flatMap[com.eiipii.etcd.client.model.EtcdHeaders](((etcdIndex: com.eiipii.etcd.client.model.EtcdIndex) =&gt; scala.Option.apply[String](headers.getHeaders().get(&quot;X-Raft-Index&quot;)).map[Int](((x$2: String) =&gt; scala.this.Predef.augmentString(x$2).toInt)).map[com.eiipii.etcd.client.model.RaftIndex](com.eiipii.etcd.client.model.RaftIndex).flatMap[com.eiipii.etcd.client.model.EtcdHeaders](((raftIndex: com.eiipii.etcd.client.model.RaftIndex) =&gt; scala.Option.apply[String](headers.getHeaders().get(&quot;X-Raft-Term&quot;)).map[Int](((x$3: String) =&gt; scala.this.Predef.augmentString(x$3).toInt)).map[com.eiipii.etcd.client.model.RaftTerm](com.eiipii.etcd.client.model.RaftTerm).map[com.eiipii.etcd.client.model.EtcdHeaders](((raftTerm: com.eiipii.etcd.client.model.RaftTerm) =&gt; com.eiipii.etcd.client.model.EtcdHeaders.apply(clusterId, etcdIndex, raftIndex, raftTerm))))))))))
+        </td>
+      </tr><tr>
+        <td>
+          160
+        </td>
+        <td>
+          370
+        </td>
+        <td>
+          4995
+          -
+          5008
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdClusterId
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdClusterId
+        </td>
+      </tr><tr>
+        <td>
+          160
+        </td>
+        <td>
+          369
+        </td>
+        <td>
+          4946
+          -
+          4989
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          io.netty.handler.codec.http.HttpHeaders.get
+        </td>
+        <td style="background: #AEF1AE">
+          headers.getHeaders().get(&quot;X-Etcd-Cluster-Id&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          160
+        </td>
+        <td>
+          384
+        </td>
+        <td>
+          4914
+          -
+          5355
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Option.apply[String](headers.getHeaders().get(&quot;X-Etcd-Cluster-Id&quot;)).map[com.eiipii.etcd.client.model.EtcdClusterId](com.eiipii.etcd.client.model.EtcdClusterId).flatMap[com.eiipii.etcd.client.model.EtcdHeaders](((clusterId: com.eiipii.etcd.client.model.EtcdClusterId) =&gt; scala.Option.apply[String](headers.getHeaders().get(&quot;X-Etcd-Index&quot;)).map[Int](((x$1: String) =&gt; scala.this.Predef.augmentString(x$1).toInt)).map[com.eiipii.etcd.client.model.EtcdIndex](com.eiipii.etcd.client.model.EtcdIndex).flatMap[com.eiipii.etcd.client.model.EtcdHeaders](((etcdIndex: com.eiipii.etcd.client.model.EtcdIndex) =&gt; scala.Option.apply[String](headers.getHeaders().get(&quot;X-Raft-Index&quot;)).map[Int](((x$2: String) =&gt; scala.this.Predef.augmentString(x$2).toInt)).map[com.eiipii.etcd.client.model.RaftIndex](com.eiipii.etcd.client.model.RaftIndex).flatMap[com.eiipii.etcd.client.model.EtcdHeaders](((raftIndex: com.eiipii.etcd.client.model.RaftIndex) =&gt; scala.Option.apply[String](headers.getHeaders().get(&quot;X-Raft-Term&quot;)).map[Int](((x$3: String) =&gt; scala.this.Predef.augmentString(x$3).toInt)).map[com.eiipii.etcd.client.model.RaftTerm](com.eiipii.etcd.client.model.RaftTerm).map[com.eiipii.etcd.client.model.EtcdHeaders](((raftTerm: com.eiipii.etcd.client.model.RaftTerm) =&gt; com.eiipii.etcd.client.model.EtcdHeaders.apply(clusterId, etcdIndex, raftIndex, raftTerm)))))))))
+        </td>
+      </tr><tr>
+        <td>
+          161
+        </td>
+        <td>
+          373
+        </td>
+        <td>
+          5093
+          -
+          5102
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdIndex
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdIndex
+        </td>
+      </tr><tr>
+        <td>
+          161
+        </td>
+        <td>
+          372
+        </td>
+        <td>
+          5080
+          -
+          5087
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.StringLike.toInt
+        </td>
+        <td style="background: #AEF1AE">
+          scala.this.Predef.augmentString(x$1).toInt
+        </td>
+      </tr><tr>
+        <td>
+          161
+        </td>
+        <td>
+          383
+        </td>
+        <td>
+          5016
+          -
+          5355
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Option.apply[String](headers.getHeaders().get(&quot;X-Etcd-Index&quot;)).map[Int](((x$1: String) =&gt; scala.this.Predef.augmentString(x$1).toInt)).map[com.eiipii.etcd.client.model.EtcdIndex](com.eiipii.etcd.client.model.EtcdIndex).flatMap[com.eiipii.etcd.client.model.EtcdHeaders](((etcdIndex: com.eiipii.etcd.client.model.EtcdIndex) =&gt; scala.Option.apply[String](headers.getHeaders().get(&quot;X-Raft-Index&quot;)).map[Int](((x$2: String) =&gt; scala.this.Predef.augmentString(x$2).toInt)).map[com.eiipii.etcd.client.model.RaftIndex](com.eiipii.etcd.client.model.RaftIndex).flatMap[com.eiipii.etcd.client.model.EtcdHeaders](((raftIndex: com.eiipii.etcd.client.model.RaftIndex) =&gt; scala.Option.apply[String](headers.getHeaders().get(&quot;X-Raft-Term&quot;)).map[Int](((x$3: String) =&gt; scala.this.Predef.augmentString(x$3).toInt)).map[com.eiipii.etcd.client.model.RaftTerm](com.eiipii.etcd.client.model.RaftTerm).map[com.eiipii.etcd.client.model.EtcdHeaders](((raftTerm: com.eiipii.etcd.client.model.RaftTerm) =&gt; com.eiipii.etcd.client.model.EtcdHeaders.apply(clusterId, etcdIndex, raftIndex, raftTerm)))))))
+        </td>
+      </tr><tr>
+        <td>
+          161
+        </td>
+        <td>
+          371
+        </td>
+        <td>
+          5036
+          -
+          5074
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          io.netty.handler.codec.http.HttpHeaders.get
+        </td>
+        <td style="background: #AEF1AE">
+          headers.getHeaders().get(&quot;X-Etcd-Index&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          162
+        </td>
+        <td>
+          382
+        </td>
+        <td>
+          5110
+          -
+          5355
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Option.apply[String](headers.getHeaders().get(&quot;X-Raft-Index&quot;)).map[Int](((x$2: String) =&gt; scala.this.Predef.augmentString(x$2).toInt)).map[com.eiipii.etcd.client.model.RaftIndex](com.eiipii.etcd.client.model.RaftIndex).flatMap[com.eiipii.etcd.client.model.EtcdHeaders](((raftIndex: com.eiipii.etcd.client.model.RaftIndex) =&gt; scala.Option.apply[String](headers.getHeaders().get(&quot;X-Raft-Term&quot;)).map[Int](((x$3: String) =&gt; scala.this.Predef.augmentString(x$3).toInt)).map[com.eiipii.etcd.client.model.RaftTerm](com.eiipii.etcd.client.model.RaftTerm).map[com.eiipii.etcd.client.model.EtcdHeaders](((raftTerm: com.eiipii.etcd.client.model.RaftTerm) =&gt; com.eiipii.etcd.client.model.EtcdHeaders.apply(clusterId, etcdIndex, raftIndex, raftTerm)))))
+        </td>
+      </tr><tr>
+        <td>
+          162
+        </td>
+        <td>
+          376
+        </td>
+        <td>
+          5187
+          -
+          5196
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.RaftIndex
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.RaftIndex
+        </td>
+      </tr><tr>
+        <td>
+          162
+        </td>
+        <td>
+          375
+        </td>
+        <td>
+          5174
+          -
+          5181
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.StringLike.toInt
+        </td>
+        <td style="background: #AEF1AE">
+          scala.this.Predef.augmentString(x$2).toInt
+        </td>
+      </tr><tr>
+        <td>
+          162
+        </td>
+        <td>
+          374
+        </td>
+        <td>
+          5130
+          -
+          5168
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          io.netty.handler.codec.http.HttpHeaders.get
+        </td>
+        <td style="background: #AEF1AE">
+          headers.getHeaders().get(&quot;X-Raft-Index&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          163
+        </td>
+        <td>
+          379
+        </td>
+        <td>
+          5279
+          -
+          5287
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.RaftTerm
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.RaftTerm
+        </td>
+      </tr><tr>
+        <td>
+          163
+        </td>
+        <td>
+          378
+        </td>
+        <td>
+          5266
+          -
+          5273
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.collection.immutable.StringLike.toInt
+        </td>
+        <td style="background: #AEF1AE">
+          scala.this.Predef.augmentString(x$3).toInt
+        </td>
+      </tr><tr>
+        <td>
+          163
+        </td>
+        <td>
+          381
+        </td>
+        <td>
+          5204
+          -
+          5355
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          scala.Option.apply[String](headers.getHeaders().get(&quot;X-Raft-Term&quot;)).map[Int](((x$3: String) =&gt; scala.this.Predef.augmentString(x$3).toInt)).map[com.eiipii.etcd.client.model.RaftTerm](com.eiipii.etcd.client.model.RaftTerm).map[com.eiipii.etcd.client.model.EtcdHeaders](((raftTerm: com.eiipii.etcd.client.model.RaftTerm) =&gt; com.eiipii.etcd.client.model.EtcdHeaders.apply(clusterId, etcdIndex, raftIndex, raftTerm)))
+        </td>
+      </tr><tr>
+        <td>
+          163
+        </td>
+        <td>
+          377
+        </td>
+        <td>
+          5223
+          -
+          5260
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          io.netty.handler.codec.http.HttpHeaders.get
+        </td>
+        <td style="background: #AEF1AE">
+          headers.getHeaders().get(&quot;X-Raft-Term&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          164
+        </td>
+        <td>
+          380
+        </td>
+        <td>
+          5301
+          -
+          5355
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdHeaders.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdHeaders.apply(clusterId, etcdIndex, raftIndex, raftTerm)
+        </td>
+      </tr><tr>
+        <td>
+          165
+        </td>
+        <td>
+          386
+        </td>
+        <td>
+          5360
+          -
+          5374
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          CONTINUE
+        </td>
+      </tr><tr>
+        <td>
+          169
+        </td>
+        <td>
+          390
+        </td>
+        <td>
+          5415
+          -
+          5546
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithCompleteEtcdHeader.this.statusCodeOp.flatMap[T](((status: Int) =&gt; AbstractEtcdHandlerWithCompleteEtcdHeader.this.headsOp.flatMap[T](((header: com.eiipii.etcd.client.model.EtcdHeaders) =&gt; AbstractEtcdHandlerWithCompleteEtcdHeader.this.createResponse(status, header, AbstractEtcdHandlerWithCompleteEtcdHeader.this.bytes.toString(&quot;UTF-8&quot;)).map[T](((t: T) =&gt; t))))))
+        </td>
+      </tr><tr>
+        <td>
+          170
+        </td>
+        <td>
+          389
+        </td>
+        <td>
+          5452
+          -
+          5546
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithCompleteEtcdHeader.this.headsOp.flatMap[T](((header: com.eiipii.etcd.client.model.EtcdHeaders) =&gt; AbstractEtcdHandlerWithCompleteEtcdHeader.this.createResponse(status, header, AbstractEtcdHandlerWithCompleteEtcdHeader.this.bytes.toString(&quot;UTF-8&quot;)).map[T](((t: T) =&gt; t))))
+        </td>
+      </tr><tr>
+        <td>
+          171
+        </td>
+        <td>
+          388
+        </td>
+        <td>
+          5474
+          -
+          5546
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithCompleteEtcdHeader.this.createResponse(status, header, AbstractEtcdHandlerWithCompleteEtcdHeader.this.bytes.toString(&quot;UTF-8&quot;)).map[T](((t: T) =&gt; t))
+        </td>
+      </tr><tr>
+        <td>
+          171
+        </td>
+        <td>
+          387
+        </td>
+        <td>
+          5510
+          -
+          5533
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.io.ByteArrayOutputStream.toString
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithCompleteEtcdHeader.this.bytes.toString(&quot;UTF-8&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          174
+        </td>
+        <td>
+          391
+        </td>
+        <td>
+          5595
+          -
+          5613
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandlerWithCompleteEtcdHeader.buildErrorResult
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithCompleteEtcdHeader.this.buildErrorResult()
+        </td>
+      </tr><tr>
+        <td>
+          177
+        </td>
+        <td>
+          403
+        </td>
+        <td>
+          5668
+          -
+          5869
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.WithFilter.flatMap
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithCompleteEtcdHeader.this.statusCodeOp.withFilter(((status: Int) =&gt; status.&gt;=(400))).flatMap[com.eiipii.etcd.client.model.EtcdRequestError](((status: Int) =&gt; org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(AbstractEtcdHandlerWithCompleteEtcdHeader.this.bytes.toString(&quot;UTF-8&quot;)), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdErrorMessage](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdErrorMessage](classOf[com.eiipii.etcd.client.model.EtcdErrorMessage])).map[com.eiipii.etcd.client.model.EtcdRequestError](((body: com.eiipii.etcd.client.model.EtcdErrorMessage) =&gt; com.eiipii.etcd.client.model.EtcdRequestError.apply(com.eiipii.etcd.client.model.EtcdResponseCode.apply(status), AbstractEtcdHandlerWithCompleteEtcdHeader.this.headsOp, body)))))
+        </td>
+      </tr><tr>
+        <td>
+          177
+        </td>
+        <td>
+          392
+        </td>
+        <td>
+          5704
+          -
+          5717
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Int.&gt;=
+        </td>
+        <td style="background: #AEF1AE">
+          status.&gt;=(400)
+        </td>
+      </tr><tr>
+        <td>
+          178
+        </td>
+        <td>
+          394
+        </td>
+        <td>
+          5748
+          -
+          5771
+        </td>
+        <td>
+          ApplyImplicitView
+        </td>
+        <td>
+          org.json4s.string2JsonInput
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.string2JsonInput(AbstractEtcdHandlerWithCompleteEtcdHeader.this.bytes.toString(&quot;UTF-8&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          178
+        </td>
+        <td>
+          397
+        </td>
+        <td>
+          5730
+          -
+          5772
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(AbstractEtcdHandlerWithCompleteEtcdHeader.this.bytes.toString(&quot;UTF-8&quot;)), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)
+        </td>
+      </tr><tr>
+        <td>
+          178
+        </td>
+        <td>
+          396
+        </td>
+        <td>
+          5742
+          -
+          5742
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$3
+        </td>
+      </tr><tr>
+        <td>
+          178
+        </td>
+        <td>
+          393
+        </td>
+        <td>
+          5748
+          -
+          5771
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.io.ByteArrayOutputStream.toString
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithCompleteEtcdHeader.this.bytes.toString(&quot;UTF-8&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          178
+        </td>
+        <td>
+          402
+        </td>
+        <td>
+          5722
+          -
+          5869
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(AbstractEtcdHandlerWithCompleteEtcdHeader.this.bytes.toString(&quot;UTF-8&quot;)), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdErrorMessage](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdErrorMessage](classOf[com.eiipii.etcd.client.model.EtcdErrorMessage])).map[com.eiipii.etcd.client.model.EtcdRequestError](((body: com.eiipii.etcd.client.model.EtcdErrorMessage) =&gt; com.eiipii.etcd.client.model.EtcdRequestError.apply(com.eiipii.etcd.client.model.EtcdResponseCode.apply(status), AbstractEtcdHandlerWithCompleteEtcdHeader.this.headsOp, body)))
+        </td>
+      </tr><tr>
+        <td>
+          178
+        </td>
+        <td>
+          395
+        </td>
+        <td>
+          5742
+          -
+          5742
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+        <td style="background: #AEF1AE">
+          org.json4s.native.JsonMethods.parse$default$2
+        </td>
+      </tr><tr>
+        <td>
+          178
+        </td>
+        <td>
+          398
+        </td>
+        <td>
+          5783
+          -
+          5783
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.reflect.ManifestFactory.classType
+        </td>
+        <td style="background: #AEF1AE">
+          reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdErrorMessage](classOf[com.eiipii.etcd.client.model.EtcdErrorMessage])
+        </td>
+      </tr><tr>
+        <td>
+          179
+        </td>
+        <td>
+          400
+        </td>
+        <td>
+          5855
+          -
+          5862
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.handlers.AbstractEtcdHandlerWithCompleteEtcdHeader.headsOp
+        </td>
+        <td style="background: #AEF1AE">
+          AbstractEtcdHandlerWithCompleteEtcdHeader.this.headsOp
+        </td>
+      </tr><tr>
+        <td>
+          179
+        </td>
+        <td>
+          399
+        </td>
+        <td>
+          5829
+          -
+          5853
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdResponseCode.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdResponseCode.apply(status)
+        </td>
+      </tr><tr>
+        <td>
+          179
+        </td>
+        <td>
+          401
+        </td>
+        <td>
+          5812
+          -
+          5869
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdRequestError.apply
+        </td>
+        <td style="background: #AEF1AE">
+          com.eiipii.etcd.client.model.EtcdRequestError.apply(com.eiipii.etcd.client.model.EtcdResponseCode.apply(status), AbstractEtcdHandlerWithCompleteEtcdHeader.this.headsOp, body)
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>

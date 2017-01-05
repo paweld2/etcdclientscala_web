@@ -1,0 +1,3929 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id="title">
+          com/eiipii/etcd/client/model/EtcdModel.scala.html
+        </title>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        $(document).ready(function() {$(".tablesorter").tablesorter();});
+      </script>
+        <style>
+          table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }table.statementlist { width: auto!important; font-size: 13px; } table.codegrid td { padding: 0!important; border: 0!important } table td.linenumber { width: 40px!important; } 
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>/*
+</span>2 <span style=''> * Copyright (c) 2016 Paweł Cesar Sanjuan Szklarz.
+</span>3 <span style=''> *
+</span>4 <span style=''> * Licensed under the Apache License, Version 2.0 (the "License");
+</span>5 <span style=''> * you may not use this file except in compliance with the License.
+</span>6 <span style=''> * You may obtain a copy of the License at
+</span>7 <span style=''> *
+</span>8 <span style=''> * http://www.apache.org/licenses/LICENSE-2.0
+</span>9 <span style=''> *
+</span>10 <span style=''> * Unless required by applicable law or agreed to in writing, software
+</span>11 <span style=''> * distributed under the License is distributed on an "AS IS" BASIS,
+</span>12 <span style=''> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+</span>13 <span style=''> * See the License for the specific language governing permissions and
+</span>14 <span style=''> * limitations under the License.
+</span>15 <span style=''> */
+</span>16 <span style=''>
+</span>17 <span style=''>package com.eiipii.etcd.client.model
+</span>18 <span style=''>
+</span>19 <span style=''>import scala.concurrent.{ Future, Promise }
+</span>20 <span style=''>
+</span>21 <span style=''>/**
+</span>22 <span style=''> * Contains methods to define well-formed instances of [[com.eiipii.etcd.client.model.EtcdKey EtcdKey]], [[com.eiipii.etcd.client.model.EtcdDirectory EtcdDirectory]], hidden nodes and [[com.eiipii.etcd.client.model.EtcdValue EtcdValue]].
+</span>23 <span style=''> *
+</span>24 <span style=''> */
+</span>25 <span style=''>object EtcdModel {
+</span>26 <span style=''>
+</span>27 <span style=''>  /**
+</span>28 <span style=''>   * Returns an instance of [[com.eiipii.etcd.client.model.EtcdKey EtcdKey]] from a list of node names.
+</span>29 <span style=''>   *
+</span>30 <span style=''>   * The key preserves the order of the list given as input.
+</span>31 <span style=''>   *
+</span>32 <span style=''>   * @param path A list of strings not containing "/", which are to be used as node names.
+</span>33 <span style=''>   */
+</span>34 <span style=''>
+</span>35 <span style=''>  def fromPath(path: List[String]): EtcdKey = {
+</span>36 <span style=''>    if (</span><span style='background: #AEF1AE'>path.exists(node => node.contains("/"))</span><span style=''>) {
+</span>37 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException("node names cannot contain '/'")</span><span style=''>
+</span>38 <span style=''>    }
+</span>39 <span style=''>    //An empty string ("") is prepended to the list so as to get a "/" at the beginning of the key.
+</span>40 <span style=''>    </span><span style='background: #AEF1AE'>EtcdKey((("") :: path).mkString("/"))</span><span style=''>
+</span>41 <span style=''>  }
+</span>42 <span style=''>
+</span>43 <span style=''>  /**
+</span>44 <span style=''>   * Returns a list of all node names in order.
+</span>45 <span style=''>   *
+</span>46 <span style=''>   * @param key An [[com.eiipii.etcd.client.model.EtcdKey EtcdKey]] which is to be split in node names and placed in order into a list.
+</span>47 <span style=''>   */
+</span>48 <span style=''>  def toPath(key: EtcdKey): List[String] = {
+</span>49 <span style=''>    //The first element is dropped, since it is always and empty string ("").
+</span>50 <span style=''>    </span><span style='background: #AEF1AE'>key.key.split("/").toList.drop(1)</span><span style=''>
+</span>51 <span style=''>  }
+</span>52 <span style=''>
+</span>53 <span style=''>  /**
+</span>54 <span style=''>   * Creates a well-formed instance of [[com.eiipii.etcd.client.model.EtcdKey EtcdKey]]  from a String that represents a path to an etcd node.
+</span>55 <span style=''>   *
+</span>56 <span style=''>   * @param key the String representation of the key
+</span>57 <span style=''>   */
+</span>58 <span style=''>  def key(key: String): EtcdKey = {
+</span>59 <span style=''>    if (</span><span style='background: #AEF1AE'>key == null || key.isEmpty</span><span style=''>) {
+</span>60 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException("key name can not be null.")</span><span style=''>
+</span>61 <span style=''>    }
+</span>62 <span style=''>    if (</span><span style='background: #AEF1AE'>!key.startsWith("/")</span><span style=''>) {
+</span>63 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s"key name must start with '/'. Provided value $key")</span><span style=''>
+</span>64 <span style=''>    }
+</span>65 <span style=''>    if (</span><span style='background: #AEF1AE'>key.endsWith("/")</span><span style=''>) {
+</span>66 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s"key name must not end with '/'. Provided value $key")</span><span style=''>
+</span>67 <span style=''>    }
+</span>68 <span style=''>    </span><span style='background: #AEF1AE'>EtcdKey(key)</span><span style=''>
+</span>69 <span style=''>  }
+</span>70 <span style=''>
+</span>71 <span style=''>  /**
+</span>72 <span style=''>   * Creates a well-formed instance of [[com.eiipii.etcd.client.model.EtcdKey EtcdKey]] from a String that represents a path to an etcd node and a String that represents the name of the node.
+</span>73 <span style=''>   *
+</span>74 <span style=''>   * @param dir the [[com.eiipii.etcd.client.model.EtcdDirectory EtcdDirectory]] which will be appended with a name of a node.
+</span>75 <span style=''>   * @param key the string representation of the name of the node.
+</span>76 <span style=''>   */
+</span>77 <span style=''>  def key(dir: EtcdDirectory, key: String): EtcdKey = </span><span style='background: #AEF1AE'>EtcdModel.key(dir.dir + key)</span><span style=''>
+</span>78 <span style=''>
+</span>79 <span style=''>  /**
+</span>80 <span style=''>   * Creates a well-formed instance of [[com.eiipii.etcd.client.model.EtcdDirectory EtcdDirectory]] from a String that represents a path.
+</span>81 <span style=''>   *
+</span>82 <span style=''>   * @param dir the string representation of the directory.
+</span>83 <span style=''>   */
+</span>84 <span style=''>  def directory(dir: String): EtcdDirectory = {
+</span>85 <span style=''>    if (</span><span style='background: #AEF1AE'>dir == null</span><span style=''>) {
+</span>86 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException("Directory name can not be null.")</span><span style=''>
+</span>87 <span style=''>    }
+</span>88 <span style=''>    if (</span><span style='background: #AEF1AE'>!dir.startsWith("/")</span><span style=''>) {
+</span>89 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s"Directory name must start with '/'. Provided value $dir")</span><span style=''>
+</span>90 <span style=''>    }
+</span>91 <span style=''>    if (</span><span style='background: #AEF1AE'>!dir.endsWith("/")</span><span style=''>) {
+</span>92 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s"Directory must end with '/'. Provided value $dir")</span><span style=''>
+</span>93 <span style=''>    }
+</span>94 <span style=''>    </span><span style='background: #AEF1AE'>EtcdDirectory(dir)</span><span style=''>
+</span>95 <span style=''>  }
+</span>96 <span style=''>  /**
+</span>97 <span style=''>   * Creates a well-formed instance of [[com.eiipii.etcd.client.model.EtcdKey EtcdKey]] from a string that represents a path to a node and a string that represents the name of the node.
+</span>98 <span style=''>   *
+</span>99 <span style=''>   * For more information on hidden nodes see [[https://coreos.com/etcd/docs/latest/v2/api.html#creating-a-hidden-node Creating a hidden node]].
+</span>100 <span style=''>   *
+</span>101 <span style=''>   * @param dir the string representation of the directory.
+</span>102 <span style=''>   * @param node the string representation of the node's name.
+</span>103 <span style=''>   * @return A [[com.eiipii.etcd.client.model.EtcdKey EtcdKey]] composed of a path and the name of a node prepended with '_'.
+</span>104 <span style=''>   *
+</span>105 <span style=''>   */
+</span>106 <span style=''>  def hiddenNode(dir: String, node: String): EtcdKey = {
+</span>107 <span style=''>    if (</span><span style='background: #AEF1AE'>dir == null || dir.isEmpty</span><span style=''>) {
+</span>108 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException("Directory name can not be null.")</span><span style=''>
+</span>109 <span style=''>    }
+</span>110 <span style=''>    if (</span><span style='background: #AEF1AE'>!dir.startsWith("/")</span><span style=''>) {
+</span>111 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s"Directory name must start with '/'. Provided value $dir")</span><span style=''>
+</span>112 <span style=''>    }
+</span>113 <span style=''>    if (</span><span style='background: #AEF1AE'>!dir.endsWith("/")</span><span style=''>) {
+</span>114 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s"Directory must end with '/'. Provided value $dir")</span><span style=''>
+</span>115 <span style=''>    }
+</span>116 <span style=''>    if (</span><span style='background: #AEF1AE'>node == null || node.isEmpty</span><span style=''>) {
+</span>117 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException("node name cannot be null.")</span><span style=''>
+</span>118 <span style=''>    }
+</span>119 <span style=''>    if (</span><span style='background: #AEF1AE'>node.endsWith("/") || node.startsWith("/")</span><span style=''>) {
+</span>120 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s"Node name must not end or start with '/'. Provided value $node")</span><span style=''>
+</span>121 <span style=''>    }
+</span>122 <span style=''>    </span><span style='background: #AEF1AE'>EtcdKey(dir + "_" + node)</span><span style=''>
+</span>123 <span style=''>  }
+</span>124 <span style=''>
+</span>125 <span style=''>  /**
+</span>126 <span style=''>   * Creates a well-formed instance of [[com.eiipii.etcd.client.model.EtcdValue EtcdValue]]
+</span>127 <span style=''>   *
+</span>128 <span style=''>   * @param value the string representation of the value
+</span>129 <span style=''>   */
+</span>130 <span style=''>  def value(value: String): EtcdValue = </span><span style='background: #AEF1AE'>EtcdValue(value)</span><span style=''>
+</span>131 <span style=''>
+</span>132 <span style=''>  /**
+</span>133 <span style=''>   * Returns an instance of [[com.eiipii.etcd.client.model.EtcdKey EtcdKey]] from a [[com.eiipii.etcd.client.model.EtcdDirectory EtcdDirectory]].
+</span>134 <span style=''>   *
+</span>135 <span style=''>   * An EtcdDirectory can be treated as an EtcdKey by dropping the closing '/'.
+</span>136 <span style=''>   *
+</span>137 <span style=''>   * @param dir the [[com.eiipii.etcd.client.model.EtcdDirectory EtcdDirectory]] that is to be treated as a key.
+</span>138 <span style=''>   */
+</span>139 <span style=''>  def keyOfDirectory(dir: EtcdDirectory) = </span><span style='background: #AEF1AE'>EtcdKey(dir.dir.dropRight(1))</span><span style=''>
+</span>140 <span style=''>
+</span>141 <span style=''>  /**
+</span>142 <span style=''>   * Returns an instance of [[com.eiipii.etcd.client.model.EtcdDirectory EtcdDirectory]] from a [[com.eiipii.etcd.client.model.EtcdKey EtcdKey]].
+</span>143 <span style=''>   *
+</span>144 <span style=''>   * An EtcdDirectory can be treated as an EtcdKey by adding a closing '/'.
+</span>145 <span style=''>   *
+</span>146 <span style=''>   * @param key the [[com.eiipii.etcd.client.model.EtcdKey EtcdKey]] that is to be treated as a directory.
+</span>147 <span style=''>   */
+</span>148 <span style=''>  def directoryOfKey(key: EtcdKey) = </span><span style='background: #AEF1AE'>EtcdDirectory(key.key + "/")</span><span style=''>
+</span>149 <span style=''>}
+</span>150 <span style=''>// Common elements
+</span>151 <span style=''>/**
+</span>152 <span style=''> * A key name is a full path name.
+</span>153 <span style=''> *
+</span>154 <span style=''> * @param key the string representation of the key.
+</span>155 <span style=''> */
+</span>156 <span style=''>case class EtcdKey(key: String) extends AnyVal
+</span>157 <span style=''>
+</span>158 <span style=''>/**
+</span>159 <span style=''> * A directory is a full path with a trailing '/'.
+</span>160 <span style=''> *
+</span>161 <span style=''> * @param dir the string representation of the directory.
+</span>162 <span style=''> */
+</span>163 <span style=''>case class EtcdDirectory(dir: String) extends AnyVal
+</span>164 <span style=''>
+</span>165 <span style=''>/**
+</span>166 <span style=''> * A value is any data being stored under a key.
+</span>167 <span style=''> *
+</span>168 <span style=''> * @param value the string representation of the value.
+</span>169 <span style=''> */
+</span>170 <span style=''>
+</span>171 <span style=''>case class EtcdValue(value: String) extends AnyVal
+</span>172 <span style=''>
+</span>173 <span style=''>/**
+</span>174 <span style=''> * Etcd information returned in headers of responses to requests performed by key-value methods.
+</span>175 <span style=''> */
+</span>176 <span style=''>case class EtcdHeaders(
+</span>177 <span style=''>  xEtcdClusterId: EtcdClusterId,
+</span>178 <span style=''>  xEtcdIndex: EtcdIndex,
+</span>179 <span style=''>  xRaftIndex: RaftIndex,
+</span>180 <span style=''>  xRaftTerm: RaftTerm
+</span>181 <span style=''>)
+</span>182 <span style=''>
+</span>183 <span style=''>sealed trait EtcdErrorMessage {
+</span>184 <span style=''>  def message: String
+</span>185 <span style=''>}
+</span>186 <span style=''>
+</span>187 <span style=''>case class EtcdError(
+</span>188 <span style=''>  cause: String,
+</span>189 <span style=''>  errorCode: Int,
+</span>190 <span style=''>  index: Int,
+</span>191 <span style=''>  message: String
+</span>192 <span style=''>) extends EtcdErrorMessage
+</span>193 <span style=''>
+</span>194 <span style=''>case class EtcdSimpleError(message: String) extends EtcdErrorMessage
+</span>195 <span style=''>
+</span>196 <span style=''>case class EtcdNodeEmpty(
+</span>197 <span style=''>  key: EtcdKey,
+</span>198 <span style=''>  modifiedIndex: EtcdIndex,
+</span>199 <span style=''>  createdIndex: EtcdIndex,
+</span>200 <span style=''>  ttl: Option[EtcdTTL]
+</span>201 <span style=''>)
+</span>202 <span style=''>
+</span>203 <span style=''>case class EtcdNodeValue(
+</span>204 <span style=''>  key: EtcdKey,
+</span>205 <span style=''>  value: EtcdValue,
+</span>206 <span style=''>  modifiedIndex: EtcdIndex,
+</span>207 <span style=''>  createdIndex: EtcdIndex,
+</span>208 <span style=''>  ttl: Option[EtcdTTL],
+</span>209 <span style=''>  expiration: Option[String]
+</span>210 <span style=''>)
+</span>211 <span style=''>
+</span>212 <span style=''>// Model for methods arguments
+</span>213 <span style=''>
+</span>214 <span style=''>// Model for methods results.
+</span>215 <span style=''>
+</span>216 <span style=''>/**
+</span>217 <span style=''> * If HTTP request information do not match the etcd format,
+</span>218 <span style=''> * then a IncorrectEtcdRequestFormatException is created
+</span>219 <span style=''> */
+</span>220 <span style=''>case class IncorrectEtcdRequestFormatException(
+</span>221 <span style=''>    val handler: String,
+</span>222 <span style=''>    val responseCode: Option[Int],
+</span>223 <span style=''>    val responseBody: Option[String],
+</span>224 <span style=''>    val headers: Option[EtcdHeaders]
+</span>225 <span style=''>) extends Exception {
+</span>226 <span style=''>
+</span>227 <span style=''>  lazy val clustedIdHeader: Option[EtcdClusterId] = </span><span style='background: #AEF1AE'>headers.map(_.xEtcdClusterId)</span><span style=''>
+</span>228 <span style=''>  override def toString: String =
+</span>229 <span style=''>    </span><span style='background: #AEF1AE'>s"Incorrect Etcd response. Handler[${handler}], statusCode[${responseCode}], body:[${responseBody}] clustedIdHeader:[${clustedIdHeader}] headers:[${headers}]"</span><span style=''>
+</span>230 <span style=''>}
+</span>231 <span style=''>
+</span>232 <span style=''>/**
+</span>233 <span style=''> * A simple version of IncorrectEtcdRequestFormatException when only ClusterId is provided on headers.
+</span>234 <span style=''> */
+</span>235 <span style=''>case class IncorrectSimpleEtcdRequestFormatException(
+</span>236 <span style=''>    val handler: String,
+</span>237 <span style=''>    val responseCode: Option[Int],
+</span>238 <span style=''>    val responseBody: Option[String],
+</span>239 <span style=''>    val clustedIdHeader: Option[EtcdClusterId]
+</span>240 <span style=''>) extends Exception {
+</span>241 <span style=''>
+</span>242 <span style=''>  override def toString: String =
+</span>243 <span style=''>    </span><span style='background: #AEF1AE'>s"Incorrect Etcd response. Handler[${handler}], statusCode[${responseCode}], body:[${responseBody}] clustedIdHeader:[${clustedIdHeader}]"</span><span style=''>
+</span>244 <span style=''>}
+</span>245 <span style=''>
+</span>246 <span style=''>/**
+</span>247 <span style=''> * HTTP response code to a request.
+</span>248 <span style=''> */
+</span>249 <span style=''>case class EtcdResponseCode(val code: Int) extends AnyVal
+</span>250 <span style=''>
+</span>251 <span style=''>case class EtcdClusterId(val id: String) extends AnyVal
+</span>252 <span style=''>
+</span>253 <span style=''>/**
+</span>254 <span style=''> * Index associated to the last operation performed in etcd.
+</span>255 <span style=''> *
+</span>256 <span style=''> * See [[https://coreos.com/etcd/docs/latest/v2/api.html#response-headers Response Headers]].
+</span>257 <span style=''> */
+</span>258 <span style=''>case class EtcdIndex(val index: Int) extends AnyVal
+</span>259 <span style=''>
+</span>260 <span style=''>/**
+</span>261 <span style=''> * Life span in seconds of a key or directory.
+</span>262 <span style=''> *
+</span>263 <span style=''> * @param ttl Integer representing the time to live in seconds.
+</span>264 <span style=''> */
+</span>265 <span style=''>case class EtcdTTL(val ttl: Int) extends AnyVal
+</span>266 <span style=''>
+</span>267 <span style=''>/**
+</span>268 <span style=''> * An integer that will increase whenever an etcd master election happens in the cluster.
+</span>269 <span style=''> *
+</span>270 <span style=''> * See [[https://coreos.com/etcd/docs/latest/v2/api.html#response-headers Response Headers]].
+</span>271 <span style=''> */
+</span>272 <span style=''>case class RaftTerm(val term: Int) extends AnyVal
+</span>273 <span style=''>
+</span>274 <span style=''>/**
+</span>275 <span style=''> * See [[https://coreos.com/etcd/docs/latest/v2/api.html#response-headers Response Headers]].
+</span>276 <span style=''> */
+</span>277 <span style=''>case class RaftIndex(val rIndex: Int) extends AnyVal
+</span>278 <span style=''>
+</span>279 <span style=''>/**
+</span>280 <span style=''> * Default response for operations which return only X-Etcd Cluster ID.
+</span>281 <span style=''> */
+</span>282 <span style=''>sealed trait EtcdConfirmationResult {
+</span>283 <span style=''>  def accepted: Boolean
+</span>284 <span style=''>}
+</span>285 <span style=''>
+</span>286 <span style=''>/**
+</span>287 <span style=''> * Empty response to confirm that operation was successful.
+</span>288 <span style=''> *
+</span>289 <span style=''> * @param xEtcdClusterId cluster id on headers
+</span>290 <span style=''> */
+</span>291 <span style=''>case class EtcdConfirmationResponse(
+</span>292 <span style=''>    xEtcdClusterId: EtcdClusterId
+</span>293 <span style=''>) extends EtcdConfirmationResult {
+</span>294 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>295 <span style=''>}
+</span>296 <span style=''>
+</span>297 <span style=''>/**
+</span>298 <span style=''> * Key-Value methods
+</span>299 <span style=''> * Put operation result.
+</span>300 <span style=''> */
+</span>301 <span style=''>sealed trait EtcdSetKeyResult {
+</span>302 <span style=''>  def accepted: Boolean
+</span>303 <span style=''>}
+</span>304 <span style=''>
+</span>305 <span style=''>case class EtcdSetKeyResponse(
+</span>306 <span style=''>    headers: EtcdHeaders,
+</span>307 <span style=''>    body: EtcdSetKeyBody
+</span>308 <span style=''>) extends EtcdSetKeyResult {
+</span>309 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>310 <span style=''>}
+</span>311 <span style=''>
+</span>312 <span style=''>case class EtcdSetKeyBody(
+</span>313 <span style=''>  action: String,
+</span>314 <span style=''>  node: EtcdNodeValue,
+</span>315 <span style=''>  prevNode: Option[EtcdNodeValue]
+</span>316 <span style=''>)
+</span>317 <span style=''>
+</span>318 <span style=''>sealed trait EtcdGetKeyResult {
+</span>319 <span style=''>  def accepted: Boolean
+</span>320 <span style=''>}
+</span>321 <span style=''>
+</span>322 <span style=''>case class EtcdGetKeyResponse(
+</span>323 <span style=''>    headers: EtcdHeaders,
+</span>324 <span style=''>    body: EtcdGetKeyBody
+</span>325 <span style=''>) extends EtcdGetKeyResult {
+</span>326 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>327 <span style=''>}
+</span>328 <span style=''>
+</span>329 <span style=''>case class EtcdGetKeyBody(
+</span>330 <span style=''>  action: String,
+</span>331 <span style=''>  node: EtcdNodeValue
+</span>332 <span style=''>)
+</span>333 <span style=''>
+</span>334 <span style=''>/**
+</span>335 <span style=''> * Result of a wait operation.
+</span>336 <span style=''> *
+</span>337 <span style=''> * For implementation details, see [[com.eiipii.etcd.client.model.EtcdWaitForKeyAccepted EtcdWaitForKeyAccepted]], [[com.eiipii.etcd.client.model.FutureBasedEtcdWaitCallback FutureBasedEtcdWaitCallback]] and [[com.eiipii.etcd.client.model.EtcdWaitCallback EtcdWaitCallback]].
+</span>338 <span style=''> */
+</span>339 <span style=''>sealed trait EtcdWaitForKeyResult {
+</span>340 <span style=''>  def accepted: Boolean
+</span>341 <span style=''>}
+</span>342 <span style=''>
+</span>343 <span style=''>/**
+</span>344 <span style=''> * Response returned once the wait is accepted.
+</span>345 <span style=''> *
+</span>346 <span style=''> * In the case there has not been any change in etcd since the watch has ben set, etcd returns a HTTP response with an empty body, but with headers confirming the wait has been set.
+</span>347 <span style=''> * See [[https://coreos.com/etcd/docs/latest/v2/api.html#waiting-for-a-change Waiting for a change]].
+</span>348 <span style=''> *
+</span>349 <span style=''> * @param headers Headers returned as response to a request of an operation on the key space.
+</span>350 <span style=''> */
+</span>351 <span style=''>case class EtcdWaitForKeyAccepted(headers: EtcdHeaders) extends EtcdWaitForKeyResult {
+</span>352 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>353 <span style=''>}
+</span>354 <span style=''>
+</span>355 <span style=''>/**
+</span>356 <span style=''> * Callback for a wait operation used by [[com.eiipii.etcd.client.handlers.EtcdWaitAcceptedAsyncHandler EtcdWaitAcceptedAsyncHandler]] to asynchonously handle etcd responses to a wait operation.
+</span>357 <span style=''> */
+</span>358 <span style=''>trait EtcdWaitCallback {
+</span>359 <span style=''>  /**
+</span>360 <span style=''>   *
+</span>361 <span style=''>   *
+</span>362 <span style=''>   * @param response [[com.eiipii.etcd.client.model.EtcdGetKeyResponse EtcdGetKeyResponse]] from etcd sent when a change on a key or directory takes place.
+</span>363 <span style=''>   */
+</span>364 <span style=''>  def onValueChange(response: EtcdGetKeyResponse): Unit
+</span>365 <span style=''>
+</span>366 <span style=''>  /**
+</span>367 <span style=''>   *
+</span>368 <span style=''>   * @param t Throwable from an error of an [[com.eiipii.etcd.client.EtcdClient.waitForKey EtcdClient.waitForKey]] operation.
+</span>369 <span style=''>   */
+</span>370 <span style=''>  def onError(t: Throwable): Unit
+</span>371 <span style=''>}
+</span>372 <span style=''>
+</span>373 <span style=''>/**
+</span>374 <span style=''> * Callback for a wait operation.
+</span>375 <span style=''> *
+</span>376 <span style=''> * Extends [[com.eiipii.etcd.client.model.EtcdWaitCallback EtcdWaitCallback]].
+</span>377 <span style=''> * It should be used as input for [[com.eiipii.etcd.client.EtcdClient.waitForKey EtcdClient.waitForKey]].
+</span>378 <span style=''> *
+</span>379 <span style=''> * It contains methods for retrieving an [[com.eiipii.etcd.client.model.EtcdGetKeyResponse EtcdGetKeyResponse]] received once a change to etcd is registered.
+</span>380 <span style=''> *
+</span>381 <span style=''> */
+</span>382 <span style=''>class FutureBasedEtcdWaitCallback extends EtcdWaitCallback {
+</span>383 <span style=''>  private[this] val p = </span><span style='background: #AEF1AE'>Promise[EtcdGetKeyResponse]</span><span style=''>
+</span>384 <span style=''>
+</span>385 <span style=''>  /**
+</span>386 <span style=''>   *
+</span>387 <span style=''>   * @param response [[com.eiipii.etcd.client.model.EtcdGetKeyResponse EtcdGetKeyResponse]] from etcd sent when a change on a key or directory takes place.
+</span>388 <span style=''>   */
+</span>389 <span style=''>  override def onValueChange(response: EtcdGetKeyResponse): Unit = </span><span style='background: #AEF1AE'>p.success(response)</span><span style=''>
+</span>390 <span style=''>
+</span>391 <span style=''>  /**
+</span>392 <span style=''>   *
+</span>393 <span style=''>   * @param t Throwable from an error of an [[com.eiipii.etcd.client.EtcdClient.waitForKey EtcdClient.waitForKey]] operation.
+</span>394 <span style=''>   */
+</span>395 <span style=''>  override def onError(t: Throwable): Unit = </span><span style='background: #AEF1AE'>p.failure(t)</span><span style=''>
+</span>396 <span style=''>
+</span>397 <span style=''>  /**
+</span>398 <span style=''>   *
+</span>399 <span style=''>   * @return Future wrapped around the [[com.eiipii.etcd.client.model.EtcdGetKeyResponse EtcdGetKeyResponse]] to be returned once the callback is completed.
+</span>400 <span style=''>   */
+</span>401 <span style=''>  def future: Future[EtcdGetKeyResponse] = </span><span style='background: #AEF1AE'>p.future</span><span style=''>
+</span>402 <span style=''>
+</span>403 <span style=''>  /**
+</span>404 <span style=''>   *
+</span>405 <span style=''>   * @return true if the callback has been completed, false otherwise.
+</span>406 <span style=''>   */
+</span>407 <span style=''>  def isCompleted: Boolean = </span><span style='background: #AEF1AE'>p.isCompleted</span><span style=''>
+</span>408 <span style=''>}
+</span>409 <span style=''>
+</span>410 <span style=''>/**
+</span>411 <span style=''> * Create directory operation result.
+</span>412 <span style=''> */
+</span>413 <span style=''>sealed trait EtcdCreateDirResult {
+</span>414 <span style=''>  def accepted: Boolean
+</span>415 <span style=''>}
+</span>416 <span style=''>
+</span>417 <span style=''>case class EtcdCreateDirResponse(
+</span>418 <span style=''>    headers: EtcdHeaders,
+</span>419 <span style=''>    body: EtcdCreateDirBody
+</span>420 <span style=''>) extends EtcdCreateDirResult {
+</span>421 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>422 <span style=''>}
+</span>423 <span style=''>
+</span>424 <span style=''>case class EtcdCreateDirBody(
+</span>425 <span style=''>  action: String,
+</span>426 <span style=''>  node: EtcdCreateDirNode,
+</span>427 <span style=''>  prevNode: Option[EtcdCreateDirNode]
+</span>428 <span style=''>)
+</span>429 <span style=''>
+</span>430 <span style=''>case class EtcdCreateDirNode(
+</span>431 <span style=''>  createdIndex: EtcdIndex,
+</span>432 <span style=''>  dir: Boolean,
+</span>433 <span style=''>  expiration: Option[String],
+</span>434 <span style=''>  key: EtcdKey,
+</span>435 <span style=''>  modifiedIndex: Option[EtcdIndex],
+</span>436 <span style=''>  ttl: Option[EtcdTTL]
+</span>437 <span style=''>)
+</span>438 <span style=''>
+</span>439 <span style=''>/**
+</span>440 <span style=''> * Delete operation result.
+</span>441 <span style=''> */
+</span>442 <span style=''>sealed trait EtcdDeleteKeyResult {
+</span>443 <span style=''>  def accepted: Boolean
+</span>444 <span style=''>}
+</span>445 <span style=''>
+</span>446 <span style=''>case class EtcdDeleteKeyResponse(
+</span>447 <span style=''>    headers: EtcdHeaders,
+</span>448 <span style=''>    body: EtcdDeleteKeyBody
+</span>449 <span style=''>) extends EtcdDeleteKeyResult {
+</span>450 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>451 <span style=''>}
+</span>452 <span style=''>
+</span>453 <span style=''>case class EtcdDeleteKeyBody(
+</span>454 <span style=''>  action: String,
+</span>455 <span style=''>  node: EtcdNodeEmpty,
+</span>456 <span style=''>  prevNode: EtcdNodeValue
+</span>457 <span style=''>)
+</span>458 <span style=''>
+</span>459 <span style=''>/**
+</span>460 <span style=''> * List directory operation result.
+</span>461 <span style=''> */
+</span>462 <span style=''>sealed trait EtcdListDirResult {
+</span>463 <span style=''>  def accepted: Boolean
+</span>464 <span style=''>}
+</span>465 <span style=''>
+</span>466 <span style=''>case class EtcdListDirResponse(
+</span>467 <span style=''>    headers: EtcdHeaders,
+</span>468 <span style=''>    body: EtcdListDirBody
+</span>469 <span style=''>) extends EtcdListDirResult {
+</span>470 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>471 <span style=''>}
+</span>472 <span style=''>
+</span>473 <span style=''>case class EtcdListDirBody(action: String, node: EtcdListDirectory)
+</span>474 <span style=''>
+</span>475 <span style=''>sealed trait EtcdListDirNode {
+</span>476 <span style=''>  def dir: Boolean
+</span>477 <span style=''>  def key: EtcdKey
+</span>478 <span style=''>  def modifiedIndex: EtcdIndex
+</span>479 <span style=''>  def createdIndex: EtcdIndex
+</span>480 <span style=''>}
+</span>481 <span style=''>
+</span>482 <span style=''>case class EtcdListDirectory(
+</span>483 <span style=''>  dir: Boolean = true,
+</span>484 <span style=''>  key: EtcdKey,
+</span>485 <span style=''>  nodes: List[EtcdListDirNode],
+</span>486 <span style=''>  modifiedIndex: EtcdIndex,
+</span>487 <span style=''>  createdIndex: EtcdIndex
+</span>488 <span style=''>) extends EtcdListDirNode
+</span>489 <span style=''>
+</span>490 <span style=''>case class EtcdListValue(
+</span>491 <span style=''>  dir: Boolean = false,
+</span>492 <span style=''>  key: EtcdKey,
+</span>493 <span style=''>  value: EtcdValue,
+</span>494 <span style=''>  modifiedIndex: EtcdIndex,
+</span>495 <span style=''>  createdIndex: EtcdIndex
+</span>496 <span style=''>) extends EtcdListDirNode
+</span>497 <span style=''>
+</span>498 <span style=''>/**
+</span>499 <span style=''> * Version Request Result.
+</span>500 <span style=''> */
+</span>501 <span style=''>
+</span>502 <span style=''>sealed trait EtcdGetVersionResult {
+</span>503 <span style=''>  def accepted: Boolean
+</span>504 <span style=''>}
+</span>505 <span style=''>
+</span>506 <span style=''>case class EtcdGetVersionResponse(
+</span>507 <span style=''>    etcdserver: String,
+</span>508 <span style=''>    etcdcluster: String
+</span>509 <span style=''>) extends EtcdGetVersionResult {
+</span>510 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>511 <span style=''>}
+</span>512 <span style=''>
+</span>513 <span style=''>sealed trait EtcdGetHealthResult {
+</span>514 <span style=''>  def accepted: Boolean
+</span>515 <span style=''>}
+</span>516 <span style=''>
+</span>517 <span style=''>case class EtcdGetHealthResponse(
+</span>518 <span style=''>    health: String
+</span>519 <span style=''>) extends EtcdGetHealthResult {
+</span>520 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>521 <span style=''>}
+</span>522 <span style=''>
+</span>523 <span style=''>/**
+</span>524 <span style=''> * Leader Statistics Result.
+</span>525 <span style=''> */
+</span>526 <span style=''>
+</span>527 <span style=''>sealed trait EtcdGetLeaderStatsResult {
+</span>528 <span style=''>  def accepted: Boolean
+</span>529 <span style=''>}
+</span>530 <span style=''>
+</span>531 <span style=''>case class EtcdGetLeaderStatsResponse(
+</span>532 <span style=''>    leader: String,
+</span>533 <span style=''>    followers: List[EtcdMemberStats]
+</span>534 <span style=''>) extends EtcdGetLeaderStatsResult {
+</span>535 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>536 <span style=''>}
+</span>537 <span style=''>
+</span>538 <span style=''>case class EtcdMemberStats(
+</span>539 <span style=''>  memberId: String,
+</span>540 <span style=''>  counts: EtcdCounts,
+</span>541 <span style=''>  latency: EtcdLatency
+</span>542 <span style=''>)
+</span>543 <span style=''>
+</span>544 <span style=''>case class EtcdCounts(
+</span>545 <span style=''>  fail: Int,
+</span>546 <span style=''>  success: Int
+</span>547 <span style=''>)
+</span>548 <span style=''>
+</span>549 <span style=''>case class EtcdLatency(
+</span>550 <span style=''>  average: Double,
+</span>551 <span style=''>  current: Double,
+</span>552 <span style=''>  maximum: Double,
+</span>553 <span style=''>  minimum: Double,
+</span>554 <span style=''>  standardDeviation: Double
+</span>555 <span style=''>)
+</span>556 <span style=''>
+</span>557 <span style=''>/**
+</span>558 <span style=''> * Self Statistics Result.
+</span>559 <span style=''> */
+</span>560 <span style=''>
+</span>561 <span style=''>sealed trait EtcdGetSelfStatsResult {
+</span>562 <span style=''>  def accepted: Boolean
+</span>563 <span style=''>}
+</span>564 <span style=''>
+</span>565 <span style=''>case class EtcdGetSelfStatsResponse(
+</span>566 <span style=''>    id: String,
+</span>567 <span style=''>    leaderInfo: EtcdLeaderInfo,
+</span>568 <span style=''>    name: String,
+</span>569 <span style=''>    recvAppendRequestCnt: Int,
+</span>570 <span style=''>    recvBandwidthRate: Option[Double],
+</span>571 <span style=''>    recvPkgRate: Option[Double],
+</span>572 <span style=''>    sendAppendRequestCnt: Int,
+</span>573 <span style=''>    startTime: String,
+</span>574 <span style=''>    state: String
+</span>575 <span style=''>) extends EtcdGetSelfStatsResult {
+</span>576 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>577 <span style=''>}
+</span>578 <span style=''>
+</span>579 <span style=''>case class EtcdLeaderInfo(
+</span>580 <span style=''>  leader: String,
+</span>581 <span style=''>  startTime: String,
+</span>582 <span style=''>  uptime: String
+</span>583 <span style=''>)
+</span>584 <span style=''>
+</span>585 <span style=''>/**
+</span>586 <span style=''> * Self Statistics Result.
+</span>587 <span style=''> */
+</span>588 <span style=''>
+</span>589 <span style=''>sealed trait EtcdGetStoreStatsResult {
+</span>590 <span style=''>  def accepted: Boolean
+</span>591 <span style=''>}
+</span>592 <span style=''>
+</span>593 <span style=''>case class EtcdGetStoreStatsResponse(
+</span>594 <span style=''>    compareAndSwapFail: Int,
+</span>595 <span style=''>    compareAndSwapSuccess: Int,
+</span>596 <span style=''>    createFail: Int,
+</span>597 <span style=''>    createSuccess: Int,
+</span>598 <span style=''>    deleteFail: Int,
+</span>599 <span style=''>    deleteSuccess: Int,
+</span>600 <span style=''>    expireCount: Int,
+</span>601 <span style=''>    getsFail: Int,
+</span>602 <span style=''>    getsSuccess: Int,
+</span>603 <span style=''>    setsFail: Int,
+</span>604 <span style=''>    setsSuccess: Int,
+</span>605 <span style=''>    updateFail: Int,
+</span>606 <span style=''>    updateSuccess: Int,
+</span>607 <span style=''>    watchers: Int
+</span>608 <span style=''>) extends EtcdGetStoreStatsResult {
+</span>609 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>610 <span style=''>}
+</span>611 <span style=''>
+</span>612 <span style=''>// Authentication
+</span>613 <span style=''>
+</span>614 <span style=''>/**
+</span>615 <span style=''> * Data used to get authorization when authentication is enabled.
+</span>616 <span style=''> *
+</span>617 <span style=''> * @param userLogin String representing a login.
+</span>618 <span style=''> * @param password String representing a password.
+</span>619 <span style=''> */
+</span>620 <span style=''>case class EtcdUserAuthenticationData(
+</span>621 <span style=''>  userLogin: String,
+</span>622 <span style=''>  password: String
+</span>623 <span style=''>)
+</span>624 <span style=''>
+</span>625 <span style=''>/**
+</span>626 <span style=''> * Data representing a user in etcd.
+</span>627 <span style=''> *
+</span>628 <span style=''> * @param user String representing the name of the user.
+</span>629 <span style=''> * @param password String representing the password of the user.
+</span>630 <span style=''> * @param roles List of instances of [[com.eiipii.etcd.client.model.EtcdRole EtcdRole]], which specify the permissions the user has.
+</span>631 <span style=''> */
+</span>632 <span style=''>case class EtcdUser(
+</span>633 <span style=''>  user: String,
+</span>634 <span style=''>  password: Option[String],
+</span>635 <span style=''>  roles: List[EtcdRole] = List()
+</span>636 <span style=''>)
+</span>637 <span style=''>
+</span>638 <span style=''>/**
+</span>639 <span style=''> * Data specifying what write and read privileges are granted or revoked to the users in possession of it.
+</span>640 <span style=''> *
+</span>641 <span style=''> * @param role String representing the name of the role.
+</span>642 <span style=''> * @param permissions List of permissions that the possession of the role grants.
+</span>643 <span style=''> * @param grant Used for granting a permission when a role is updated.
+</span>644 <span style=''> * @param revoke Used for revoking a permission when a role is updated.
+</span>645 <span style=''> */
+</span>646 <span style=''>case class EtcdRole(
+</span>647 <span style=''>  role: String,
+</span>648 <span style=''>  permissions: Option[EtcdPermission] = None,
+</span>649 <span style=''>  grant: Option[EtcdPermission] = None,
+</span>650 <span style=''>  revoke: Option[EtcdPermission] = None
+</span>651 <span style=''>)
+</span>652 <span style=''>
+</span>653 <span style=''>/**
+</span>654 <span style=''> * Data specifying the read and write access to the key-value and authentication spaces.
+</span>655 <span style=''> *
+</span>656 <span style=''> * @param kv Instance of [[com.eiipii.etcd.client.model.EtcdKV EtcdKV]]
+</span>657 <span style=''> */
+</span>658 <span style=''>case class EtcdPermission(
+</span>659 <span style=''>  kv: EtcdKV
+</span>660 <span style=''>)
+</span>661 <span style=''>
+</span>662 <span style=''>/**
+</span>663 <span style=''> * Data specifying the read and write access to the key-value and authentication spaces.
+</span>664 <span style=''> *
+</span>665 <span style=''> * @param read List of strings specifying read access to a certain domain of the key-value and authentication spaces.
+</span>666 <span style=''> * @param write List of strings specifying write access to a certain domain of the key-value and authentication spaces.
+</span>667 <span style=''> */
+</span>668 <span style=''>case class EtcdKV(
+</span>669 <span style=''>  read: List[String],
+</span>670 <span style=''>  write: List[String]
+</span>671 <span style=''>)
+</span>672 <span style=''>
+</span>673 <span style=''>case class EtcdEnableAuthentication(
+</span>674 <span style=''>  enabled: Option[Boolean]
+</span>675 <span style=''>)
+</span>676 <span style=''>
+</span>677 <span style=''>/**
+</span>678 <span style=''> * Form that needs to be filled to use as input for [[com.eiipii.etcd.client.EtcdClient.addUpdateUser EtcdClient.addUpdateUser]] and [[com.eiipii.etcd.client.EtcdClient.deleteUser EtcdClient.deleteUser]] methods.
+</span>679 <span style=''> *
+</span>680 <span style=''> * @param user String identifying a user.
+</span>681 <span style=''> * @param password Password that the user will use for authentication.
+</span>682 <span style=''> * @param roles List of roles that a user has when it gets created.
+</span>683 <span style=''> * @param grant List of roles to be granted when performing an update.
+</span>684 <span style=''> * @param revoke List of roles to be revoked when performing an update.
+</span>685 <span style=''> */
+</span>686 <span style=''>case class EtcdUserRequestForm(
+</span>687 <span style=''>  user: String,
+</span>688 <span style=''>  password: Option[String] = None,
+</span>689 <span style=''>  roles: List[String] = List(),
+</span>690 <span style=''>  grant: List[String] = List(),
+</span>691 <span style=''>  revoke: List[String] = List()
+</span>692 <span style=''>)
+</span>693 <span style=''>
+</span>694 <span style=''>/**
+</span>695 <span style=''> * Get Authentication Status
+</span>696 <span style=''> */
+</span>697 <span style=''>
+</span>698 <span style=''>sealed trait EtcdGetAuthenticationStatusResult {
+</span>699 <span style=''>  def accepted: Boolean
+</span>700 <span style=''>}
+</span>701 <span style=''>
+</span>702 <span style=''>case class EtcdGetAuthenticationStatusResponse(
+</span>703 <span style=''>    xEtcdClusterId: EtcdClusterId,
+</span>704 <span style=''>    body: EtcdEnableAuthentication
+</span>705 <span style=''>) extends EtcdGetAuthenticationStatusResult {
+</span>706 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>707 <span style=''>}
+</span>708 <span style=''>
+</span>709 <span style=''>/**
+</span>710 <span style=''> * Add or Update User
+</span>711 <span style=''> */
+</span>712 <span style=''>
+</span>713 <span style=''>sealed trait EtcdAddUpdateUserResult {
+</span>714 <span style=''>  def accepted: Boolean
+</span>715 <span style=''>}
+</span>716 <span style=''>
+</span>717 <span style=''>case class EtcdAddUpdateUserResponse(
+</span>718 <span style=''>    xEtcdClusterId: EtcdClusterId,
+</span>719 <span style=''>    body: EtcdAddUpdateUserResponseBody
+</span>720 <span style=''>) extends EtcdAddUpdateUserResult {
+</span>721 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>722 <span style=''>}
+</span>723 <span style=''>
+</span>724 <span style=''>case class EtcdAddUpdateUserResponseBody(
+</span>725 <span style=''>  user: String,
+</span>726 <span style=''>  password: Option[String],
+</span>727 <span style=''>  roles: List[String]
+</span>728 <span style=''>)
+</span>729 <span style=''>
+</span>730 <span style=''>/**
+</span>731 <span style=''> * GetUsers
+</span>732 <span style=''> */
+</span>733 <span style=''>
+</span>734 <span style=''>sealed trait EtcdGetUsersResult {
+</span>735 <span style=''>  def accepted: Boolean
+</span>736 <span style=''>}
+</span>737 <span style=''>
+</span>738 <span style=''>case class EtcdGetUsersResponse(
+</span>739 <span style=''>    xEtcdClusterId: EtcdClusterId,
+</span>740 <span style=''>    users: EtcdGetUsersBody
+</span>741 <span style=''>) extends EtcdGetUsersResult {
+</span>742 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>743 <span style=''>}
+</span>744 <span style=''>
+</span>745 <span style=''>case class EtcdGetUsersBody(
+</span>746 <span style=''>  users: List[EtcdUser]
+</span>747 <span style=''>)
+</span>748 <span style=''>
+</span>749 <span style=''>/**
+</span>750 <span style=''> * GetUserDetails
+</span>751 <span style=''> */
+</span>752 <span style=''>
+</span>753 <span style=''>sealed trait EtcdGetUserDetailsResult {
+</span>754 <span style=''>  def accepted: Boolean
+</span>755 <span style=''>}
+</span>756 <span style=''>
+</span>757 <span style=''>case class EtcdGetUserDetailsResponse(
+</span>758 <span style=''>    xEtcdClusterId: EtcdClusterId,
+</span>759 <span style=''>    body: EtcdUser
+</span>760 <span style=''>) extends EtcdGetUserDetailsResult {
+</span>761 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>762 <span style=''>}
+</span>763 <span style=''>
+</span>764 <span style=''>/**
+</span>765 <span style=''> * CreateUpdateRole
+</span>766 <span style=''> */
+</span>767 <span style=''>
+</span>768 <span style=''>sealed trait EtcdAddUpdateRoleResult {
+</span>769 <span style=''>  def accepted: Boolean
+</span>770 <span style=''>}
+</span>771 <span style=''>
+</span>772 <span style=''>case class EtcdAddUpdateRoleResponse(
+</span>773 <span style=''>    xEtcdClusterId: EtcdClusterId,
+</span>774 <span style=''>    body: EtcdRole
+</span>775 <span style=''>) extends EtcdAddUpdateRoleResult {
+</span>776 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>777 <span style=''>}
+</span>778 <span style=''>
+</span>779 <span style=''>/**
+</span>780 <span style=''> * GetRoles
+</span>781 <span style=''> */
+</span>782 <span style=''>
+</span>783 <span style=''>sealed trait EtcdGetRolesResult {
+</span>784 <span style=''>  def accepted: Boolean
+</span>785 <span style=''>}
+</span>786 <span style=''>
+</span>787 <span style=''>case class EtcdGetRolesResponse(
+</span>788 <span style=''>    xEtcdClusterId: EtcdClusterId,
+</span>789 <span style=''>    roles: EtcdGetRolesBody
+</span>790 <span style=''>) extends EtcdGetRolesResult {
+</span>791 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>792 <span style=''>}
+</span>793 <span style=''>
+</span>794 <span style=''>case class EtcdGetRolesBody(
+</span>795 <span style=''>  roles: List[EtcdRole]
+</span>796 <span style=''>)
+</span>797 <span style=''>
+</span>798 <span style=''>/**
+</span>799 <span style=''> * GetRoleDetails
+</span>800 <span style=''> */
+</span>801 <span style=''>
+</span>802 <span style=''>sealed trait EtcdGetRoleDetailsResult {
+</span>803 <span style=''>  def accepted: Boolean
+</span>804 <span style=''>}
+</span>805 <span style=''>
+</span>806 <span style=''>case class EtcdGetRoleDetailsResponse(
+</span>807 <span style=''>    xEtcdClusterId: EtcdClusterId,
+</span>808 <span style=''>    body: EtcdRole
+</span>809 <span style=''>) extends EtcdGetRoleDetailsResult {
+</span>810 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>811 <span style=''>}
+</span>812 <span style=''>
+</span>813 <span style=''>// Members
+</span>814 <span style=''>
+</span>815 <span style=''>/**
+</span>816 <span style=''> * Case class representing the information that a member of a cluster may have of another member.
+</span>817 <span style=''> *
+</span>818 <span style=''> * @param id String identifying a member of an etcd cluster.
+</span>819 <span style=''> * @param name String identifying a member of an etcd cluster by name.
+</span>820 <span style=''> * @param peerURLs List of URLs (represented as strings) used for communication between peers in an etcd cluster.
+</span>821 <span style=''> * @param clientURLs List of URLs (represented as strings) used for communication with clients.
+</span>822 <span style=''> */
+</span>823 <span style=''>case class EtcdMember(
+</span>824 <span style=''>  id: String,
+</span>825 <span style=''>  name: String,
+</span>826 <span style=''>  peerURLs: List[String],
+</span>827 <span style=''>  clientURLs: List[String]
+</span>828 <span style=''>)
+</span>829 <span style=''>
+</span>830 <span style=''>/**
+</span>831 <span style=''> * GetMembers
+</span>832 <span style=''> */
+</span>833 <span style=''>
+</span>834 <span style=''>sealed trait EtcdGetMembersResult {
+</span>835 <span style=''>  def accepted: Boolean
+</span>836 <span style=''>}
+</span>837 <span style=''>
+</span>838 <span style=''>case class EtcdGetMembersResponse(
+</span>839 <span style=''>    xEtcdClusterId: EtcdClusterId,
+</span>840 <span style=''>    body: EtcdGetMembersBody
+</span>841 <span style=''>) extends EtcdGetMembersResult {
+</span>842 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>843 <span style=''>}
+</span>844 <span style=''>
+</span>845 <span style=''>case class EtcdGetMembersBody(
+</span>846 <span style=''>  members: List[EtcdMember]
+</span>847 <span style=''>)
+</span>848 <span style=''>
+</span>849 <span style=''>/**
+</span>850 <span style=''> * AddMember
+</span>851 <span style=''> */
+</span>852 <span style=''>
+</span>853 <span style=''>sealed trait EtcdAddMemberResult {
+</span>854 <span style=''>  def accepted: Boolean
+</span>855 <span style=''>}
+</span>856 <span style=''>
+</span>857 <span style=''>case class EtcdAddMemberResponse(
+</span>858 <span style=''>    xEtcdClusterId: EtcdClusterId,
+</span>859 <span style=''>    body: EtcdMember
+</span>860 <span style=''>) extends EtcdAddMemberResult {
+</span>861 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>true</span><span style=''>
+</span>862 <span style=''>}
+</span>863 <span style=''>
+</span>864 <span style=''>/**
+</span>865 <span style=''> * Form used to update the peer URLs of a member of a cluster.
+</span>866 <span style=''> *
+</span>867 <span style=''> * @param peerURLs List of strings representing the peer URLs.
+</span>868 <span style=''> */
+</span>869 <span style=''>
+</span>870 <span style=''>case class EtcdMemberForm(
+</span>871 <span style=''>  peerURLs: List[String]
+</span>872 <span style=''>)
+</span>873 <span style=''>
+</span>874 <span style=''>/**
+</span>875 <span style=''> * Type of error returned by most operations on etcd that are not done on the key space.
+</span>876 <span style=''> *
+</span>877 <span style=''> * @param statusCode HTTP response code returned in the response's headers.
+</span>878 <span style=''> * @param xEtcdClusterId Etcd cluster id information
+</span>879 <span style=''> * @param error Message with information on the cause of the error.
+</span>880 <span style=''> */
+</span>881 <span style=''>case class EtcdStandardError(
+</span>882 <span style=''>  statusCode: EtcdResponseCode,
+</span>883 <span style=''>  xEtcdClusterId: Option[EtcdClusterId],
+</span>884 <span style=''>  error: EtcdErrorMessage
+</span>885 <span style=''>) extends EtcdAddMemberResult
+</span>886 <span style=''>    with EtcdGetMembersResult
+</span>887 <span style=''>    with EtcdGetRoleDetailsResult
+</span>888 <span style=''>    with EtcdGetRolesResult
+</span>889 <span style=''>    with EtcdGetUserDetailsResult
+</span>890 <span style=''>    with EtcdGetUsersResult
+</span>891 <span style=''>    with EtcdGetAuthenticationStatusResult
+</span>892 <span style=''>    with EtcdAddUpdateUserResult
+</span>893 <span style=''>    with EtcdGetVersionResult
+</span>894 <span style=''>    with EtcdGetLeaderStatsResult
+</span>895 <span style=''>    with EtcdConfirmationResult
+</span>896 <span style=''>    with EtcdGetStoreStatsResult
+</span>897 <span style=''>    with EtcdGetSelfStatsResult
+</span>898 <span style=''>    with EtcdGetHealthResult
+</span>899 <span style=''>    with EtcdAddUpdateRoleResult {
+</span>900 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>false</span><span style=''>
+</span>901 <span style=''>}
+</span>902 <span style=''>
+</span>903 <span style=''>/**
+</span>904 <span style=''> * Type of error returned by most operations on etcd done on the key space.
+</span>905 <span style=''> *
+</span>906 <span style=''> * @param statusCode HTTP response code returned in the response's headers.
+</span>907 <span style=''> * @param headers Headers of the HTTP response returned by etcd.
+</span>908 <span style=''> * @param body Body of the HTTP error response containing information on the cause of the error.
+</span>909 <span style=''> */
+</span>910 <span style=''>case class EtcdRequestError(
+</span>911 <span style=''>  statusCode: EtcdResponseCode,
+</span>912 <span style=''>  headers: Option[EtcdHeaders],
+</span>913 <span style=''>  body: EtcdErrorMessage
+</span>914 <span style=''>) extends EtcdListDirResult
+</span>915 <span style=''>    with EtcdSetKeyResult
+</span>916 <span style=''>    with EtcdGetKeyResult
+</span>917 <span style=''>    with EtcdWaitForKeyResult
+</span>918 <span style=''>    with EtcdCreateDirResult
+</span>919 <span style=''>    with EtcdDeleteKeyResult {
+</span>920 <span style=''>  override def accepted: Boolean = </span><span style='background: #AEF1AE'>false</span><span style=''>
+</span>921 <span style=''>}
+</span></pre>
+          </div>
+          <div class="tab-pane" id="statementlist">
+            <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line</th>
+        <th>Stmt Id</th>
+        <th>Pos</th>
+        <th>Tree</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          591
+        </td>
+        <td>
+          1320
+          -
+          1338
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.contains
+        </td>
+        <td style="background: #AEF1AE">
+          node.contains(&quot;/&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          596
+        </td>
+        <td>
+          1296
+          -
+          1296
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          595
+        </td>
+        <td>
+          1296
+          -
+          1296
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          592
+        </td>
+        <td>
+          1300
+          -
+          1339
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.LinearSeqOptimized.exists
+        </td>
+        <td style="background: #AEF1AE">
+          path.exists(((node: String) =&gt; node.contains(&quot;/&quot;)))
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          594
+        </td>
+        <td>
+          1349
+          -
+          1416
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(&quot;node names cannot contain \'/\'&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          37
+        </td>
+        <td>
+          593
+        </td>
+        <td>
+          1349
+          -
+          1416
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(&quot;node names cannot contain \'/\'&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          597
+        </td>
+        <td>
+          1536
+          -
+          1563
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.TraversableOnce.mkString
+        </td>
+        <td style="background: #AEF1AE">
+          {
+  &lt;synthetic&gt; &lt;artifact&gt; val x$1: String = &quot;&quot;;
+  path.::[String](x$1)
+}.mkString(&quot;/&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          598
+        </td>
+        <td>
+          1527
+          -
+          1564
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdKey.apply
+        </td>
+        <td style="background: #AEF1AE">
+          EtcdKey.apply({
+  &lt;synthetic&gt; &lt;artifact&gt; val x$1: String = &quot;&quot;;
+  path.::[String](x$1)
+}.mkString(&quot;/&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          50
+        </td>
+        <td>
+          599
+        </td>
+        <td>
+          1898
+          -
+          1931
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.immutable.List.drop
+        </td>
+        <td style="background: #AEF1AE">
+          scala.this.Predef.refArrayOps[String](key.key.split(&quot;/&quot;)).toList.drop(1)
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          600
+        </td>
+        <td>
+          2201
+          -
+          2205
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          null
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          606
+        </td>
+        <td>
+          2190
+          -
+          2190
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          602
+        </td>
+        <td>
+          2194
+          -
+          2220
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.||
+        </td>
+        <td style="background: #AEF1AE">
+          key.==(null).||(key.isEmpty())
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          605
+        </td>
+        <td>
+          2190
+          -
+          2190
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          601
+        </td>
+        <td>
+          2209
+          -
+          2220
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.isEmpty
+        </td>
+        <td style="background: #AEF1AE">
+          key.isEmpty()
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          603
+        </td>
+        <td>
+          2230
+          -
+          2293
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(&quot;key name can not be null.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          60
+        </td>
+        <td>
+          604
+        </td>
+        <td>
+          2230
+          -
+          2293
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(&quot;key name can not be null.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          612
+        </td>
+        <td>
+          2304
+          -
+          2304
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          608
+        </td>
+        <td>
+          2308
+          -
+          2328
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #AEF1AE">
+          key.startsWith(&quot;/&quot;).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          611
+        </td>
+        <td>
+          2304
+          -
+          2304
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          62
+        </td>
+        <td>
+          607
+        </td>
+        <td>
+          2324
+          -
+          2327
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;/&quot;
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          609
+        </td>
+        <td>
+          2338
+          -
+          2426
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;key name must start with \'/\'. Provided value &quot;, &quot;&quot;).s(key))
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          610
+        </td>
+        <td>
+          2338
+          -
+          2426
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;key name must start with \'/\'. Provided value &quot;, &quot;&quot;).s(key))
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          617
+        </td>
+        <td>
+          2437
+          -
+          2437
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          613
+        </td>
+        <td>
+          2441
+          -
+          2458
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.endsWith
+        </td>
+        <td style="background: #AEF1AE">
+          key.endsWith(&quot;/&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          616
+        </td>
+        <td>
+          2437
+          -
+          2437
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          615
+        </td>
+        <td>
+          2468
+          -
+          2558
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;key name must not end with \'/\'. Provided value &quot;, &quot;&quot;).s(key))
+        </td>
+      </tr><tr>
+        <td>
+          66
+        </td>
+        <td>
+          614
+        </td>
+        <td>
+          2468
+          -
+          2558
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;key name must not end with \'/\'. Provided value &quot;, &quot;&quot;).s(key))
+        </td>
+      </tr><tr>
+        <td>
+          68
+        </td>
+        <td>
+          618
+        </td>
+        <td>
+          2569
+          -
+          2581
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdKey.apply
+        </td>
+        <td style="background: #AEF1AE">
+          EtcdKey.apply(key)
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          620
+        </td>
+        <td>
+          3044
+          -
+          3072
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdModel.key
+        </td>
+        <td style="background: #AEF1AE">
+          EtcdModel.key(dir.dir.+(key))
+        </td>
+      </tr><tr>
+        <td>
+          77
+        </td>
+        <td>
+          619
+        </td>
+        <td>
+          3058
+          -
+          3071
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          dir.dir.+(key)
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          621
+        </td>
+        <td>
+          3345
+          -
+          3356
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.Object.==
+        </td>
+        <td style="background: #AEF1AE">
+          dir.==(null)
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          624
+        </td>
+        <td>
+          3341
+          -
+          3341
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          85
+        </td>
+        <td>
+          625
+        </td>
+        <td>
+          3341
+          -
+          3341
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          623
+        </td>
+        <td>
+          3366
+          -
+          3435
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(&quot;Directory name can not be null.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          86
+        </td>
+        <td>
+          622
+        </td>
+        <td>
+          3366
+          -
+          3435
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(&quot;Directory name can not be null.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          627
+        </td>
+        <td>
+          3450
+          -
+          3470
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #AEF1AE">
+          dir.startsWith(&quot;/&quot;).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          630
+        </td>
+        <td>
+          3446
+          -
+          3446
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          626
+        </td>
+        <td>
+          3466
+          -
+          3469
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;/&quot;
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          631
+        </td>
+        <td>
+          3446
+          -
+          3446
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          89
+        </td>
+        <td>
+          629
+        </td>
+        <td>
+          3480
+          -
+          3574
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Directory name must start with \'/\'. Provided value &quot;, &quot;&quot;).s(dir))
+        </td>
+      </tr><tr>
+        <td>
+          89
+        </td>
+        <td>
+          628
+        </td>
+        <td>
+          3480
+          -
+          3574
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Directory name must start with \'/\'. Provided value &quot;, &quot;&quot;).s(dir))
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          636
+        </td>
+        <td>
+          3585
+          -
+          3585
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          633
+        </td>
+        <td>
+          3589
+          -
+          3607
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #AEF1AE">
+          dir.endsWith(&quot;/&quot;).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          632
+        </td>
+        <td>
+          3603
+          -
+          3606
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;/&quot;
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          637
+        </td>
+        <td>
+          3585
+          -
+          3585
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          635
+        </td>
+        <td>
+          3617
+          -
+          3704
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Directory must end with \'/\'. Provided value &quot;, &quot;&quot;).s(dir))
+        </td>
+      </tr><tr>
+        <td>
+          92
+        </td>
+        <td>
+          634
+        </td>
+        <td>
+          3617
+          -
+          3704
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Directory must end with \'/\'. Provided value &quot;, &quot;&quot;).s(dir))
+        </td>
+      </tr><tr>
+        <td>
+          94
+        </td>
+        <td>
+          638
+        </td>
+        <td>
+          3715
+          -
+          3733
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdDirectory.apply
+        </td>
+        <td style="background: #AEF1AE">
+          EtcdDirectory.apply(dir)
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          645
+        </td>
+        <td>
+          4406
+          -
+          4406
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          639
+        </td>
+        <td>
+          4417
+          -
+          4421
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          null
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          641
+        </td>
+        <td>
+          4410
+          -
+          4436
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.||
+        </td>
+        <td style="background: #AEF1AE">
+          dir.==(null).||(dir.isEmpty())
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          644
+        </td>
+        <td>
+          4406
+          -
+          4406
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          640
+        </td>
+        <td>
+          4425
+          -
+          4436
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.isEmpty
+        </td>
+        <td style="background: #AEF1AE">
+          dir.isEmpty()
+        </td>
+      </tr><tr>
+        <td>
+          108
+        </td>
+        <td>
+          642
+        </td>
+        <td>
+          4446
+          -
+          4515
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(&quot;Directory name can not be null.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          108
+        </td>
+        <td>
+          643
+        </td>
+        <td>
+          4446
+          -
+          4515
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(&quot;Directory name can not be null.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          651
+        </td>
+        <td>
+          4526
+          -
+          4526
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          650
+        </td>
+        <td>
+          4526
+          -
+          4526
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          647
+        </td>
+        <td>
+          4530
+          -
+          4550
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #AEF1AE">
+          dir.startsWith(&quot;/&quot;).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          646
+        </td>
+        <td>
+          4546
+          -
+          4549
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;/&quot;
+        </td>
+      </tr><tr>
+        <td>
+          111
+        </td>
+        <td>
+          648
+        </td>
+        <td>
+          4560
+          -
+          4654
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Directory name must start with \'/\'. Provided value &quot;, &quot;&quot;).s(dir))
+        </td>
+      </tr><tr>
+        <td>
+          111
+        </td>
+        <td>
+          649
+        </td>
+        <td>
+          4560
+          -
+          4654
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Directory name must start with \'/\'. Provided value &quot;, &quot;&quot;).s(dir))
+        </td>
+      </tr><tr>
+        <td>
+          113
+        </td>
+        <td>
+          657
+        </td>
+        <td>
+          4665
+          -
+          4665
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          113
+        </td>
+        <td>
+          653
+        </td>
+        <td>
+          4669
+          -
+          4687
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.Boolean.unary_!
+        </td>
+        <td style="background: #AEF1AE">
+          dir.endsWith(&quot;/&quot;).unary_!
+        </td>
+      </tr><tr>
+        <td>
+          113
+        </td>
+        <td>
+          656
+        </td>
+        <td>
+          4665
+          -
+          4665
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          113
+        </td>
+        <td>
+          652
+        </td>
+        <td>
+          4683
+          -
+          4686
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;/&quot;
+        </td>
+      </tr><tr>
+        <td>
+          114
+        </td>
+        <td>
+          654
+        </td>
+        <td>
+          4697
+          -
+          4784
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Directory must end with \'/\'. Provided value &quot;, &quot;&quot;).s(dir))
+        </td>
+      </tr><tr>
+        <td>
+          114
+        </td>
+        <td>
+          655
+        </td>
+        <td>
+          4697
+          -
+          4784
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Directory must end with \'/\'. Provided value &quot;, &quot;&quot;).s(dir))
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          660
+        </td>
+        <td>
+          4799
+          -
+          4827
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.||
+        </td>
+        <td style="background: #AEF1AE">
+          node.==(null).||(node.isEmpty())
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          663
+        </td>
+        <td>
+          4795
+          -
+          4795
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          659
+        </td>
+        <td>
+          4815
+          -
+          4827
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.isEmpty
+        </td>
+        <td style="background: #AEF1AE">
+          node.isEmpty()
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          664
+        </td>
+        <td>
+          4795
+          -
+          4795
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          658
+        </td>
+        <td>
+          4807
+          -
+          4811
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          null
+        </td>
+      </tr><tr>
+        <td>
+          117
+        </td>
+        <td>
+          662
+        </td>
+        <td>
+          4837
+          -
+          4900
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(&quot;node name cannot be null.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          117
+        </td>
+        <td>
+          661
+        </td>
+        <td>
+          4837
+          -
+          4900
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(&quot;node name cannot be null.&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          119
+        </td>
+        <td>
+          666
+        </td>
+        <td>
+          4937
+          -
+          4957
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.startsWith
+        </td>
+        <td style="background: #AEF1AE">
+          node.startsWith(&quot;/&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          119
+        </td>
+        <td>
+          671
+        </td>
+        <td>
+          4911
+          -
+          4911
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          119
+        </td>
+        <td>
+          665
+        </td>
+        <td>
+          4929
+          -
+          4932
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;/&quot;
+        </td>
+      </tr><tr>
+        <td>
+          119
+        </td>
+        <td>
+          667
+        </td>
+        <td>
+          4915
+          -
+          4957
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Boolean.||
+        </td>
+        <td style="background: #AEF1AE">
+          node.endsWith(&quot;/&quot;).||(node.startsWith(&quot;/&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          119
+        </td>
+        <td>
+          670
+        </td>
+        <td>
+          4911
+          -
+          4911
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          669
+        </td>
+        <td>
+          4967
+          -
+          5068
+        </td>
+        <td>
+          Block
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Node name must not end or start with \'/\'. Provided value &quot;, &quot;&quot;).s(node))
+        </td>
+      </tr><tr>
+        <td>
+          120
+        </td>
+        <td>
+          668
+        </td>
+        <td>
+          4967
+          -
+          5068
+        </td>
+        <td>
+          Throw
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Node name must not end or start with \'/\'. Provided value &quot;, &quot;&quot;).s(node))
+        </td>
+      </tr><tr>
+        <td>
+          122
+        </td>
+        <td>
+          672
+        </td>
+        <td>
+          5087
+          -
+          5103
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          dir.+(&quot;_&quot;).+(node)
+        </td>
+      </tr><tr>
+        <td>
+          122
+        </td>
+        <td>
+          673
+        </td>
+        <td>
+          5079
+          -
+          5104
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdKey.apply
+        </td>
+        <td style="background: #AEF1AE">
+          EtcdKey.apply(dir.+(&quot;_&quot;).+(node))
+        </td>
+      </tr><tr>
+        <td>
+          130
+        </td>
+        <td>
+          674
+        </td>
+        <td>
+          5316
+          -
+          5332
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdValue.apply
+        </td>
+        <td style="background: #AEF1AE">
+          EtcdValue.apply(value)
+        </td>
+      </tr><tr>
+        <td>
+          139
+        </td>
+        <td>
+          675
+        </td>
+        <td>
+          5746
+          -
+          5766
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.collection.IndexedSeqOptimized.dropRight
+        </td>
+        <td style="background: #AEF1AE">
+          scala.this.Predef.augmentString(dir.dir).dropRight(1)
+        </td>
+      </tr><tr>
+        <td>
+          139
+        </td>
+        <td>
+          676
+        </td>
+        <td>
+          5738
+          -
+          5767
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdKey.apply
+        </td>
+        <td style="background: #AEF1AE">
+          EtcdKey.apply(scala.this.Predef.augmentString(dir.dir).dropRight(1))
+        </td>
+      </tr><tr>
+        <td>
+          148
+        </td>
+        <td>
+          678
+        </td>
+        <td>
+          6157
+          -
+          6185
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdDirectory.apply
+        </td>
+        <td style="background: #AEF1AE">
+          EtcdDirectory.apply(key.key.+(&quot;/&quot;))
+        </td>
+      </tr><tr>
+        <td>
+          148
+        </td>
+        <td>
+          677
+        </td>
+        <td>
+          6171
+          -
+          6184
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          java.lang.String.+
+        </td>
+        <td style="background: #AEF1AE">
+          key.key.+(&quot;/&quot;)
+        </td>
+      </tr><tr>
+        <td>
+          227
+        </td>
+        <td>
+          680
+        </td>
+        <td>
+          7920
+          -
+          7949
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.Option.map
+        </td>
+        <td style="background: #AEF1AE">
+          IncorrectEtcdRequestFormatException.this.headers.map[com.eiipii.etcd.client.model.EtcdClusterId](((x$2: com.eiipii.etcd.client.model.EtcdHeaders) =&gt; x$2.xEtcdClusterId))
+        </td>
+      </tr><tr>
+        <td>
+          227
+        </td>
+        <td>
+          679
+        </td>
+        <td>
+          7932
+          -
+          7948
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.EtcdHeaders.xEtcdClusterId
+        </td>
+        <td style="background: #AEF1AE">
+          x$2.xEtcdClusterId
+        </td>
+      </tr><tr>
+        <td>
+          229
+        </td>
+        <td>
+          687
+        </td>
+        <td>
+          8025
+          -
+          8032
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException.handler
+        </td>
+        <td style="background: #AEF1AE">
+          IncorrectEtcdRequestFormatException.this.handler
+        </td>
+      </tr><tr>
+        <td>
+          229
+        </td>
+        <td>
+          681
+        </td>
+        <td>
+          7990
+          -
+          8024
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;Incorrect Etcd response. Handler[&quot;
+        </td>
+      </tr><tr>
+        <td>
+          229
+        </td>
+        <td>
+          690
+        </td>
+        <td>
+          8136
+          -
+          8143
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException.headers
+        </td>
+        <td style="background: #AEF1AE">
+          IncorrectEtcdRequestFormatException.this.headers
+        </td>
+      </tr><tr>
+        <td>
+          229
+        </td>
+        <td>
+          684
+        </td>
+        <td>
+          8086
+          -
+          8106
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;] clustedIdHeader:[&quot;
+        </td>
+      </tr><tr>
+        <td>
+          229
+        </td>
+        <td>
+          683
+        </td>
+        <td>
+          8062
+          -
+          8072
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;], body:[&quot;
+        </td>
+      </tr><tr>
+        <td>
+          229
+        </td>
+        <td>
+          686
+        </td>
+        <td>
+          8144
+          -
+          8146
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;]&quot;
+        </td>
+      </tr><tr>
+        <td>
+          229
+        </td>
+        <td>
+          689
+        </td>
+        <td>
+          8073
+          -
+          8085
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException.responseBody
+        </td>
+        <td style="background: #AEF1AE">
+          IncorrectEtcdRequestFormatException.this.responseBody
+        </td>
+      </tr><tr>
+        <td>
+          229
+        </td>
+        <td>
+          682
+        </td>
+        <td>
+          8033
+          -
+          8048
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;], statusCode[&quot;
+        </td>
+      </tr><tr>
+        <td>
+          229
+        </td>
+        <td>
+          691
+        </td>
+        <td>
+          7988
+          -
+          8146
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.StringContext.s
+        </td>
+        <td style="background: #AEF1AE">
+          scala.StringContext.apply(&quot;Incorrect Etcd response. Handler[&quot;, &quot;], statusCode[&quot;, &quot;], body:[&quot;, &quot;] clustedIdHeader:[&quot;, &quot;] headers:[&quot;, &quot;]&quot;).s(IncorrectEtcdRequestFormatException.this.handler, IncorrectEtcdRequestFormatException.this.responseCode, IncorrectEtcdRequestFormatException.this.responseBody, IncorrectEtcdRequestFormatException.this.clustedIdHeader, IncorrectEtcdRequestFormatException.this.headers)
+        </td>
+      </tr><tr>
+        <td>
+          229
+        </td>
+        <td>
+          685
+        </td>
+        <td>
+          8123
+          -
+          8135
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;] headers:[&quot;
+        </td>
+      </tr><tr>
+        <td>
+          229
+        </td>
+        <td>
+          688
+        </td>
+        <td>
+          8049
+          -
+          8061
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException.responseCode
+        </td>
+        <td style="background: #AEF1AE">
+          IncorrectEtcdRequestFormatException.this.responseCode
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          696
+        </td>
+        <td>
+          8656
+          -
+          8658
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;]&quot;
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          699
+        </td>
+        <td>
+          8606
+          -
+          8618
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException.responseBody
+        </td>
+        <td style="background: #AEF1AE">
+          IncorrectSimpleEtcdRequestFormatException.this.responseBody
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          693
+        </td>
+        <td>
+          8566
+          -
+          8581
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;], statusCode[&quot;
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          692
+        </td>
+        <td>
+          8523
+          -
+          8557
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;Incorrect Etcd response. Handler[&quot;
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          701
+        </td>
+        <td>
+          8521
+          -
+          8658
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.StringContext.s
+        </td>
+        <td style="background: #AEF1AE">
+          scala.StringContext.apply(&quot;Incorrect Etcd response. Handler[&quot;, &quot;], statusCode[&quot;, &quot;], body:[&quot;, &quot;] clustedIdHeader:[&quot;, &quot;]&quot;).s(IncorrectSimpleEtcdRequestFormatException.this.handler, IncorrectSimpleEtcdRequestFormatException.this.responseCode, IncorrectSimpleEtcdRequestFormatException.this.responseBody, IncorrectSimpleEtcdRequestFormatException.this.clustedIdHeader)
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          695
+        </td>
+        <td>
+          8619
+          -
+          8639
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;] clustedIdHeader:[&quot;
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          698
+        </td>
+        <td>
+          8582
+          -
+          8594
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException.responseCode
+        </td>
+        <td style="background: #AEF1AE">
+          IncorrectSimpleEtcdRequestFormatException.this.responseCode
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          697
+        </td>
+        <td>
+          8558
+          -
+          8565
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException.handler
+        </td>
+        <td style="background: #AEF1AE">
+          IncorrectSimpleEtcdRequestFormatException.this.handler
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          700
+        </td>
+        <td>
+          8640
+          -
+          8655
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException.clustedIdHeader
+        </td>
+        <td style="background: #AEF1AE">
+          IncorrectSimpleEtcdRequestFormatException.this.clustedIdHeader
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          694
+        </td>
+        <td>
+          8595
+          -
+          8605
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          &quot;], body:[&quot;
+        </td>
+      </tr><tr>
+        <td>
+          294
+        </td>
+        <td>
+          702
+        </td>
+        <td>
+          10018
+          -
+          10022
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          309
+        </td>
+        <td>
+          703
+        </td>
+        <td>
+          10285
+          -
+          10289
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          326
+        </td>
+        <td>
+          704
+        </td>
+        <td>
+          10603
+          -
+          10607
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          352
+        </td>
+        <td>
+          705
+        </td>
+        <td>
+          11624
+          -
+          11628
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          383
+        </td>
+        <td>
+          706
+        </td>
+        <td>
+          12754
+          -
+          12781
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.concurrent.Promise.apply
+        </td>
+        <td style="background: #AEF1AE">
+          scala.concurrent.Promise.apply[com.eiipii.etcd.client.model.EtcdGetKeyResponse]()
+        </td>
+      </tr><tr>
+        <td>
+          389
+        </td>
+        <td>
+          708
+        </td>
+        <td>
+          13032
+          -
+          13032
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          389
+        </td>
+        <td>
+          707
+        </td>
+        <td>
+          13023
+          -
+          13042
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.concurrent.Promise.success
+        </td>
+        <td style="background: #AEF1AE">
+          FutureBasedEtcdWaitCallback.this.p.success(response)
+        </td>
+      </tr><tr>
+        <td>
+          395
+        </td>
+        <td>
+          710
+        </td>
+        <td>
+          13241
+          -
+          13241
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          ()
+        </td>
+      </tr><tr>
+        <td>
+          395
+        </td>
+        <td>
+          709
+        </td>
+        <td>
+          13232
+          -
+          13244
+        </td>
+        <td>
+          Apply
+        </td>
+        <td>
+          scala.concurrent.Promise.failure
+        </td>
+        <td style="background: #AEF1AE">
+          FutureBasedEtcdWaitCallback.this.p.failure(t)
+        </td>
+      </tr><tr>
+        <td>
+          401
+        </td>
+        <td>
+          711
+        </td>
+        <td>
+          13463
+          -
+          13471
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.concurrent.Promise.future
+        </td>
+        <td style="background: #AEF1AE">
+          FutureBasedEtcdWaitCallback.this.p.future
+        </td>
+      </tr><tr>
+        <td>
+          407
+        </td>
+        <td>
+          712
+        </td>
+        <td>
+          13590
+          -
+          13603
+        </td>
+        <td>
+          Select
+        </td>
+        <td>
+          scala.concurrent.Promise.isCompleted
+        </td>
+        <td style="background: #AEF1AE">
+          FutureBasedEtcdWaitCallback.this.p.isCompleted
+        </td>
+      </tr><tr>
+        <td>
+          421
+        </td>
+        <td>
+          713
+        </td>
+        <td>
+          13870
+          -
+          13874
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          450
+        </td>
+        <td>
+          714
+        </td>
+        <td>
+          14428
+          -
+          14432
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          470
+        </td>
+        <td>
+          715
+        </td>
+        <td>
+          14789
+          -
+          14793
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          510
+        </td>
+        <td>
+          716
+        </td>
+        <td>
+          15598
+          -
+          15602
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          520
+        </td>
+        <td>
+          717
+        </td>
+        <td>
+          15788
+          -
+          15792
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          535
+        </td>
+        <td>
+          718
+        </td>
+        <td>
+          16069
+          -
+          16073
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          576
+        </td>
+        <td>
+          719
+        </td>
+        <td>
+          16807
+          -
+          16811
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          609
+        </td>
+        <td>
+          720
+        </td>
+        <td>
+          17430
+          -
+          17434
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          706
+        </td>
+        <td>
+          721
+        </td>
+        <td>
+          20415
+          -
+          20419
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          721
+        </td>
+        <td>
+          722
+        </td>
+        <td>
+          20704
+          -
+          20708
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          742
+        </td>
+        <td>
+          723
+        </td>
+        <td>
+          21067
+          -
+          21071
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          761
+        </td>
+        <td>
+          724
+        </td>
+        <td>
+          21390
+          -
+          21394
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          776
+        </td>
+        <td>
+          725
+        </td>
+        <td>
+          21656
+          -
+          21660
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          791
+        </td>
+        <td>
+          726
+        </td>
+        <td>
+          21908
+          -
+          21912
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          810
+        </td>
+        <td>
+          727
+        </td>
+        <td>
+          22231
+          -
+          22235
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          842
+        </td>
+        <td>
+          728
+        </td>
+        <td>
+          23064
+          -
+          23068
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          861
+        </td>
+        <td>
+          729
+        </td>
+        <td>
+          23375
+          -
+          23379
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          true
+        </td>
+      </tr><tr>
+        <td>
+          900
+        </td>
+        <td>
+          730
+        </td>
+        <td>
+          24522
+          -
+          24527
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          false
+        </td>
+      </tr><tr>
+        <td>
+          920
+        </td>
+        <td>
+          731
+        </td>
+        <td>
+          25179
+          -
+          25184
+        </td>
+        <td>
+          Literal
+        </td>
+        <td>
+          &lt;nosymbol&gt;
+        </td>
+        <td style="background: #AEF1AE">
+          false
+        </td>
+      </tr>
+    </table>
+          </div>
+        </div>
+      </body>
+    </html>
