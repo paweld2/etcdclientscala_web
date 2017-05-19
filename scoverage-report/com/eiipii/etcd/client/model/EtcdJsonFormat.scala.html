@@ -4,7 +4,7 @@
         <title id="title">
           com/eiipii/etcd/client/model/EtcdJsonFormat.scala.html
         </title>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
       </script>
         <style>
@@ -23,16 +23,16 @@
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>/*
-</span>2 <span style=''> * Copyright (c) 2016 Paweł Cesar Sanjuan Szklarz.
+</span>2 <span style=''> * Copyright (c) 2017 Paweł Cesar Sanjuan Szklarz.
 </span>3 <span style=''> *
-</span>4 <span style=''> * Licensed under the Apache License, Version 2.0 (the "License");
+</span>4 <span style=''> * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
 </span>5 <span style=''> * you may not use this file except in compliance with the License.
 </span>6 <span style=''> * You may obtain a copy of the License at
 </span>7 <span style=''> *
 </span>8 <span style=''> * http://www.apache.org/licenses/LICENSE-2.0
 </span>9 <span style=''> *
 </span>10 <span style=''> * Unless required by applicable law or agreed to in writing, software
-</span>11 <span style=''> * distributed under the License is distributed on an "AS IS" BASIS,
+</span>11 <span style=''> * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
 </span>12 <span style=''> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 </span>13 <span style=''> * See the License for the specific language governing permissions and
 </span>14 <span style=''> * limitations under the License.
@@ -79,159 +79,159 @@
 </span>55 <span style=''>import org.json4s.JsonDSL._
 </span>56 <span style=''>
 </span>57 <span style=''>case object EtcdListDirNodeSerializer extends CustomSerializer[EtcdListDirNode](
-</span>58 <span style=''>  implicit format => ({
-</span>59 <span style=''>    case rootNode: JValue =>
-</span>60 <span style=''>      (rootNode \ "dir") match {
-</span>61 <span style=''>        case JBool(true) =>
+</span>58 <span style=''>  implicit format =&gt; ({
+</span>59 <span style=''>    case rootNode: JValue =&gt;
+</span>60 <span style=''>      (rootNode \ &quot;dir&quot;) match {
+</span>61 <span style=''>        case JBool(true) =&gt;
 </span>62 <span style=''>          EtcdListDirectory(
 </span>63 <span style=''>            true,
-</span>64 <span style=''>            (rootNode \ "key").extract[EtcdKey],
-</span>65 <span style=''>            (rootNode \ "nodes").extract[List[EtcdListDirNode]],
-</span>66 <span style=''>            (rootNode \ "modifiedIndex").extract[EtcdIndex],
-</span>67 <span style=''>            (rootNode \ "createdIndex").extract[EtcdIndex]
+</span>64 <span style=''>            (rootNode \ &quot;key&quot;).extract[EtcdKey],
+</span>65 <span style=''>            (rootNode \ &quot;nodes&quot;).extract[List[EtcdListDirNode]],
+</span>66 <span style=''>            (rootNode \ &quot;modifiedIndex&quot;).extract[EtcdIndex],
+</span>67 <span style=''>            (rootNode \ &quot;createdIndex&quot;).extract[EtcdIndex]
 </span>68 <span style=''>          )
-</span>69 <span style=''>        case _ => EtcdListValue(
+</span>69 <span style=''>        case _ =&gt; EtcdListValue(
 </span>70 <span style=''>          false,
-</span>71 <span style=''>          (rootNode \ "key").extract[EtcdKey],
-</span>72 <span style=''>          (rootNode \ "value").extract[EtcdValue],
-</span>73 <span style=''>          (rootNode \ "modifiedIndex").extract[EtcdIndex],
-</span>74 <span style=''>          (rootNode \ "createdIndex").extract[EtcdIndex]
+</span>71 <span style=''>          (rootNode \ &quot;key&quot;).extract[EtcdKey],
+</span>72 <span style=''>          (rootNode \ &quot;value&quot;).extract[EtcdValue],
+</span>73 <span style=''>          (rootNode \ &quot;modifiedIndex&quot;).extract[EtcdIndex],
+</span>74 <span style=''>          (rootNode \ &quot;createdIndex&quot;).extract[EtcdIndex]
 </span>75 <span style=''>        )
 </span>76 <span style=''>      }
 </span>77 <span style=''>  }, {
-</span>78 <span style=''>    case value: EtcdErrorMessage => value match {
-</span>79 <span style=''>      case EtcdError(cause, errorCode, index, message) =>
-</span>80 <span style=''>        ("cause", cause) ~
-</span>81 <span style=''>          ("errorCode", errorCode) ~
-</span>82 <span style=''>          ("index", index) ~
-</span>83 <span style=''>          ("message", message)
-</span>84 <span style=''>      case EtcdSimpleError(message) =>
-</span>85 <span style=''>        ("message", message)
+</span>78 <span style=''>    case value: EtcdErrorMessage =&gt; value match {
+</span>79 <span style=''>      case EtcdError(cause, errorCode, index, message) =&gt;
+</span>80 <span style=''>        (&quot;cause&quot;, cause) ~
+</span>81 <span style=''>          (&quot;errorCode&quot;, errorCode) ~
+</span>82 <span style=''>          (&quot;index&quot;, index) ~
+</span>83 <span style=''>          (&quot;message&quot;, message)
+</span>84 <span style=''>      case EtcdSimpleError(message) =&gt;
+</span>85 <span style=''>        (&quot;message&quot;, message)
 </span>86 <span style=''>    }
 </span>87 <span style=''>  })
 </span>88 <span style=''>)
 </span>89 <span style=''>
 </span>90 <span style=''>case object EtcdErrorMessageSerializer extends CustomSerializer[EtcdErrorMessage](
-</span>91 <span style=''>  implicit format => ({
-</span>92 <span style=''>    case rootNode: JValue =>
-</span>93 <span style=''>      (rootNode \ "errorCode") match {
-</span>94 <span style=''>        case JInt(errorCode) =>
+</span>91 <span style=''>  implicit format =&gt; ({
+</span>92 <span style=''>    case rootNode: JValue =&gt;
+</span>93 <span style=''>      (rootNode \ &quot;errorCode&quot;) match {
+</span>94 <span style=''>        case JInt(errorCode) =&gt;
 </span>95 <span style=''>          EtcdError(
-</span>96 <span style=''>            (rootNode \ "cause").extract[String],
+</span>96 <span style=''>            (rootNode \ &quot;cause&quot;).extract[String],
 </span>97 <span style=''>            errorCode.intValue(),
-</span>98 <span style=''>            (rootNode \ "index").extract[Int],
-</span>99 <span style=''>            (rootNode \ "message").extract[String]
+</span>98 <span style=''>            (rootNode \ &quot;index&quot;).extract[Int],
+</span>99 <span style=''>            (rootNode \ &quot;message&quot;).extract[String]
 </span>100 <span style=''>
 </span>101 <span style=''>          )
-</span>102 <span style=''>        case _ => EtcdSimpleError((rootNode \ "message").extract[String])
+</span>102 <span style=''>        case _ =&gt; EtcdSimpleError((rootNode \ &quot;message&quot;).extract[String])
 </span>103 <span style=''>      }
 </span>104 <span style=''>  }, {
-</span>105 <span style=''>    case value: EtcdErrorMessage => value match {
-</span>106 <span style=''>      case EtcdError(cause, errorCode, index, message) =>
-</span>107 <span style=''>        ("cause", cause) ~
-</span>108 <span style=''>          ("errorCode", errorCode) ~
-</span>109 <span style=''>          ("index", index) ~
-</span>110 <span style=''>          ("message", message)
-</span>111 <span style=''>      case EtcdSimpleError(message) =>
-</span>112 <span style=''>        ("message", message)
+</span>105 <span style=''>    case value: EtcdErrorMessage =&gt; value match {
+</span>106 <span style=''>      case EtcdError(cause, errorCode, index, message) =&gt;
+</span>107 <span style=''>        (&quot;cause&quot;, cause) ~
+</span>108 <span style=''>          (&quot;errorCode&quot;, errorCode) ~
+</span>109 <span style=''>          (&quot;index&quot;, index) ~
+</span>110 <span style=''>          (&quot;message&quot;, message)
+</span>111 <span style=''>      case EtcdSimpleError(message) =&gt;
+</span>112 <span style=''>        (&quot;message&quot;, message)
 </span>113 <span style=''>    }
 </span>114 <span style=''>  })
 </span>115 <span style=''>)
 </span>116 <span style=''>
 </span>117 <span style=''>case object EtcdMemberStatsSerialized extends CustomSerializer[EtcdGetLeaderStatsResponse](
-</span>118 <span style=''>  implicit format => ({
-</span>119 <span style=''>    case rootNode: JValue =>
-</span>120 <span style=''>      val members = (rootNode \ "followers") match {
-</span>121 <span style=''>        case JObject(members) =>
+</span>118 <span style=''>  implicit format =&gt; ({
+</span>119 <span style=''>    case rootNode: JValue =&gt;
+</span>120 <span style=''>      val members = (rootNode \ &quot;followers&quot;) match {
+</span>121 <span style=''>        case JObject(members) =&gt;
 </span>122 <span style=''>          members.map {
-</span>123 <span style=''>            case (id, json) =>
-</span>124 <span style=''>              val counts = (json \ "counts").extract[EtcdCounts]
-</span>125 <span style=''>              val latency = (json \ "latency").extract[EtcdLatency]
+</span>123 <span style=''>            case (id, json) =&gt;
+</span>124 <span style=''>              val counts = (json \ &quot;counts&quot;).extract[EtcdCounts]
+</span>125 <span style=''>              val latency = (json \ &quot;latency&quot;).extract[EtcdLatency]
 </span>126 <span style=''>              EtcdMemberStats(
 </span>127 <span style=''>                id,
 </span>128 <span style=''>                counts,
 </span>129 <span style=''>                latency
 </span>130 <span style=''>              )
 </span>131 <span style=''>          }
-</span>132 <span style=''>        case _ => List[EtcdMemberStats]()
+</span>132 <span style=''>        case _ =&gt; List[EtcdMemberStats]()
 </span>133 <span style=''>      }
-</span>134 <span style=''>      EtcdGetLeaderStatsResponse((rootNode \ "leader").extract[String], members)
+</span>134 <span style=''>      EtcdGetLeaderStatsResponse((rootNode \ &quot;leader&quot;).extract[String], members)
 </span>135 <span style=''>  }, {
-</span>136 <span style=''>    case value: EtcdGetLeaderStatsResponse =>
+</span>136 <span style=''>    case value: EtcdGetLeaderStatsResponse =&gt;
 </span>137 <span style=''>      val followersJ: JObject = (JObject() /: value.followers) {
-</span>138 <span style=''>        case (jsonPart, member) =>
+</span>138 <span style=''>        case (jsonPart, member) =&gt;
 </span>139 <span style=''>          jsonPart ~ (
 </span>140 <span style=''>            member.memberId,
-</span>141 <span style=''>            ("counts",
-</span>142 <span style=''>              ("fail", member.counts.fail) ~ ("success", member.counts.success)) ~ ("latency",
-</span>143 <span style=''>                ("average", member.latency.average) ~
-</span>144 <span style=''>                ("current", member.latency.current) ~
-</span>145 <span style=''>                ("maximum", member.latency.maximum) ~
-</span>146 <span style=''>                ("minimum", member.latency.minimum) ~
-</span>147 <span style=''>                ("standardDeviation", member.latency.standardDeviation))
+</span>141 <span style=''>            (&quot;counts&quot;,
+</span>142 <span style=''>              (&quot;fail&quot;, member.counts.fail) ~ (&quot;success&quot;, member.counts.success)) ~ (&quot;latency&quot;,
+</span>143 <span style=''>                (&quot;average&quot;, member.latency.average) ~
+</span>144 <span style=''>                (&quot;current&quot;, member.latency.current) ~
+</span>145 <span style=''>                (&quot;maximum&quot;, member.latency.maximum) ~
+</span>146 <span style=''>                (&quot;minimum&quot;, member.latency.minimum) ~
+</span>147 <span style=''>                (&quot;standardDeviation&quot;, member.latency.standardDeviation))
 </span>148 <span style=''>          )
 </span>149 <span style=''>      }
-</span>150 <span style=''>      ("leader", value.leader) ~ ("followers", followersJ)
+</span>150 <span style=''>      (&quot;leader&quot;, value.leader) ~ (&quot;followers&quot;, followersJ)
 </span>151 <span style=''>      JObject(List(
-</span>152 <span style=''>        "leader" -> JString(value.leader),
-</span>153 <span style=''>        "followers" -> followersJ
+</span>152 <span style=''>        &quot;leader&quot; -&gt; JString(value.leader),
+</span>153 <span style=''>        &quot;followers&quot; -&gt; followersJ
 </span>154 <span style=''>      ))
 </span>155 <span style=''>  })
 </span>156 <span style=''>)
 </span>157 <span style=''>
 </span>158 <span style=''>case object EtcdValueSerializer extends CustomSerializer[EtcdValue](
-</span>159 <span style=''>  format => ({
-</span>160 <span style=''>    case JString(s) => EtcdValue(s)
+</span>159 <span style=''>  format =&gt; ({
+</span>160 <span style=''>    case JString(s) =&gt; EtcdValue(s)
 </span>161 <span style=''>  }, {
-</span>162 <span style=''>    case value: EtcdValue => JString(value.value)
+</span>162 <span style=''>    case value: EtcdValue =&gt; JString(value.value)
 </span>163 <span style=''>  })
 </span>164 <span style=''>)
 </span>165 <span style=''>
 </span>166 <span style=''>case object EtcdKeySerializer extends CustomSerializer[EtcdKey](
-</span>167 <span style=''>  format => ({
-</span>168 <span style=''>    case JString(s) => EtcdKey(s)
+</span>167 <span style=''>  format =&gt; ({
+</span>168 <span style=''>    case JString(s) =&gt; EtcdKey(s)
 </span>169 <span style=''>  }, {
-</span>170 <span style=''>    case key: EtcdKey => JString(key.key)
+</span>170 <span style=''>    case key: EtcdKey =&gt; JString(key.key)
 </span>171 <span style=''>  })
 </span>172 <span style=''>)
 </span>173 <span style=''>
 </span>174 <span style=''>case object EtcdClusterIdSerializer extends CustomSerializer[EtcdClusterId](
-</span>175 <span style=''>  format => ({
-</span>176 <span style=''>    case JString(s) => EtcdClusterId(s)
+</span>175 <span style=''>  format =&gt; ({
+</span>176 <span style=''>    case JString(s) =&gt; EtcdClusterId(s)
 </span>177 <span style=''>  }, {
-</span>178 <span style=''>    case v: EtcdClusterId => JString(v.id)
+</span>178 <span style=''>    case v: EtcdClusterId =&gt; JString(v.id)
 </span>179 <span style=''>  })
 </span>180 <span style=''>)
 </span>181 <span style=''>
 </span>182 <span style=''>case object EtcdIndexSerializer extends CustomSerializer[EtcdIndex](
-</span>183 <span style=''>  format => ({
-</span>184 <span style=''>    case JInt(s) => EtcdIndex(s.intValue())
+</span>183 <span style=''>  format =&gt; ({
+</span>184 <span style=''>    case JInt(s) =&gt; EtcdIndex(s.intValue())
 </span>185 <span style=''>  }, {
-</span>186 <span style=''>    case v: EtcdIndex => JInt(v.index)
+</span>186 <span style=''>    case v: EtcdIndex =&gt; JInt(v.index)
 </span>187 <span style=''>  })
 </span>188 <span style=''>)
 </span>189 <span style=''>
 </span>190 <span style=''>case object RaftIndexSerializer extends CustomSerializer[RaftIndex](
-</span>191 <span style=''>  format => ({
-</span>192 <span style=''>    case JInt(s) => RaftIndex(s.intValue())
+</span>191 <span style=''>  format =&gt; ({
+</span>192 <span style=''>    case JInt(s) =&gt; RaftIndex(s.intValue())
 </span>193 <span style=''>  }, {
-</span>194 <span style=''>    case v: RaftIndex => JInt(v.rIndex)
+</span>194 <span style=''>    case v: RaftIndex =&gt; JInt(v.rIndex)
 </span>195 <span style=''>  })
 </span>196 <span style=''>)
 </span>197 <span style=''>
 </span>198 <span style=''>case object RaftTermSerializer extends CustomSerializer[RaftTerm](
-</span>199 <span style=''>  format => ({
-</span>200 <span style=''>    case JInt(s) => RaftTerm(s.intValue())
+</span>199 <span style=''>  format =&gt; ({
+</span>200 <span style=''>    case JInt(s) =&gt; RaftTerm(s.intValue())
 </span>201 <span style=''>  }, {
-</span>202 <span style=''>    case v: RaftTerm => JInt(v.term)
+</span>202 <span style=''>    case v: RaftTerm =&gt; JInt(v.term)
 </span>203 <span style=''>  })
 </span>204 <span style=''>)
 </span>205 <span style=''>
 </span>206 <span style=''>case object EtcdTTLSerializer extends CustomSerializer[EtcdTTL](
-</span>207 <span style=''>  format => ({
-</span>208 <span style=''>    case JInt(s) => EtcdTTL(s.intValue())
+</span>207 <span style=''>  format =&gt; ({
+</span>208 <span style=''>    case JInt(s) =&gt; EtcdTTL(s.intValue())
 </span>209 <span style=''>  }, {
-</span>210 <span style=''>    case v: EtcdTTL => JInt(v.ttl)
+</span>210 <span style=''>    case v: EtcdTTL =&gt; JInt(v.ttl)
 </span>211 <span style=''>  })
 </span>212 <span style=''>)
 </span></pre>
@@ -250,7 +250,7 @@
           41
         </td>
         <td>
-          590
+          291
         </td>
         <td>
           1730
@@ -258,20 +258,20 @@
           2023
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          org.json4s.Formats.++
+          
         </td>
         <td style="background: #AEF1AE">
-          org.json4s.DefaultFormats.++(collection.this.Seq.apply[org.json4s.CustomSerializer[_ &gt;: com.eiipii.etcd.client.model.EtcdListDirNode with com.eiipii.etcd.client.model.EtcdErrorMessage with com.eiipii.etcd.client.model.EtcdGetLeaderStatsResponse with com.eiipii.etcd.client.model.RaftTerm with com.eiipii.etcd.client.model.RaftIndex with com.eiipii.etcd.client.model.EtcdTTL with com.eiipii.etcd.client.model.EtcdIndex with com.eiipii.etcd.client.model.EtcdClusterId with com.eiipii.etcd.client.model.EtcdKey with com.eiipii.etcd.client.model.EtcdValue] with Product with Serializable](EtcdValueSerializer, EtcdKeySerializer, EtcdClusterIdSerializer, EtcdIndexSerializer, EtcdTTLSerializer, RaftIndexSerializer, RaftTermSerializer, EtcdMemberStatsSerialized, EtcdErrorMessageSerializer, EtcdListDirNodeSerializer))
+          
         </td>
       </tr><tr>
         <td>
           41
         </td>
         <td>
-          589
+          21
         </td>
         <td>
           1748
@@ -279,13 +279,13 @@
           2023
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          scala.collection.generic.GenericCompanion.apply
+          
         </td>
         <td style="background: #AEF1AE">
-          collection.this.Seq.apply[org.json4s.CustomSerializer[_ &gt;: com.eiipii.etcd.client.model.EtcdListDirNode with com.eiipii.etcd.client.model.EtcdErrorMessage with com.eiipii.etcd.client.model.EtcdGetLeaderStatsResponse with com.eiipii.etcd.client.model.RaftTerm with com.eiipii.etcd.client.model.RaftIndex with com.eiipii.etcd.client.model.EtcdTTL with com.eiipii.etcd.client.model.EtcdIndex with com.eiipii.etcd.client.model.EtcdClusterId with com.eiipii.etcd.client.model.EtcdKey with com.eiipii.etcd.client.model.EtcdValue] with Product with Serializable](EtcdValueSerializer, EtcdKeySerializer, EtcdClusterIdSerializer, EtcdIndexSerializer, EtcdTTLSerializer, RaftIndexSerializer, RaftTermSerializer, EtcdMemberStatsSerialized, EtcdErrorMessageSerializer, EtcdListDirNodeSerializer)
+          
         </td>
       </tr>
     </table>

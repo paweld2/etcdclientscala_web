@@ -55,60 +55,45 @@
 <span id="id1"></span><h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="creating-a-new-project-form-the-giter8-template">
 <span id="id2"></span><h2>Creating a New Project form the Giter8 Template<a class="headerlink" href="#creating-a-new-project-form-the-giter8-template" title="Permalink to this headline">¶</a></h2>
-<p>We have created an template project so you can test our etcd client in a convinient manner.
-The template can be found at the <a class="reference external" href="https://github.com/foundweekends/giter8/wiki/giter8-templates">Giter8 templates page</a>.</p>
+<p>We have created an template project so you can test our etcd client in a convenient manner.</p>
 <p>If you want to use this template, firts install <a class="reference external" href="http://www.foundweekends.org/conscript/setup.html">Conscript</a> following the instructions in their official page.
 Next, install <a class="reference external" href="http://www.foundweekends.org/giter8/Combined+Pages.html#Giter8">Giter8</a>.
 Once Giter8 has been successfully installed, use the following command to call it:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">g8</span> <span class="n">https</span><span class="o">://....</span><span class="n">g8</span><span class="o">.</span><span class="n">git</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">g8</span> <span class="n">https</span><span class="o">://</span><span class="n">bitbucket</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">eiipii</span><span class="o">/</span><span class="n">scalaetcdhttpclienttemplate</span><span class="o">.</span><span class="n">g8</span>
 </pre></div>
 </div>
-<p>Call the parameter from the directory in which you wish to place the project.</p>
+<p>Call the command from the directory in which you wish to place the project.</p>
 <p>There are two parameters that you can change in order to make things easier.
 The <code class="docutils literal"><span class="pre">package</span></code> parameter will be used to place your organization&#8217;s name in the project.
 The <code class="docutils literal"><span class="pre">name</span></code> parameter will name the project.
-This parameter will also be used to name a couple of sample classes inside the template.
+This last parameter will also be used to name a couple of sample classes inside the template.
 You will be prompted for the values.
 Hitting enter will yield the default values.
 Also, if you wish to input the values of the variables through the commandline, use the following command:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">g8</span> <span class="n">https</span><span class="o">://....</span><span class="n">g8</span><span class="o">.</span><span class="n">git</span> <span class="o">--</span><span class="n">name</span><span class="s">&quot;the name of the project&quot;</span> <span class="o">--</span><span class="n">package</span><span class="s">&quot;org.yourorganization&quot;</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">g8</span> <span class="n">https</span><span class="o">://</span><span class="n">bitbucket</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">eiipii</span><span class="o">/</span><span class="n">scalaetcdhttpclienttemplate</span><span class="o">.</span><span class="n">g8</span> <span class="o">\</span>
+<span class="o">--</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;the name of the project&quot;</span> <span class="o">--</span><span class="n">package</span><span class="o">=</span><span class="s">&quot;org.yourorganization&quot;</span>
 </pre></div>
 </div>
 <p>By introducing a name using separate words you will get a project in which the sample classes have camel cased names, as in <code class="docutils literal"><span class="pre">TheNameOfTheProjectSampleClass</span></code>.</p>
 <p>One of the classes is a test which returns the version of the etcd API.
-It uses a Docker container, so you will have to have Docker in order to run it.</p>
-<p>If you want to build on that project, you are free to do so.
+It uses a Docker container, so you will have to have <a class="reference external" href="https://www.docker.com/">Docker</a> in order to run it.
+Also, you have to keep ports <code class="docutils literal"><span class="pre">4001</span></code> and <code class="docutils literal"><span class="pre">2380</span></code> free in order for the container to run properly.</p>
+<p>If you want to build your own project on that template project, you are free to do so.
 Just add and remove the dependencies as you find most convenient.</p>
 </div>
 <div class="section" id="adding-the-library-to-your-project">
 <span id="id3"></span><h2>Adding the Library to Your Project<a class="headerlink" href="#adding-the-library-to-your-project" title="Permalink to this headline">¶</a></h2>
 <p>The first thing you need to do is to add the library to your sbt project.
 Adding the following lines to the <code class="docutils literal"><span class="pre">build.sbt</span></code> file should suffice:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.eiipii&quot;</span> <span class="o">%</span> <span class="s">&quot;etcdhttpclient_2.11&quot;</span> <span class="o">%</span> <span class="s">&quot;0.1.0-SNAPSHOT&quot;</span>
-   <span class="o">...</span>
-<span class="n">resolvers</span> <span class="o">+=</span> <span class="s">&quot;Sonatype OSS Snapshots&quot;</span> <span class="n">at</span> <span class="s">&quot;https://oss.sonatype.org/content/repositories/snapshots&quot;</span>
+<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="n">libraryDependencies</span> <span class="o">+=</span> <span class="s">&quot;com.eiipii&quot;</span> <span class="o">%%</span> <span class="s">&quot;etcdhttpclient&quot;</span> <span class="o">%</span> <span class="s">&quot;0.1.1&quot;</span>
 </pre></div>
 </div>
 <p>As for a Maven project, add these lines to your <code class="docutils literal"><span class="pre">pom.xml</span></code>:</p>
 <div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">dependency</span><span class="o">&gt;</span>
   <span class="o">&lt;</span><span class="n">groupId</span><span class="o">&gt;</span><span class="n">com</span><span class="o">.</span><span class="n">eiipii</span><span class="o">&lt;/</span><span class="n">groupId</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">etcdhttpclient_2</span><span class="o">.</span><span class="mi">11</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.1</span><span class="o">.</span><span class="mi">0</span><span class="o">-</span><span class="nc">SNAPSHOT</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">classifier</span><span class="o">&gt;</span><span class="n">sources</span><span class="o">&lt;/</span><span class="n">classifier</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">artifactId</span><span class="o">&gt;</span><span class="n">etcdhttpclient_2</span><span class="o">.</span><span class="mi">12</span><span class="o">&lt;/</span><span class="n">artifactId</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">version</span><span class="o">&gt;</span><span class="mf">0.1</span><span class="o">.</span><span class="mi">1</span><span class="o">&lt;/</span><span class="n">version</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="n">dependency</span><span class="o">&gt;</span>
-</pre></div>
-</div>
-<p>You might have to add the sonatype repository:</p>
-<div class="highlight-scala"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">repositories</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">repository</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">id</span><span class="o">&gt;</span><span class="n">oss</span><span class="o">-</span><span class="n">sonatype</span><span class="o">&lt;/</span><span class="n">id</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">oss</span><span class="o">-</span><span class="n">sonatype</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">url</span><span class="o">&gt;</span><span class="n">https</span><span class="o">://</span><span class="n">oss</span><span class="o">.</span><span class="n">sonatype</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">content</span><span class="o">/</span><span class="n">repositories</span><span class="o">/</span><span class="n">snapshots</span><span class="o">&lt;/</span><span class="n">url</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">snapshots</span><span class="o">&gt;</span>
-      <span class="o">&lt;</span><span class="n">enabled</span><span class="o">&gt;</span><span class="kc">true</span><span class="o">&lt;/</span><span class="n">enabled</span><span class="o">&gt;</span>
-    <span class="o">&lt;/</span><span class="n">snapshots</span><span class="o">&gt;</span>
-  <span class="o">&lt;/</span><span class="n">repository</span><span class="o">&gt;</span>
-<span class="o">&lt;/</span><span class="n">repositories</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 </div>
@@ -236,7 +221,8 @@ Also, remember that there is a <a class="reference external" href="http://etcdsc
 This is a centralized repo for tracking issues over all of our open source projects.
 Also, take a look at the <a class="reference external" href="https://waffle.io/eiipii/openSupportRepo">Open Support Repository in Waffle</a> for a different interface.
 Don&#8217;t forget to use the <code class="docutils literal"><span class="pre">etcdhttpclient</span></code> label to help us keep things organized.
-Also, before adding an issue, make sure that it is a new one.</p>
+Before adding an issue, please make sure that it is a new one.</p>
+<p>You can also take advantage of our <a class="reference external" href="https://groups.google.com/forum/#!forum/etcdhttpclient">mailing list</a>: <code class="docutils literal"><span class="pre">etcdhttpclient&#64;googlegroups.com</span></code>.</p>
 </div>
 </div>
 

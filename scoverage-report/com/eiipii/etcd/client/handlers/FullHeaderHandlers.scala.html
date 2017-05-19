@@ -4,7 +4,7 @@
         <title id="title">
           com/eiipii/etcd/client/handlers/FullHeaderHandlers.scala.html
         </title>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
       </script>
         <style>
@@ -23,16 +23,16 @@
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>/*
-</span>2 <span style=''> * Copyright (c) 2016 Paweł Cesar Sanjuan Szklarz.
+</span>2 <span style=''> * Copyright (c) 2017 Paweł Cesar Sanjuan Szklarz.
 </span>3 <span style=''> *
-</span>4 <span style=''> * Licensed under the Apache License, Version 2.0 (the "License");
+</span>4 <span style=''> * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
 </span>5 <span style=''> * you may not use this file except in compliance with the License.
 </span>6 <span style=''> * You may obtain a copy of the License at
 </span>7 <span style=''> *
 </span>8 <span style=''> * http://www.apache.org/licenses/LICENSE-2.0
 </span>9 <span style=''> *
 </span>10 <span style=''> * Unless required by applicable law or agreed to in writing, software
-</span>11 <span style=''> * distributed under the License is distributed on an "AS IS" BASIS,
+</span>11 <span style=''> * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
 </span>12 <span style=''> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 </span>13 <span style=''> * See the License for the specific language governing permissions and
 </span>14 <span style=''> * limitations under the License.
@@ -53,7 +53,7 @@
 </span>29 <span style=''>class EtcdPutResponseAsyncHandler(val promise: Promise[EtcdSetKeyResult]) extends AbstractEtcdHandlerWithCompleteEtcdHeader[EtcdSetKeyResult] {
 </span>30 <span style=''>
 </span>31 <span style=''>  override def createResponse(status: Int, header: EtcdHeaders, json: String): Option[EtcdSetKeyResult] = </span><span style='background: #AEF1AE'>for {
-</span>32 <span style=''></span><span style='background: #AEF1AE'>    body <- JsonMethods.parse(bytes.toString("UTF-8")).extractOpt[EtcdSetKeyBody]
+</span>32 <span style=''></span><span style='background: #AEF1AE'>    body &lt;- JsonMethods.parse(bytes.toString(&quot;UTF-8&quot;)).extractOpt[EtcdSetKeyBody]
 </span>33 <span style=''></span><span style='background: #AEF1AE'>  } yield EtcdSetKeyResponse(header, body)</span><span style=''>
 </span>34 <span style=''>
 </span>35 <span style=''>}
@@ -61,7 +61,7 @@
 </span>37 <span style=''>class EtcdDeleteResponseAsyncHandler(val promise: Promise[EtcdDeleteKeyResult]) extends AbstractEtcdHandlerWithCompleteEtcdHeader[EtcdDeleteKeyResult] {
 </span>38 <span style=''>
 </span>39 <span style=''>  override def createResponse(status: Int, header: EtcdHeaders, json: String): Option[EtcdDeleteKeyResult] = </span><span style='background: #AEF1AE'>for {
-</span>40 <span style=''></span><span style='background: #AEF1AE'>    body <- JsonMethods.parse(bytes.toString("UTF-8")).extractOpt[EtcdDeleteKeyBody]
+</span>40 <span style=''></span><span style='background: #AEF1AE'>    body &lt;- JsonMethods.parse(bytes.toString(&quot;UTF-8&quot;)).extractOpt[EtcdDeleteKeyBody]
 </span>41 <span style=''></span><span style='background: #AEF1AE'>  } yield EtcdDeleteKeyResponse(header, body)</span><span style=''>
 </span>42 <span style=''>
 </span>43 <span style=''>}
@@ -69,7 +69,7 @@
 </span>45 <span style=''>class EtcdCreateDirResponseAsyncHandler(val promise: Promise[EtcdCreateDirResult]) extends AbstractEtcdHandlerWithCompleteEtcdHeader[EtcdCreateDirResult] {
 </span>46 <span style=''>
 </span>47 <span style=''>  override def createResponse(status: Int, header: EtcdHeaders, json: String): Option[EtcdCreateDirResult] = </span><span style='background: #AEF1AE'>for {
-</span>48 <span style=''></span><span style='background: #AEF1AE'>    body <- JsonMethods.parse(json).extractOpt[EtcdCreateDirBody]
+</span>48 <span style=''></span><span style='background: #AEF1AE'>    body &lt;- JsonMethods.parse(json).extractOpt[EtcdCreateDirBody]
 </span>49 <span style=''></span><span style='background: #AEF1AE'>  } yield EtcdCreateDirResponse(header, body)</span><span style=''>
 </span>50 <span style=''>
 </span>51 <span style=''>}
@@ -77,14 +77,14 @@
 </span>53 <span style=''>class EtcdListDirAsyncHandler(val promise: Promise[EtcdListDirResult]) extends AbstractEtcdHandlerWithCompleteEtcdHeader[EtcdListDirResult] {
 </span>54 <span style=''>
 </span>55 <span style=''>  override def createResponse(status: Int, header: EtcdHeaders, json: String): Option[EtcdListDirResult] = </span><span style='background: #AEF1AE'>for {
-</span>56 <span style=''></span><span style='background: #AEF1AE'>    body <- JsonMethods.parse(bytes.toString("UTF-8")).extractOpt[EtcdListDirBody]
+</span>56 <span style=''></span><span style='background: #AEF1AE'>    body &lt;- JsonMethods.parse(bytes.toString(&quot;UTF-8&quot;)).extractOpt[EtcdListDirBody]
 </span>57 <span style=''></span><span style='background: #AEF1AE'>  } yield EtcdListDirResponse(header, body)</span><span style=''>
 </span>58 <span style=''>}
 </span>59 <span style=''>
 </span>60 <span style=''>class EtcdGetResponseAsyncHandler(val promise: Promise[EtcdGetKeyResult]) extends AbstractEtcdHandlerWithCompleteEtcdHeader[EtcdGetKeyResult] {
 </span>61 <span style=''>
 </span>62 <span style=''>  override def createResponse(status: Int, header: EtcdHeaders, json: String): Option[EtcdGetKeyResult] = </span><span style='background: #AEF1AE'>for {
-</span>63 <span style=''></span><span style='background: #AEF1AE'>    body <- JsonMethods.parse(bytes.toString("UTF-8")).extractOpt[EtcdGetKeyBody]
+</span>63 <span style=''></span><span style='background: #AEF1AE'>    body &lt;- JsonMethods.parse(bytes.toString(&quot;UTF-8&quot;)).extractOpt[EtcdGetKeyBody]
 </span>64 <span style=''></span><span style='background: #AEF1AE'>  } yield EtcdGetKeyResponse(header, body)</span><span style=''>
 </span>65 <span style=''>
 </span>66 <span style=''>}
@@ -104,28 +104,7 @@
           32
         </td>
         <td>
-          460
-        </td>
-        <td>
-          1169
-          -
-          1169
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.reflect.ManifestFactory.classType
-        </td>
-        <td style="background: #AEF1AE">
-          reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdSetKeyBody](classOf[com.eiipii.etcd.client.model.EtcdSetKeyBody])
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          457
+          337
         </td>
         <td>
           1128
@@ -133,41 +112,20 @@
           1128
         </td>
         <td>
-          Select
+          
         </td>
         <td>
-          org.json4s.native.JsonMethods.parse$default$2
+          
         </td>
         <td style="background: #AEF1AE">
-          org.json4s.native.JsonMethods.parse$default$2
+          
         </td>
       </tr><tr>
         <td>
           32
         </td>
         <td>
-          456
-        </td>
-        <td>
-          1134
-          -
-          1157
-        </td>
-        <td>
-          ApplyImplicitView
-        </td>
-        <td>
-          org.json4s.string2JsonInput
-        </td>
-        <td style="background: #AEF1AE">
-          org.this.json4s.`package`.string2JsonInput(EtcdPutResponseAsyncHandler.this.bytes.toString(&quot;UTF-8&quot;))
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          459
+          573
         </td>
         <td>
           1116
@@ -175,41 +133,20 @@
           1158
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          org.json4s.native.JsonMethods.parse
+          
         </td>
         <td style="background: #AEF1AE">
-          org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(EtcdPutResponseAsyncHandler.this.bytes.toString(&quot;UTF-8&quot;)), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)
+          
         </td>
       </tr><tr>
         <td>
           32
         </td>
         <td>
-          462
-        </td>
-        <td>
-          1098
-          -
-          1228
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Option.map
-        </td>
-        <td style="background: #AEF1AE">
-          org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(EtcdPutResponseAsyncHandler.this.bytes.toString(&quot;UTF-8&quot;)), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdSetKeyBody](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdSetKeyBody](classOf[com.eiipii.etcd.client.model.EtcdSetKeyBody])).map[com.eiipii.etcd.client.model.EtcdSetKeyResponse](((body: com.eiipii.etcd.client.model.EtcdSetKeyBody) =&gt; com.eiipii.etcd.client.model.EtcdSetKeyResponse.apply(header, body)))
-        </td>
-      </tr><tr>
-        <td>
-          32
-        </td>
-        <td>
-          455
+          713
         </td>
         <td>
           1134
@@ -217,20 +154,62 @@
           1157
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          java.io.ByteArrayOutputStream.toString
+          
         </td>
         <td style="background: #AEF1AE">
-          EtcdPutResponseAsyncHandler.this.bytes.toString(&quot;UTF-8&quot;)
+          
         </td>
       </tr><tr>
         <td>
           32
         </td>
         <td>
-          458
+          479
+        </td>
+        <td>
+          1134
+          -
+          1157
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          284
+        </td>
+        <td>
+          1098
+          -
+          1228
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          266
         </td>
         <td>
           1128
@@ -238,20 +217,41 @@
           1128
         </td>
         <td>
-          Select
+          
         </td>
         <td>
-          org.json4s.native.JsonMethods.parse$default$3
+          
         </td>
         <td style="background: #AEF1AE">
-          org.json4s.native.JsonMethods.parse$default$3
+          
+        </td>
+      </tr><tr>
+        <td>
+          32
+        </td>
+        <td>
+          520
+        </td>
+        <td>
+          1169
+          -
+          1169
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
         </td>
       </tr><tr>
         <td>
           33
         </td>
         <td>
-          461
+          25
         </td>
         <td>
           1196
@@ -259,125 +259,20 @@
           1228
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.EtcdSetKeyResponse.apply
+          
         </td>
         <td style="background: #AEF1AE">
-          com.eiipii.etcd.client.model.EtcdSetKeyResponse.apply(header, body)
+          
         </td>
       </tr><tr>
         <td>
           40
         </td>
         <td>
-          463
-        </td>
-        <td>
-          1532
-          -
-          1555
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          java.io.ByteArrayOutputStream.toString
-        </td>
-        <td style="background: #AEF1AE">
-          EtcdDeleteResponseAsyncHandler.this.bytes.toString(&quot;UTF-8&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          465
-        </td>
-        <td>
-          1526
-          -
-          1526
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          org.json4s.native.JsonMethods.parse$default$2
-        </td>
-        <td style="background: #AEF1AE">
-          org.json4s.native.JsonMethods.parse$default$2
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          468
-        </td>
-        <td>
-          1567
-          -
-          1567
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.reflect.ManifestFactory.classType
-        </td>
-        <td style="background: #AEF1AE">
-          reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdDeleteKeyBody](classOf[com.eiipii.etcd.client.model.EtcdDeleteKeyBody])
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          470
-        </td>
-        <td>
-          1496
-          -
-          1632
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Option.map
-        </td>
-        <td style="background: #AEF1AE">
-          org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(EtcdDeleteResponseAsyncHandler.this.bytes.toString(&quot;UTF-8&quot;)), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdDeleteKeyBody](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdDeleteKeyBody](classOf[com.eiipii.etcd.client.model.EtcdDeleteKeyBody])).map[com.eiipii.etcd.client.model.EtcdDeleteKeyResponse](((body: com.eiipii.etcd.client.model.EtcdDeleteKeyBody) =&gt; com.eiipii.etcd.client.model.EtcdDeleteKeyResponse.apply(header, body)))
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          464
-        </td>
-        <td>
-          1532
-          -
-          1555
-        </td>
-        <td>
-          ApplyImplicitView
-        </td>
-        <td>
-          org.json4s.string2JsonInput
-        </td>
-        <td style="background: #AEF1AE">
-          org.this.json4s.`package`.string2JsonInput(EtcdDeleteResponseAsyncHandler.this.bytes.toString(&quot;UTF-8&quot;))
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          467
+          131
         </td>
         <td>
           1514
@@ -385,20 +280,104 @@
           1556
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          org.json4s.native.JsonMethods.parse
+          
         </td>
         <td style="background: #AEF1AE">
-          org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(EtcdDeleteResponseAsyncHandler.this.bytes.toString(&quot;UTF-8&quot;)), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)
+          
         </td>
       </tr><tr>
         <td>
           40
         </td>
         <td>
-          466
+          244
+        </td>
+        <td>
+          1532
+          -
+          1555
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          615
+        </td>
+        <td>
+          1532
+          -
+          1555
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          509
+        </td>
+        <td>
+          1496
+          -
+          1632
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          45
+        </td>
+        <td>
+          1567
+          -
+          1567
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          356
         </td>
         <td>
           1526
@@ -406,20 +385,41 @@
           1526
         </td>
         <td>
-          Select
+          
         </td>
         <td>
-          org.json4s.native.JsonMethods.parse$default$3
+          
         </td>
         <td style="background: #AEF1AE">
-          org.json4s.native.JsonMethods.parse$default$3
+          
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          583
+        </td>
+        <td>
+          1526
+          -
+          1526
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
         </td>
       </tr><tr>
         <td>
           41
         </td>
         <td>
-          469
+          8
         </td>
         <td>
           1597
@@ -427,62 +427,20 @@
           1632
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.EtcdDeleteKeyResponse.apply
+          
         </td>
         <td style="background: #AEF1AE">
-          com.eiipii.etcd.client.model.EtcdDeleteKeyResponse.apply(header, body)
+          
         </td>
       </tr><tr>
         <td>
           48
         </td>
         <td>
-          472
-        </td>
-        <td>
-          1933
-          -
-          1933
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          org.json4s.native.JsonMethods.parse$default$2
-        </td>
-        <td style="background: #AEF1AE">
-          org.json4s.native.JsonMethods.parse$default$2
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          474
-        </td>
-        <td>
-          1921
-          -
-          1944
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          org.json4s.native.JsonMethods.parse
-        </td>
-        <td style="background: #AEF1AE">
-          org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          477
+          648
         </td>
         <td>
           1903
@@ -490,20 +448,104 @@
           2020
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          scala.Option.map
+          
         </td>
         <td style="background: #AEF1AE">
-          org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(json), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdCreateDirBody](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdCreateDirBody](classOf[com.eiipii.etcd.client.model.EtcdCreateDirBody])).map[com.eiipii.etcd.client.model.EtcdCreateDirResponse](((body: com.eiipii.etcd.client.model.EtcdCreateDirBody) =&gt; com.eiipii.etcd.client.model.EtcdCreateDirResponse.apply(header, body)))
+          
         </td>
       </tr><tr>
         <td>
           48
         </td>
         <td>
-          471
+          109
+        </td>
+        <td>
+          1933
+          -
+          1933
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          333
+        </td>
+        <td>
+          1933
+          -
+          1933
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          90
+        </td>
+        <td>
+          1921
+          -
+          1944
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          317
+        </td>
+        <td>
+          1955
+          -
+          1955
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          48
+        </td>
+        <td>
+          371
         </td>
         <td>
           1939
@@ -511,62 +553,20 @@
           1943
         </td>
         <td>
-          ApplyImplicitView
+          
         </td>
         <td>
-          org.json4s.string2JsonInput
+          
         </td>
         <td style="background: #AEF1AE">
-          org.this.json4s.`package`.string2JsonInput(json)
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          473
-        </td>
-        <td>
-          1933
-          -
-          1933
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          org.json4s.native.JsonMethods.parse$default$3
-        </td>
-        <td style="background: #AEF1AE">
-          org.json4s.native.JsonMethods.parse$default$3
-        </td>
-      </tr><tr>
-        <td>
-          48
-        </td>
-        <td>
-          475
-        </td>
-        <td>
-          1955
-          -
-          1955
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.reflect.ManifestFactory.classType
-        </td>
-        <td style="background: #AEF1AE">
-          reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdCreateDirBody](classOf[com.eiipii.etcd.client.model.EtcdCreateDirBody])
+          
         </td>
       </tr><tr>
         <td>
           49
         </td>
         <td>
-          476
+          578
         </td>
         <td>
           1985
@@ -574,20 +574,41 @@
           2020
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.EtcdCreateDirResponse.apply
+          
         </td>
         <td style="background: #AEF1AE">
-          com.eiipii.etcd.client.model.EtcdCreateDirResponse.apply(header, body)
+          
         </td>
       </tr><tr>
         <td>
           56
         </td>
         <td>
-          478
+          164
+        </td>
+        <td>
+          2305
+          -
+          2305
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          457
         </td>
         <td>
           2311
@@ -595,125 +616,20 @@
           2334
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          java.io.ByteArrayOutputStream.toString
+          
         </td>
         <td style="background: #AEF1AE">
-          EtcdListDirAsyncHandler.this.bytes.toString(&quot;UTF-8&quot;)
+          
         </td>
       </tr><tr>
         <td>
           56
         </td>
         <td>
-          481
-        </td>
-        <td>
-          2305
-          -
-          2305
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          org.json4s.native.JsonMethods.parse$default$3
-        </td>
-        <td style="background: #AEF1AE">
-          org.json4s.native.JsonMethods.parse$default$3
-        </td>
-      </tr><tr>
-        <td>
-          56
-        </td>
-        <td>
-          480
-        </td>
-        <td>
-          2305
-          -
-          2305
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          org.json4s.native.JsonMethods.parse$default$2
-        </td>
-        <td style="background: #AEF1AE">
-          org.json4s.native.JsonMethods.parse$default$2
-        </td>
-      </tr><tr>
-        <td>
-          56
-        </td>
-        <td>
-          483
-        </td>
-        <td>
-          2346
-          -
-          2346
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.reflect.ManifestFactory.classType
-        </td>
-        <td style="background: #AEF1AE">
-          reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdListDirBody](classOf[com.eiipii.etcd.client.model.EtcdListDirBody])
-        </td>
-      </tr><tr>
-        <td>
-          56
-        </td>
-        <td>
-          479
-        </td>
-        <td>
-          2311
-          -
-          2334
-        </td>
-        <td>
-          ApplyImplicitView
-        </td>
-        <td>
-          org.json4s.string2JsonInput
-        </td>
-        <td style="background: #AEF1AE">
-          org.this.json4s.`package`.string2JsonInput(EtcdListDirAsyncHandler.this.bytes.toString(&quot;UTF-8&quot;))
-        </td>
-      </tr><tr>
-        <td>
-          56
-        </td>
-        <td>
-          482
-        </td>
-        <td>
-          2293
-          -
-          2335
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          org.json4s.native.JsonMethods.parse
-        </td>
-        <td style="background: #AEF1AE">
-          org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(EtcdListDirAsyncHandler.this.bytes.toString(&quot;UTF-8&quot;)), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)
-        </td>
-      </tr><tr>
-        <td>
-          56
-        </td>
-        <td>
-          485
+          412
         </td>
         <td>
           2275
@@ -721,20 +637,104 @@
           2407
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          scala.Option.map
+          
         </td>
         <td style="background: #AEF1AE">
-          org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(EtcdListDirAsyncHandler.this.bytes.toString(&quot;UTF-8&quot;)), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdListDirBody](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdListDirBody](classOf[com.eiipii.etcd.client.model.EtcdListDirBody])).map[com.eiipii.etcd.client.model.EtcdListDirResponse](((body: com.eiipii.etcd.client.model.EtcdListDirBody) =&gt; com.eiipii.etcd.client.model.EtcdListDirResponse.apply(header, body)))
+          
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          689
+        </td>
+        <td>
+          2293
+          -
+          2335
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          476
+        </td>
+        <td>
+          2346
+          -
+          2346
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          30
+        </td>
+        <td>
+          2305
+          -
+          2305
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          56
+        </td>
+        <td>
+          215
+        </td>
+        <td>
+          2311
+          -
+          2334
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
         </td>
       </tr><tr>
         <td>
           57
         </td>
         <td>
-          484
+          262
         </td>
         <td>
           2374
@@ -742,20 +742,20 @@
           2407
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.EtcdListDirResponse.apply
+          
         </td>
         <td style="background: #AEF1AE">
-          com.eiipii.etcd.client.model.EtcdListDirResponse.apply(header, body)
+          
         </td>
       </tr><tr>
         <td>
           63
         </td>
         <td>
-          487
+          310
         </td>
         <td>
           2698
@@ -763,20 +763,20 @@
           2721
         </td>
         <td>
-          ApplyImplicitView
+          
         </td>
         <td>
-          org.json4s.string2JsonInput
+          
         </td>
         <td style="background: #AEF1AE">
-          org.this.json4s.`package`.string2JsonInput(EtcdGetResponseAsyncHandler.this.bytes.toString(&quot;UTF-8&quot;))
+          
         </td>
       </tr><tr>
         <td>
           63
         </td>
         <td>
-          490
+          390
         </td>
         <td>
           2680
@@ -784,20 +784,20 @@
           2722
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          org.json4s.native.JsonMethods.parse
+          
         </td>
         <td style="background: #AEF1AE">
-          org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(EtcdGetResponseAsyncHandler.this.bytes.toString(&quot;UTF-8&quot;)), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)
+          
         </td>
       </tr><tr>
         <td>
           63
         </td>
         <td>
-          489
+          103
         </td>
         <td>
           2692
@@ -805,62 +805,20 @@
           2692
         </td>
         <td>
-          Select
+          
         </td>
         <td>
-          org.json4s.native.JsonMethods.parse$default$3
+          
         </td>
         <td style="background: #AEF1AE">
-          org.json4s.native.JsonMethods.parse$default$3
+          
         </td>
       </tr><tr>
         <td>
           63
         </td>
         <td>
-          486
-        </td>
-        <td>
-          2698
-          -
-          2721
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          java.io.ByteArrayOutputStream.toString
-        </td>
-        <td style="background: #AEF1AE">
-          EtcdGetResponseAsyncHandler.this.bytes.toString(&quot;UTF-8&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          63
-        </td>
-        <td>
-          488
-        </td>
-        <td>
-          2692
-          -
-          2692
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          org.json4s.native.JsonMethods.parse$default$2
-        </td>
-        <td style="background: #AEF1AE">
-          org.json4s.native.JsonMethods.parse$default$2
-        </td>
-      </tr><tr>
-        <td>
-          63
-        </td>
-        <td>
-          491
+          626
         </td>
         <td>
           2733
@@ -868,20 +826,20 @@
           2733
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          scala.reflect.ManifestFactory.classType
+          
         </td>
         <td style="background: #AEF1AE">
-          reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdGetKeyBody](classOf[com.eiipii.etcd.client.model.EtcdGetKeyBody])
+          
         </td>
       </tr><tr>
         <td>
           63
         </td>
         <td>
-          493
+          330
         </td>
         <td>
           2662
@@ -889,20 +847,62 @@
           2792
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          scala.Option.map
+          
         </td>
         <td style="background: #AEF1AE">
-          org.this.json4s.`package`.jvalue2extractable(org.json4s.native.JsonMethods.parse(org.this.json4s.`package`.string2JsonInput(EtcdGetResponseAsyncHandler.this.bytes.toString(&quot;UTF-8&quot;)), org.json4s.native.JsonMethods.parse$default$2, org.json4s.native.JsonMethods.parse$default$3)).extractOpt[com.eiipii.etcd.client.model.EtcdGetKeyBody](com.eiipii.etcd.client.model.EtcdJsonFormat.format, reflect.this.ManifestFactory.classType[com.eiipii.etcd.client.model.EtcdGetKeyBody](classOf[com.eiipii.etcd.client.model.EtcdGetKeyBody])).map[com.eiipii.etcd.client.model.EtcdGetKeyResponse](((body: com.eiipii.etcd.client.model.EtcdGetKeyBody) =&gt; com.eiipii.etcd.client.model.EtcdGetKeyResponse.apply(header, body)))
+          
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          661
+        </td>
+        <td>
+          2698
+          -
+          2721
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          63
+        </td>
+        <td>
+          161
+        </td>
+        <td>
+          2692
+          -
+          2692
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
         </td>
       </tr><tr>
         <td>
           64
         </td>
         <td>
-          492
+          566
         </td>
         <td>
           2760
@@ -910,13 +910,13 @@
           2792
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.EtcdGetKeyResponse.apply
+          
         </td>
         <td style="background: #AEF1AE">
-          com.eiipii.etcd.client.model.EtcdGetKeyResponse.apply(header, body)
+          
         </td>
       </tr>
     </table>

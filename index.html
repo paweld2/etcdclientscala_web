@@ -52,8 +52,7 @@
 <h1>Welcome to EtcdClient&#8217;s documentation!<a class="headerlink" href="#welcome-to-etcdclient-s-documentation" title="Permalink to this headline">¶</a></h1>
 <p>EtcdClient is an asynchronous etcd client library with key-value methods, support for authentication and methods for retrieving statistics and managing members of etcd clusters.
 EtcdClient is built on top of <a class="reference external" href="http://docs.scala-lang.org/overviews/core/futures.html">Scala Futures and Promises</a>,
-<a class="reference external" href="https://github.com/AsyncHttpClient/async-http-client/">AsyncHttpClient</a>, <a class="reference external" href="http://netty.io/">Netty</a>  and <a class="reference external" href="https://github.com/json4s/json4s">JSON4S</a>.
-EtcdClient tests provide 100% <a class="reference external" href="http://etcdscalaclient.eiipii.com/scoverage-report/index.html">code coverage</a>.</p>
+<a class="reference external" href="https://github.com/AsyncHttpClient/async-http-client/">AsyncHttpClient</a>, <a class="reference external" href="http://netty.io/">Netty</a>  and <a class="reference external" href="https://github.com/json4s/json4s">JSON4S</a>.</p>
 <p>It is implemented according to <strong>version 2</strong> of the Etcd API.
 The complete etcd API information can be found on the <a class="reference external" href="https://coreos.com/etcd/docs/latest/">etcd documentation</a>.</p>
 <p>The following is a document explaining how to use EtcdClient, in order to get you started as quickly as possible.
@@ -64,7 +63,7 @@ In particular, the exact contents of the responses returned by etcd are not cove
 However, it is only a matter of searching in the scaladoc for the selected case class representing the response of a particular operation.
 The implementation is straightforward.</p>
 <p>The first part of the document is a quickstart for those who wish to quickly test the client.
-Next, we briefly explains the model used in order to render responses to HTTP requests made to etcd servers.
+Next, we briefly explain the model used in order to render responses to HTTP requests made to etcd servers.
 Then we proceed to list all methods implemented by EtcdClient and examples to illustrate possible use cases.
 We hope that a few examples will suffice to get most users started.</p>
 <p>Contents:</p>

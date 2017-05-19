@@ -4,7 +4,7 @@
         <title id="title">
           com/eiipii/etcd/client/model/EtcdModel.scala.html
         </title>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/><script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script><script type="text/javascript">
         $(document).ready(function() {$(".tablesorter").tablesorter();});
       </script>
         <style>
@@ -23,16 +23,16 @@
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
             <pre style='font-size: 12pt; font-family: courier;'>1 <span style=''>/*
-</span>2 <span style=''> * Copyright (c) 2016 Paweł Cesar Sanjuan Szklarz.
+</span>2 <span style=''> * Copyright (c) 2017 Paweł Cesar Sanjuan Szklarz.
 </span>3 <span style=''> *
-</span>4 <span style=''> * Licensed under the Apache License, Version 2.0 (the "License");
+</span>4 <span style=''> * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
 </span>5 <span style=''> * you may not use this file except in compliance with the License.
 </span>6 <span style=''> * You may obtain a copy of the License at
 </span>7 <span style=''> *
 </span>8 <span style=''> * http://www.apache.org/licenses/LICENSE-2.0
 </span>9 <span style=''> *
 </span>10 <span style=''> * Unless required by applicable law or agreed to in writing, software
-</span>11 <span style=''> * distributed under the License is distributed on an "AS IS" BASIS,
+</span>11 <span style=''> * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
 </span>12 <span style=''> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 </span>13 <span style=''> * See the License for the specific language governing permissions and
 </span>14 <span style=''> * limitations under the License.
@@ -53,15 +53,15 @@
 </span>29 <span style=''>   *
 </span>30 <span style=''>   * The key preserves the order of the list given as input.
 </span>31 <span style=''>   *
-</span>32 <span style=''>   * @param path A list of strings not containing "/", which are to be used as node names.
+</span>32 <span style=''>   * @param path A list of strings not containing &quot;/&quot;, which are to be used as node names.
 </span>33 <span style=''>   */
 </span>34 <span style=''>
 </span>35 <span style=''>  def fromPath(path: List[String]): EtcdKey = {
-</span>36 <span style=''>    if (</span><span style='background: #AEF1AE'>path.exists(node => node.contains("/"))</span><span style=''>) {
-</span>37 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException("node names cannot contain '/'")</span><span style=''>
+</span>36 <span style=''>    if (</span><span style='background: #AEF1AE'>path.exists(node =&gt; node.contains(&quot;/&quot;))</span><span style=''>) {
+</span>37 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(&quot;node names cannot contain '/'&quot;)</span><span style=''>
 </span>38 <span style=''>    }
-</span>39 <span style=''>    //An empty string ("") is prepended to the list so as to get a "/" at the beginning of the key.
-</span>40 <span style=''>    </span><span style='background: #AEF1AE'>EtcdKey((("") :: path).mkString("/"))</span><span style=''>
+</span>39 <span style=''>    //An empty string (&quot;&quot;) is prepended to the list so as to get a &quot;/&quot; at the beginning of the key.
+</span>40 <span style=''>    </span><span style='background: #AEF1AE'>EtcdKey(((&quot;&quot;) :: path).mkString(&quot;/&quot;))</span><span style=''>
 </span>41 <span style=''>  }
 </span>42 <span style=''>
 </span>43 <span style=''>  /**
@@ -70,8 +70,8 @@
 </span>46 <span style=''>   * @param key An [[com.eiipii.etcd.client.model.EtcdKey EtcdKey]] which is to be split in node names and placed in order into a list.
 </span>47 <span style=''>   */
 </span>48 <span style=''>  def toPath(key: EtcdKey): List[String] = {
-</span>49 <span style=''>    //The first element is dropped, since it is always and empty string ("").
-</span>50 <span style=''>    </span><span style='background: #AEF1AE'>key.key.split("/").toList.drop(1)</span><span style=''>
+</span>49 <span style=''>    //The first element is dropped, since it is always and empty string (&quot;&quot;).
+</span>50 <span style=''>    </span><span style='background: #AEF1AE'>key.key.split(&quot;/&quot;).toList.drop(1)</span><span style=''>
 </span>51 <span style=''>  }
 </span>52 <span style=''>
 </span>53 <span style=''>  /**
@@ -81,13 +81,13 @@
 </span>57 <span style=''>   */
 </span>58 <span style=''>  def key(key: String): EtcdKey = {
 </span>59 <span style=''>    if (</span><span style='background: #AEF1AE'>key == null || key.isEmpty</span><span style=''>) {
-</span>60 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException("key name can not be null.")</span><span style=''>
+</span>60 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(&quot;key name can not be null.&quot;)</span><span style=''>
 </span>61 <span style=''>    }
-</span>62 <span style=''>    if (</span><span style='background: #AEF1AE'>!key.startsWith("/")</span><span style=''>) {
-</span>63 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s"key name must start with '/'. Provided value $key")</span><span style=''>
+</span>62 <span style=''>    if (</span><span style='background: #AEF1AE'>!key.startsWith(&quot;/&quot;)</span><span style=''>) {
+</span>63 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s&quot;key name must start with '/'. Provided value $key&quot;)</span><span style=''>
 </span>64 <span style=''>    }
-</span>65 <span style=''>    if (</span><span style='background: #AEF1AE'>key.endsWith("/")</span><span style=''>) {
-</span>66 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s"key name must not end with '/'. Provided value $key")</span><span style=''>
+</span>65 <span style=''>    if (</span><span style='background: #AEF1AE'>key.endsWith(&quot;/&quot;)</span><span style=''>) {
+</span>66 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s&quot;key name must not end with '/'. Provided value $key&quot;)</span><span style=''>
 </span>67 <span style=''>    }
 </span>68 <span style=''>    </span><span style='background: #AEF1AE'>EtcdKey(key)</span><span style=''>
 </span>69 <span style=''>  }
@@ -107,13 +107,13 @@
 </span>83 <span style=''>   */
 </span>84 <span style=''>  def directory(dir: String): EtcdDirectory = {
 </span>85 <span style=''>    if (</span><span style='background: #AEF1AE'>dir == null</span><span style=''>) {
-</span>86 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException("Directory name can not be null.")</span><span style=''>
+</span>86 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(&quot;Directory name can not be null.&quot;)</span><span style=''>
 </span>87 <span style=''>    }
-</span>88 <span style=''>    if (</span><span style='background: #AEF1AE'>!dir.startsWith("/")</span><span style=''>) {
-</span>89 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s"Directory name must start with '/'. Provided value $dir")</span><span style=''>
+</span>88 <span style=''>    if (</span><span style='background: #AEF1AE'>!dir.startsWith(&quot;/&quot;)</span><span style=''>) {
+</span>89 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s&quot;Directory name must start with '/'. Provided value $dir&quot;)</span><span style=''>
 </span>90 <span style=''>    }
-</span>91 <span style=''>    if (</span><span style='background: #AEF1AE'>!dir.endsWith("/")</span><span style=''>) {
-</span>92 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s"Directory must end with '/'. Provided value $dir")</span><span style=''>
+</span>91 <span style=''>    if (</span><span style='background: #AEF1AE'>!dir.endsWith(&quot;/&quot;)</span><span style=''>) {
+</span>92 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s&quot;Directory must end with '/'. Provided value $dir&quot;)</span><span style=''>
 </span>93 <span style=''>    }
 </span>94 <span style=''>    </span><span style='background: #AEF1AE'>EtcdDirectory(dir)</span><span style=''>
 </span>95 <span style=''>  }
@@ -129,21 +129,21 @@
 </span>105 <span style=''>   */
 </span>106 <span style=''>  def hiddenNode(dir: String, node: String): EtcdKey = {
 </span>107 <span style=''>    if (</span><span style='background: #AEF1AE'>dir == null || dir.isEmpty</span><span style=''>) {
-</span>108 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException("Directory name can not be null.")</span><span style=''>
+</span>108 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(&quot;Directory name can not be null.&quot;)</span><span style=''>
 </span>109 <span style=''>    }
-</span>110 <span style=''>    if (</span><span style='background: #AEF1AE'>!dir.startsWith("/")</span><span style=''>) {
-</span>111 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s"Directory name must start with '/'. Provided value $dir")</span><span style=''>
+</span>110 <span style=''>    if (</span><span style='background: #AEF1AE'>!dir.startsWith(&quot;/&quot;)</span><span style=''>) {
+</span>111 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s&quot;Directory name must start with '/'. Provided value $dir&quot;)</span><span style=''>
 </span>112 <span style=''>    }
-</span>113 <span style=''>    if (</span><span style='background: #AEF1AE'>!dir.endsWith("/")</span><span style=''>) {
-</span>114 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s"Directory must end with '/'. Provided value $dir")</span><span style=''>
+</span>113 <span style=''>    if (</span><span style='background: #AEF1AE'>!dir.endsWith(&quot;/&quot;)</span><span style=''>) {
+</span>114 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s&quot;Directory must end with '/'. Provided value $dir&quot;)</span><span style=''>
 </span>115 <span style=''>    }
 </span>116 <span style=''>    if (</span><span style='background: #AEF1AE'>node == null || node.isEmpty</span><span style=''>) {
-</span>117 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException("node name cannot be null.")</span><span style=''>
+</span>117 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(&quot;node name cannot be null.&quot;)</span><span style=''>
 </span>118 <span style=''>    }
-</span>119 <span style=''>    if (</span><span style='background: #AEF1AE'>node.endsWith("/") || node.startsWith("/")</span><span style=''>) {
-</span>120 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s"Node name must not end or start with '/'. Provided value $node")</span><span style=''>
+</span>119 <span style=''>    if (</span><span style='background: #AEF1AE'>node.endsWith(&quot;/&quot;) || node.startsWith(&quot;/&quot;)</span><span style=''>) {
+</span>120 <span style=''>      </span><span style='background: #AEF1AE'>throw new IllegalArgumentException(s&quot;Node name must not end or start with '/'. Provided value $node&quot;)</span><span style=''>
 </span>121 <span style=''>    }
-</span>122 <span style=''>    </span><span style='background: #AEF1AE'>EtcdKey(dir + "_" + node)</span><span style=''>
+</span>122 <span style=''>    </span><span style='background: #AEF1AE'>EtcdKey(dir + &quot;_&quot; + node)</span><span style=''>
 </span>123 <span style=''>  }
 </span>124 <span style=''>
 </span>125 <span style=''>  /**
@@ -169,7 +169,7 @@
 </span>145 <span style=''>   *
 </span>146 <span style=''>   * @param key the [[com.eiipii.etcd.client.model.EtcdKey EtcdKey]] that is to be treated as a directory.
 </span>147 <span style=''>   */
-</span>148 <span style=''>  def directoryOfKey(key: EtcdKey) = </span><span style='background: #AEF1AE'>EtcdDirectory(key.key + "/")</span><span style=''>
+</span>148 <span style=''>  def directoryOfKey(key: EtcdKey) = </span><span style='background: #AEF1AE'>EtcdDirectory(key.key + &quot;/&quot;)</span><span style=''>
 </span>149 <span style=''>}
 </span>150 <span style=''>// Common elements
 </span>151 <span style=''>/**
@@ -250,7 +250,7 @@
 </span>226 <span style=''>
 </span>227 <span style=''>  lazy val clustedIdHeader: Option[EtcdClusterId] = </span><span style='background: #AEF1AE'>headers.map(_.xEtcdClusterId)</span><span style=''>
 </span>228 <span style=''>  override def toString: String =
-</span>229 <span style=''>    </span><span style='background: #AEF1AE'>s"Incorrect Etcd response. Handler[${handler}], statusCode[${responseCode}], body:[${responseBody}] clustedIdHeader:[${clustedIdHeader}] headers:[${headers}]"</span><span style=''>
+</span>229 <span style=''>    </span><span style='background: #AEF1AE'>s&quot;Incorrect Etcd response. Handler[${handler}], statusCode[${responseCode}], body:[${responseBody}] clustedIdHeader:[${clustedIdHeader}] headers:[${headers}]&quot;</span><span style=''>
 </span>230 <span style=''>}
 </span>231 <span style=''>
 </span>232 <span style=''>/**
@@ -264,7 +264,7 @@
 </span>240 <span style=''>) extends Exception {
 </span>241 <span style=''>
 </span>242 <span style=''>  override def toString: String =
-</span>243 <span style=''>    </span><span style='background: #AEF1AE'>s"Incorrect Etcd response. Handler[${handler}], statusCode[${responseCode}], body:[${responseBody}] clustedIdHeader:[${clustedIdHeader}]"</span><span style=''>
+</span>243 <span style=''>    </span><span style='background: #AEF1AE'>s&quot;Incorrect Etcd response. Handler[${handler}], statusCode[${responseCode}], body:[${responseBody}] clustedIdHeader:[${clustedIdHeader}]&quot;</span><span style=''>
 </span>244 <span style=''>}
 </span>245 <span style=''>
 </span>246 <span style=''>/**
@@ -959,7 +959,7 @@
           36
         </td>
         <td>
-          591
+          462
         </td>
         <td>
           1320
@@ -967,62 +967,20 @@
           1338
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          java.lang.String.contains
+          
         </td>
         <td style="background: #AEF1AE">
-          node.contains(&quot;/&quot;)
+          
         </td>
       </tr><tr>
         <td>
           36
         </td>
         <td>
-          596
-        </td>
-        <td>
-          1296
-          -
-          1296
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          595
-        </td>
-        <td>
-          1296
-          -
-          1296
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          36
-        </td>
-        <td>
-          592
+          668
         </td>
         <td>
           1300
@@ -1030,20 +988,62 @@
           1339
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          scala.collection.LinearSeqOptimized.exists
+          
         </td>
         <td style="background: #AEF1AE">
-          path.exists(((node: String) =&gt; node.contains(&quot;/&quot;)))
+          
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          608
+        </td>
+        <td>
+          1296
+          -
+          1296
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          36
+        </td>
+        <td>
+          365
+        </td>
+        <td>
+          1296
+          -
+          1296
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
         </td>
       </tr><tr>
         <td>
           37
         </td>
         <td>
-          594
+          182
         </td>
         <td>
           1349
@@ -1051,20 +1051,20 @@
           1416
         </td>
         <td>
-          Block
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(&quot;node names cannot contain \'/\'&quot;)
+          
         </td>
       </tr><tr>
         <td>
           37
         </td>
         <td>
-          593
+          117
         </td>
         <td>
           1349
@@ -1072,44 +1072,20 @@
           1416
         </td>
         <td>
-          Throw
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(&quot;node names cannot contain \'/\'&quot;)
+          
         </td>
       </tr><tr>
         <td>
           40
         </td>
         <td>
-          597
-        </td>
-        <td>
-          1536
-          -
-          1563
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.collection.TraversableOnce.mkString
-        </td>
-        <td style="background: #AEF1AE">
-          {
-  &lt;synthetic&gt; &lt;artifact&gt; val x$1: String = &quot;&quot;;
-  path.::[String](x$1)
-}.mkString(&quot;/&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          40
-        </td>
-        <td>
-          598
+          86
         </td>
         <td>
           1527
@@ -1117,23 +1093,41 @@
           1564
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.EtcdKey.apply
+          
         </td>
         <td style="background: #AEF1AE">
-          EtcdKey.apply({
-  &lt;synthetic&gt; &lt;artifact&gt; val x$1: String = &quot;&quot;;
-  path.::[String](x$1)
-}.mkString(&quot;/&quot;))
+          
+        </td>
+      </tr><tr>
+        <td>
+          40
+        </td>
+        <td>
+          591
+        </td>
+        <td>
+          1536
+          -
+          1563
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
         </td>
       </tr><tr>
         <td>
           50
         </td>
         <td>
-          599
+          363
         </td>
         <td>
           1898
@@ -1141,104 +1135,20 @@
           1931
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          scala.collection.immutable.List.drop
+          
         </td>
         <td style="background: #AEF1AE">
-          scala.this.Predef.refArrayOps[String](key.key.split(&quot;/&quot;)).toList.drop(1)
+          
         </td>
       </tr><tr>
         <td>
           59
         </td>
         <td>
-          600
-        </td>
-        <td>
-          2201
-          -
-          2205
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          null
-        </td>
-      </tr><tr>
-        <td>
-          59
-        </td>
-        <td>
-          606
-        </td>
-        <td>
-          2190
-          -
-          2190
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          59
-        </td>
-        <td>
-          602
-        </td>
-        <td>
-          2194
-          -
-          2220
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Boolean.||
-        </td>
-        <td style="background: #AEF1AE">
-          key.==(null).||(key.isEmpty())
-        </td>
-      </tr><tr>
-        <td>
-          59
-        </td>
-        <td>
-          605
-        </td>
-        <td>
-          2190
-          -
-          2190
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          59
-        </td>
-        <td>
-          601
+          406
         </td>
         <td>
           2209
@@ -1246,20 +1156,104 @@
           2220
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          java.lang.String.isEmpty
+          
         </td>
         <td style="background: #AEF1AE">
-          key.isEmpty()
+          
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          430
+        </td>
+        <td>
+          2190
+          -
+          2190
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          579
+        </td>
+        <td>
+          2194
+          -
+          2220
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          414
+        </td>
+        <td>
+          2201
+          -
+          2205
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          59
+        </td>
+        <td>
+          641
+        </td>
+        <td>
+          2190
+          -
+          2190
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
         </td>
       </tr><tr>
         <td>
           60
         </td>
         <td>
-          603
+          429
         </td>
         <td>
           2230
@@ -1267,13 +1261,13 @@
           2293
         </td>
         <td>
-          Throw
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(&quot;key name can not be null.&quot;)
+          
         </td>
       </tr><tr>
         <td>
@@ -1288,20 +1282,20 @@
           2293
         </td>
         <td>
-          Block
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(&quot;key name can not be null.&quot;)
+          
         </td>
       </tr><tr>
         <td>
           62
         </td>
         <td>
-          612
+          403
         </td>
         <td>
           2304
@@ -1309,20 +1303,20 @@
           2304
         </td>
         <td>
-          Block
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          ()
+          
         </td>
       </tr><tr>
         <td>
           62
         </td>
         <td>
-          608
+          89
         </td>
         <td>
           2308
@@ -1330,20 +1324,20 @@
           2328
         </td>
         <td>
-          Select
+          
         </td>
         <td>
-          scala.Boolean.unary_!
+          
         </td>
         <td style="background: #AEF1AE">
-          key.startsWith(&quot;/&quot;).unary_!
+          
         </td>
       </tr><tr>
         <td>
           62
         </td>
         <td>
-          611
+          171
         </td>
         <td>
           2304
@@ -1351,20 +1345,20 @@
           2304
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          ()
+          
         </td>
       </tr><tr>
         <td>
           62
         </td>
         <td>
-          607
+          655
         </td>
         <td>
           2324
@@ -1372,20 +1366,20 @@
           2327
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          &quot;/&quot;
+          
         </td>
       </tr><tr>
         <td>
           63
         </td>
         <td>
-          609
+          100
         </td>
         <td>
           2338
@@ -1393,20 +1387,20 @@
           2426
         </td>
         <td>
-          Throw
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;key name must start with \'/\'. Provided value &quot;, &quot;&quot;).s(key))
+          
         </td>
       </tr><tr>
         <td>
           63
         </td>
         <td>
-          610
+          130
         </td>
         <td>
           2338
@@ -1414,20 +1408,20 @@
           2426
         </td>
         <td>
-          Block
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;key name must start with \'/\'. Provided value &quot;, &quot;&quot;).s(key))
+          
         </td>
       </tr><tr>
         <td>
           65
         </td>
         <td>
-          617
+          43
         </td>
         <td>
           2437
@@ -1435,20 +1429,41 @@
           2437
         </td>
         <td>
-          Block
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          ()
+          
         </td>
       </tr><tr>
         <td>
           65
         </td>
         <td>
-          613
+          671
+        </td>
+        <td>
+          2437
+          -
+          2437
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          65
+        </td>
+        <td>
+          339
         </td>
         <td>
           2441
@@ -1456,41 +1471,20 @@
           2458
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          java.lang.String.endsWith
+          
         </td>
         <td style="background: #AEF1AE">
-          key.endsWith(&quot;/&quot;)
-        </td>
-      </tr><tr>
-        <td>
-          65
-        </td>
-        <td>
-          616
-        </td>
-        <td>
-          2437
-          -
-          2437
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          ()
+          
         </td>
       </tr><tr>
         <td>
           66
         </td>
         <td>
-          615
+          174
         </td>
         <td>
           2468
@@ -1498,20 +1492,20 @@
           2558
         </td>
         <td>
-          Block
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;key name must not end with \'/\'. Provided value &quot;, &quot;&quot;).s(key))
+          
         </td>
       </tr><tr>
         <td>
           66
         </td>
         <td>
-          614
+          353
         </td>
         <td>
           2468
@@ -1519,20 +1513,20 @@
           2558
         </td>
         <td>
-          Throw
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;key name must not end with \'/\'. Provided value &quot;, &quot;&quot;).s(key))
+          
         </td>
       </tr><tr>
         <td>
           68
         </td>
         <td>
-          618
+          593
         </td>
         <td>
           2569
@@ -1540,20 +1534,20 @@
           2581
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.EtcdKey.apply
+          
         </td>
         <td style="background: #AEF1AE">
-          EtcdKey.apply(key)
+          
         </td>
       </tr><tr>
         <td>
           77
         </td>
         <td>
-          620
+          113
         </td>
         <td>
           3044
@@ -1561,20 +1555,20 @@
           3072
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.EtcdModel.key
+          
         </td>
         <td style="background: #AEF1AE">
-          EtcdModel.key(dir.dir.+(key))
+          
         </td>
       </tr><tr>
         <td>
           77
         </td>
         <td>
-          619
+          560
         </td>
         <td>
           3058
@@ -1582,20 +1576,20 @@
           3071
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          java.lang.String.+
+          
         </td>
         <td style="background: #AEF1AE">
-          dir.dir.+(key)
+          
         </td>
       </tr><tr>
         <td>
           85
         </td>
         <td>
-          621
+          606
         </td>
         <td>
           3345
@@ -1603,20 +1597,20 @@
           3356
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          java.lang.Object.==
+          
         </td>
         <td style="background: #AEF1AE">
-          dir.==(null)
+          
         </td>
       </tr><tr>
         <td>
           85
         </td>
         <td>
-          624
+          369
         </td>
         <td>
           3341
@@ -1624,20 +1618,20 @@
           3341
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          ()
+          
         </td>
       </tr><tr>
         <td>
           85
         </td>
         <td>
-          625
+          85
         </td>
         <td>
           3341
@@ -1645,20 +1639,20 @@
           3341
         </td>
         <td>
-          Block
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          ()
+          
         </td>
       </tr><tr>
         <td>
           86
         </td>
         <td>
-          623
+          418
         </td>
         <td>
           3366
@@ -1666,20 +1660,20 @@
           3435
         </td>
         <td>
-          Block
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(&quot;Directory name can not be null.&quot;)
+          
         </td>
       </tr><tr>
         <td>
           86
         </td>
         <td>
-          622
+          88
         </td>
         <td>
           3366
@@ -1687,20 +1681,62 @@
           3435
         </td>
         <td>
-          Throw
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(&quot;Directory name can not be null.&quot;)
+          
         </td>
       </tr><tr>
         <td>
           88
         </td>
         <td>
-          627
+          331
+        </td>
+        <td>
+          3446
+          -
+          3446
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          327
+        </td>
+        <td>
+          3446
+          -
+          3446
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          88
+        </td>
+        <td>
+          290
         </td>
         <td>
           3450
@@ -1708,41 +1744,20 @@
           3470
         </td>
         <td>
-          Select
+          
         </td>
         <td>
-          scala.Boolean.unary_!
+          
         </td>
         <td style="background: #AEF1AE">
-          dir.startsWith(&quot;/&quot;).unary_!
+          
         </td>
       </tr><tr>
         <td>
           88
         </td>
         <td>
-          630
-        </td>
-        <td>
-          3446
-          -
-          3446
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          88
-        </td>
-        <td>
-          626
+          562
         </td>
         <td>
           3466
@@ -1750,41 +1765,20 @@
           3469
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          &quot;/&quot;
-        </td>
-      </tr><tr>
-        <td>
-          88
-        </td>
-        <td>
-          631
-        </td>
-        <td>
-          3446
-          -
-          3446
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          ()
+          
         </td>
       </tr><tr>
         <td>
           89
         </td>
         <td>
-          629
+          106
         </td>
         <td>
           3480
@@ -1792,20 +1786,20 @@
           3574
         </td>
         <td>
-          Block
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Directory name must start with \'/\'. Provided value &quot;, &quot;&quot;).s(dir))
+          
         </td>
       </tr><tr>
         <td>
           89
         </td>
         <td>
-          628
+          159
         </td>
         <td>
           3480
@@ -1813,62 +1807,20 @@
           3574
         </td>
         <td>
-          Throw
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Directory name must start with \'/\'. Provided value &quot;, &quot;&quot;).s(dir))
+          
         </td>
       </tr><tr>
         <td>
           91
         </td>
         <td>
-          636
-        </td>
-        <td>
-          3585
-          -
-          3585
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          91
-        </td>
-        <td>
-          633
-        </td>
-        <td>
-          3589
-          -
-          3607
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          scala.Boolean.unary_!
-        </td>
-        <td style="background: #AEF1AE">
-          dir.endsWith(&quot;/&quot;).unary_!
-        </td>
-      </tr><tr>
-        <td>
-          91
-        </td>
-        <td>
-          632
+          101
         </td>
         <td>
           3603
@@ -1876,20 +1828,20 @@
           3606
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          &quot;/&quot;
+          
         </td>
       </tr><tr>
         <td>
           91
         </td>
         <td>
-          637
+          577
         </td>
         <td>
           3585
@@ -1897,20 +1849,62 @@
           3585
         </td>
         <td>
-          Block
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          ()
+          
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          156
+        </td>
+        <td>
+          3585
+          -
+          3585
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          91
+        </td>
+        <td>
+          658
+        </td>
+        <td>
+          3589
+          -
+          3607
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
         </td>
       </tr><tr>
         <td>
           92
         </td>
         <td>
-          635
+          315
         </td>
         <td>
           3617
@@ -1918,20 +1912,20 @@
           3704
         </td>
         <td>
-          Block
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Directory must end with \'/\'. Provided value &quot;, &quot;&quot;).s(dir))
+          
         </td>
       </tr><tr>
         <td>
           92
         </td>
         <td>
-          634
+          545
         </td>
         <td>
           3617
@@ -1939,20 +1933,20 @@
           3704
         </td>
         <td>
-          Throw
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Directory must end with \'/\'. Provided value &quot;, &quot;&quot;).s(dir))
+          
         </td>
       </tr><tr>
         <td>
           94
         </td>
         <td>
-          638
+          646
         </td>
         <td>
           3715
@@ -1960,62 +1954,20 @@
           3733
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.EtcdDirectory.apply
+          
         </td>
         <td style="background: #AEF1AE">
-          EtcdDirectory.apply(dir)
+          
         </td>
       </tr><tr>
         <td>
           107
         </td>
         <td>
-          645
-        </td>
-        <td>
-          4406
-          -
-          4406
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          107
-        </td>
-        <td>
-          639
-        </td>
-        <td>
-          4417
-          -
-          4421
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          null
-        </td>
-      </tr><tr>
-        <td>
-          107
-        </td>
-        <td>
-          641
+          122
         </td>
         <td>
           4410
@@ -2023,41 +1975,20 @@
           4436
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          scala.Boolean.||
+          
         </td>
         <td style="background: #AEF1AE">
-          dir.==(null).||(dir.isEmpty())
+          
         </td>
       </tr><tr>
         <td>
           107
         </td>
         <td>
-          644
-        </td>
-        <td>
-          4406
-          -
-          4406
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          107
-        </td>
-        <td>
-          640
+          672
         </td>
         <td>
           4425
@@ -2065,20 +1996,83 @@
           4436
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          java.lang.String.isEmpty
+          
         </td>
         <td style="background: #AEF1AE">
-          dir.isEmpty()
+          
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          181
+        </td>
+        <td>
+          4417
+          -
+          4421
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          417
+        </td>
+        <td>
+          4406
+          -
+          4406
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          107
+        </td>
+        <td>
+          344
+        </td>
+        <td>
+          4406
+          -
+          4406
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
         </td>
       </tr><tr>
         <td>
           108
         </td>
         <td>
-          642
+          681
         </td>
         <td>
           4446
@@ -2086,20 +2080,20 @@
           4515
         </td>
         <td>
-          Throw
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(&quot;Directory name can not be null.&quot;)
+          
         </td>
       </tr><tr>
         <td>
           108
         </td>
         <td>
-          643
+          623
         </td>
         <td>
           4446
@@ -2107,20 +2101,20 @@
           4515
         </td>
         <td>
-          Block
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(&quot;Directory name can not be null.&quot;)
+          
         </td>
       </tr><tr>
         <td>
           110
         </td>
         <td>
-          651
+          382
         </td>
         <td>
           4526
@@ -2128,41 +2122,20 @@
           4526
         </td>
         <td>
-          Block
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          ()
+          
         </td>
       </tr><tr>
         <td>
           110
         </td>
         <td>
-          650
-        </td>
-        <td>
-          4526
-          -
-          4526
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          110
-        </td>
-        <td>
-          647
+          124
         </td>
         <td>
           4530
@@ -2170,20 +2143,41 @@
           4550
         </td>
         <td>
-          Select
+          
         </td>
         <td>
-          scala.Boolean.unary_!
+          
         </td>
         <td style="background: #AEF1AE">
-          dir.startsWith(&quot;/&quot;).unary_!
+          
         </td>
       </tr><tr>
         <td>
           110
         </td>
         <td>
-          646
+          437
+        </td>
+        <td>
+          4526
+          -
+          4526
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          110
+        </td>
+        <td>
+          440
         </td>
         <td>
           4546
@@ -2191,20 +2185,20 @@
           4549
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          &quot;/&quot;
+          
         </td>
       </tr><tr>
         <td>
           111
         </td>
         <td>
-          648
+          630
         </td>
         <td>
           4560
@@ -2212,20 +2206,20 @@
           4654
         </td>
         <td>
-          Throw
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Directory name must start with \'/\'. Provided value &quot;, &quot;&quot;).s(dir))
+          
         </td>
       </tr><tr>
         <td>
           111
         </td>
         <td>
-          649
+          387
         </td>
         <td>
           4560
@@ -2233,41 +2227,20 @@
           4654
         </td>
         <td>
-          Block
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Directory name must start with \'/\'. Provided value &quot;, &quot;&quot;).s(dir))
+          
         </td>
       </tr><tr>
         <td>
           113
         </td>
         <td>
-          657
-        </td>
-        <td>
-          4665
-          -
-          4665
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          113
-        </td>
-        <td>
-          653
+          618
         </td>
         <td>
           4669
@@ -2275,20 +2248,20 @@
           4687
         </td>
         <td>
-          Select
+          
         </td>
         <td>
-          scala.Boolean.unary_!
+          
         </td>
         <td style="background: #AEF1AE">
-          dir.endsWith(&quot;/&quot;).unary_!
+          
         </td>
       </tr><tr>
         <td>
           113
         </td>
         <td>
-          656
+          208
         </td>
         <td>
           4665
@@ -2296,20 +2269,41 @@
           4665
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          ()
+          
         </td>
       </tr><tr>
         <td>
           113
         </td>
         <td>
-          652
+          725
+        </td>
+        <td>
+          4665
+          -
+          4665
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          113
+        </td>
+        <td>
+          554
         </td>
         <td>
           4683
@@ -2317,20 +2311,20 @@
           4686
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          &quot;/&quot;
+          
         </td>
       </tr><tr>
         <td>
           114
         </td>
         <td>
-          654
+          729
         </td>
         <td>
           4697
@@ -2338,20 +2332,20 @@
           4784
         </td>
         <td>
-          Throw
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Directory must end with \'/\'. Provided value &quot;, &quot;&quot;).s(dir))
+          
         </td>
       </tr><tr>
         <td>
           114
         </td>
         <td>
-          655
+          619
         </td>
         <td>
           4697
@@ -2359,41 +2353,20 @@
           4784
         </td>
         <td>
-          Block
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Directory must end with \'/\'. Provided value &quot;, &quot;&quot;).s(dir))
+          
         </td>
       </tr><tr>
         <td>
           116
         </td>
         <td>
-          660
-        </td>
-        <td>
-          4799
-          -
-          4827
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Boolean.||
-        </td>
-        <td style="background: #AEF1AE">
-          node.==(null).||(node.isEmpty())
-        </td>
-      </tr><tr>
-        <td>
-          116
-        </td>
-        <td>
-          663
+          448
         </td>
         <td>
           4795
@@ -2401,20 +2374,41 @@
           4795
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          ()
+          
         </td>
       </tr><tr>
         <td>
           116
         </td>
         <td>
-          659
+          345
+        </td>
+        <td>
+          4795
+          -
+          4795
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          183
         </td>
         <td>
           4815
@@ -2422,41 +2416,20 @@
           4827
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          java.lang.String.isEmpty
+          
         </td>
         <td style="background: #AEF1AE">
-          node.isEmpty()
+          
         </td>
       </tr><tr>
         <td>
           116
         </td>
         <td>
-          664
-        </td>
-        <td>
-          4795
-          -
-          4795
-        </td>
-        <td>
-          Block
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          116
-        </td>
-        <td>
-          658
+          228
         </td>
         <td>
           4807
@@ -2464,20 +2437,41 @@
           4811
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          null
+          
+        </td>
+      </tr><tr>
+        <td>
+          116
+        </td>
+        <td>
+          201
+        </td>
+        <td>
+          4799
+          -
+          4827
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
         </td>
       </tr><tr>
         <td>
           117
         </td>
         <td>
-          662
+          460
         </td>
         <td>
           4837
@@ -2485,20 +2479,20 @@
           4900
         </td>
         <td>
-          Block
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(&quot;node name cannot be null.&quot;)
+          
         </td>
       </tr><tr>
         <td>
           117
         </td>
         <td>
-          661
+          669
         </td>
         <td>
           4837
@@ -2506,20 +2500,20 @@
           4900
         </td>
         <td>
-          Throw
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(&quot;node name cannot be null.&quot;)
+          
         </td>
       </tr><tr>
         <td>
           119
         </td>
         <td>
-          666
+          328
         </td>
         <td>
           4937
@@ -2527,20 +2521,20 @@
           4957
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          java.lang.String.startsWith
+          
         </td>
         <td style="background: #AEF1AE">
-          node.startsWith(&quot;/&quot;)
+          
         </td>
       </tr><tr>
         <td>
           119
         </td>
         <td>
-          671
+          210
         </td>
         <td>
           4911
@@ -2548,20 +2542,20 @@
           4911
         </td>
         <td>
-          Block
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          ()
+          
         </td>
       </tr><tr>
         <td>
           119
         </td>
         <td>
-          665
+          383
         </td>
         <td>
           4929
@@ -2569,20 +2563,20 @@
           4932
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          &quot;/&quot;
+          
         </td>
       </tr><tr>
         <td>
           119
         </td>
         <td>
-          667
+          114
         </td>
         <td>
           4915
@@ -2590,20 +2584,20 @@
           4957
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          scala.Boolean.||
+          
         </td>
         <td style="background: #AEF1AE">
-          node.endsWith(&quot;/&quot;).||(node.startsWith(&quot;/&quot;))
+          
         </td>
       </tr><tr>
         <td>
           119
         </td>
         <td>
-          670
+          144
         </td>
         <td>
           4911
@@ -2611,20 +2605,20 @@
           4911
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          ()
+          
         </td>
       </tr><tr>
         <td>
           120
         </td>
         <td>
-          669
+          678
         </td>
         <td>
           4967
@@ -2632,20 +2626,20 @@
           5068
         </td>
         <td>
-          Block
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Node name must not end or start with \'/\'. Provided value &quot;, &quot;&quot;).s(node))
+          
         </td>
       </tr><tr>
         <td>
           120
         </td>
         <td>
-          668
+          692
         </td>
         <td>
           4967
@@ -2653,20 +2647,20 @@
           5068
         </td>
         <td>
-          Throw
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          throw new scala.`package`.IllegalArgumentException(scala.StringContext.apply(&quot;Node name must not end or start with \'/\'. Provided value &quot;, &quot;&quot;).s(node))
+          
         </td>
       </tr><tr>
         <td>
           122
         </td>
         <td>
-          672
+          136
         </td>
         <td>
           5087
@@ -2674,20 +2668,20 @@
           5103
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          java.lang.String.+
+          
         </td>
         <td style="background: #AEF1AE">
-          dir.+(&quot;_&quot;).+(node)
+          
         </td>
       </tr><tr>
         <td>
           122
         </td>
         <td>
-          673
+          143
         </td>
         <td>
           5079
@@ -2695,20 +2689,20 @@
           5104
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.EtcdKey.apply
+          
         </td>
         <td style="background: #AEF1AE">
-          EtcdKey.apply(dir.+(&quot;_&quot;).+(node))
+          
         </td>
       </tr><tr>
         <td>
           130
         </td>
         <td>
-          674
+          230
         </td>
         <td>
           5316
@@ -2716,20 +2710,20 @@
           5332
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.EtcdValue.apply
+          
         </td>
         <td style="background: #AEF1AE">
-          EtcdValue.apply(value)
+          
         </td>
       </tr><tr>
         <td>
           139
         </td>
         <td>
-          675
+          316
         </td>
         <td>
           5746
@@ -2737,20 +2731,20 @@
           5766
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          scala.collection.IndexedSeqOptimized.dropRight
+          
         </td>
         <td style="background: #AEF1AE">
-          scala.this.Predef.augmentString(dir.dir).dropRight(1)
+          
         </td>
       </tr><tr>
         <td>
           139
         </td>
         <td>
-          676
+          152
         </td>
         <td>
           5738
@@ -2758,20 +2752,20 @@
           5767
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.EtcdKey.apply
+          
         </td>
         <td style="background: #AEF1AE">
-          EtcdKey.apply(scala.this.Predef.augmentString(dir.dir).dropRight(1))
+          
         </td>
       </tr><tr>
         <td>
           148
         </td>
         <td>
-          678
+          664
         </td>
         <td>
           6157
@@ -2779,20 +2773,20 @@
           6185
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.EtcdDirectory.apply
+          
         </td>
         <td style="background: #AEF1AE">
-          EtcdDirectory.apply(key.key.+(&quot;/&quot;))
+          
         </td>
       </tr><tr>
         <td>
           148
         </td>
         <td>
-          677
+          374
         </td>
         <td>
           6171
@@ -2800,41 +2794,20 @@
           6184
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          java.lang.String.+
+          
         </td>
         <td style="background: #AEF1AE">
-          key.key.+(&quot;/&quot;)
+          
         </td>
       </tr><tr>
         <td>
           227
         </td>
         <td>
-          680
-        </td>
-        <td>
-          7920
-          -
-          7949
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.Option.map
-        </td>
-        <td style="background: #AEF1AE">
-          IncorrectEtcdRequestFormatException.this.headers.map[com.eiipii.etcd.client.model.EtcdClusterId](((x$2: com.eiipii.etcd.client.model.EtcdHeaders) =&gt; x$2.xEtcdClusterId))
-        </td>
-      </tr><tr>
-        <td>
-          227
-        </td>
-        <td>
-          679
+          516
         </td>
         <td>
           7932
@@ -2842,230 +2815,41 @@
           7948
         </td>
         <td>
-          Select
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.EtcdHeaders.xEtcdClusterId
+          
         </td>
         <td style="background: #AEF1AE">
-          x$2.xEtcdClusterId
+          
         </td>
       </tr><tr>
         <td>
-          229
+          227
         </td>
         <td>
-          687
+          72
         </td>
         <td>
-          8025
+          7920
           -
-          8032
+          7949
         </td>
         <td>
-          Select
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException.handler
+          
         </td>
         <td style="background: #AEF1AE">
-          IncorrectEtcdRequestFormatException.this.handler
+          
         </td>
       </tr><tr>
         <td>
           229
         </td>
         <td>
-          681
-        </td>
-        <td>
-          7990
-          -
-          8024
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          &quot;Incorrect Etcd response. Handler[&quot;
-        </td>
-      </tr><tr>
-        <td>
-          229
-        </td>
-        <td>
-          690
-        </td>
-        <td>
-          8136
-          -
-          8143
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException.headers
-        </td>
-        <td style="background: #AEF1AE">
-          IncorrectEtcdRequestFormatException.this.headers
-        </td>
-      </tr><tr>
-        <td>
-          229
-        </td>
-        <td>
-          684
-        </td>
-        <td>
-          8086
-          -
-          8106
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          &quot;] clustedIdHeader:[&quot;
-        </td>
-      </tr><tr>
-        <td>
-          229
-        </td>
-        <td>
-          683
-        </td>
-        <td>
-          8062
-          -
-          8072
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          &quot;], body:[&quot;
-        </td>
-      </tr><tr>
-        <td>
-          229
-        </td>
-        <td>
-          686
-        </td>
-        <td>
-          8144
-          -
-          8146
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          &quot;]&quot;
-        </td>
-      </tr><tr>
-        <td>
-          229
-        </td>
-        <td>
-          689
-        </td>
-        <td>
-          8073
-          -
-          8085
-        </td>
-        <td>
-          Select
-        </td>
-        <td>
-          com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException.responseBody
-        </td>
-        <td style="background: #AEF1AE">
-          IncorrectEtcdRequestFormatException.this.responseBody
-        </td>
-      </tr><tr>
-        <td>
-          229
-        </td>
-        <td>
-          682
-        </td>
-        <td>
-          8033
-          -
-          8048
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          &quot;], statusCode[&quot;
-        </td>
-      </tr><tr>
-        <td>
-          229
-        </td>
-        <td>
-          691
-        </td>
-        <td>
-          7988
-          -
-          8146
-        </td>
-        <td>
-          Apply
-        </td>
-        <td>
-          scala.StringContext.s
-        </td>
-        <td style="background: #AEF1AE">
-          scala.StringContext.apply(&quot;Incorrect Etcd response. Handler[&quot;, &quot;], statusCode[&quot;, &quot;], body:[&quot;, &quot;] clustedIdHeader:[&quot;, &quot;] headers:[&quot;, &quot;]&quot;).s(IncorrectEtcdRequestFormatException.this.handler, IncorrectEtcdRequestFormatException.this.responseCode, IncorrectEtcdRequestFormatException.this.responseBody, IncorrectEtcdRequestFormatException.this.clustedIdHeader, IncorrectEtcdRequestFormatException.this.headers)
-        </td>
-      </tr><tr>
-        <td>
-          229
-        </td>
-        <td>
-          685
-        </td>
-        <td>
-          8123
-          -
-          8135
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          &quot;] headers:[&quot;
-        </td>
-      </tr><tr>
-        <td>
-          229
-        </td>
-        <td>
-          688
+          346
         </td>
         <td>
           8049
@@ -3073,188 +2857,230 @@
           8061
         </td>
         <td>
-          Select
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.IncorrectEtcdRequestFormatException.responseCode
+          
         </td>
         <td style="background: #AEF1AE">
-          IncorrectEtcdRequestFormatException.this.responseCode
+          
         </td>
       </tr><tr>
         <td>
-          243
+          229
         </td>
         <td>
-          696
+          334
         </td>
         <td>
-          8656
+          7990
           -
-          8658
+          8024
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          &quot;]&quot;
+          
         </td>
       </tr><tr>
         <td>
-          243
+          229
         </td>
         <td>
-          699
+          597
         </td>
         <td>
-          8606
+          8025
           -
-          8618
+          8032
         </td>
         <td>
-          Select
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException.responseBody
+          
         </td>
         <td style="background: #AEF1AE">
-          IncorrectSimpleEtcdRequestFormatException.this.responseBody
+          
         </td>
       </tr><tr>
         <td>
-          243
+          229
         </td>
         <td>
-          693
+          546
         </td>
         <td>
-          8566
+          8086
           -
-          8581
+          8106
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          &quot;], statusCode[&quot;
+          
         </td>
       </tr><tr>
         <td>
-          243
+          229
         </td>
         <td>
-          692
+          91
         </td>
         <td>
-          8523
+          8144
           -
-          8557
+          8146
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          &quot;Incorrect Etcd response. Handler[&quot;
+          
         </td>
       </tr><tr>
         <td>
-          243
+          229
         </td>
         <td>
-          701
+          154
         </td>
         <td>
-          8521
+          7988
           -
-          8658
+          8146
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          scala.StringContext.s
+          
         </td>
         <td style="background: #AEF1AE">
-          scala.StringContext.apply(&quot;Incorrect Etcd response. Handler[&quot;, &quot;], statusCode[&quot;, &quot;], body:[&quot;, &quot;] clustedIdHeader:[&quot;, &quot;]&quot;).s(IncorrectSimpleEtcdRequestFormatException.this.handler, IncorrectSimpleEtcdRequestFormatException.this.responseCode, IncorrectSimpleEtcdRequestFormatException.this.responseBody, IncorrectSimpleEtcdRequestFormatException.this.clustedIdHeader)
+          
         </td>
       </tr><tr>
         <td>
-          243
+          229
         </td>
         <td>
-          695
+          635
         </td>
         <td>
-          8619
+          8123
           -
-          8639
+          8135
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          &quot;] clustedIdHeader:[&quot;
+          
         </td>
       </tr><tr>
         <td>
-          243
+          229
         </td>
         <td>
-          698
+          69
         </td>
         <td>
-          8582
+          8136
           -
-          8594
+          8143
         </td>
         <td>
-          Select
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException.responseCode
+          
         </td>
         <td style="background: #AEF1AE">
-          IncorrectSimpleEtcdRequestFormatException.this.responseCode
+          
         </td>
       </tr><tr>
         <td>
-          243
+          229
         </td>
         <td>
-          697
+          386
         </td>
         <td>
-          8558
+          8062
           -
-          8565
+          8072
         </td>
         <td>
-          Select
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException.handler
+          
         </td>
         <td style="background: #AEF1AE">
-          IncorrectSimpleEtcdRequestFormatException.this.handler
+          
+        </td>
+      </tr><tr>
+        <td>
+          229
+        </td>
+        <td>
+          580
+        </td>
+        <td>
+          8073
+          -
+          8085
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          229
+        </td>
+        <td>
+          305
+        </td>
+        <td>
+          8033
+          -
+          8048
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
         </td>
       </tr><tr>
         <td>
           243
         </td>
         <td>
-          700
+          517
         </td>
         <td>
           8640
@@ -3262,20 +3088,20 @@
           8655
         </td>
         <td>
-          Select
+          
         </td>
         <td>
-          com.eiipii.etcd.client.model.IncorrectSimpleEtcdRequestFormatException.clustedIdHeader
+          
         </td>
         <td style="background: #AEF1AE">
-          IncorrectSimpleEtcdRequestFormatException.this.clustedIdHeader
+          
         </td>
       </tr><tr>
         <td>
           243
         </td>
         <td>
-          694
+          391
         </td>
         <td>
           8595
@@ -3283,20 +3109,188 @@
           8605
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          &quot;], body:[&quot;
+          
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          59
+        </td>
+        <td>
+          8558
+          -
+          8565
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          307
+        </td>
+        <td>
+          8523
+          -
+          8557
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          20
+        </td>
+        <td>
+          8521
+          -
+          8658
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          126
+        </td>
+        <td>
+          8606
+          -
+          8618
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          389
+        </td>
+        <td>
+          8656
+          -
+          8658
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          329
+        </td>
+        <td>
+          8582
+          -
+          8594
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          625
+        </td>
+        <td>
+          8619
+          -
+          8639
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
+        </td>
+      </tr><tr>
+        <td>
+          243
+        </td>
+        <td>
+          565
+        </td>
+        <td>
+          8566
+          -
+          8581
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
         </td>
       </tr><tr>
         <td>
           294
         </td>
         <td>
-          702
+          384
         </td>
         <td>
           10018
@@ -3304,20 +3298,20 @@
           10022
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           309
         </td>
         <td>
-          703
+          99
         </td>
         <td>
           10285
@@ -3325,20 +3319,20 @@
           10289
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           326
         </td>
         <td>
-          704
+          98
         </td>
         <td>
           10603
@@ -3346,20 +3340,20 @@
           10607
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           352
         </td>
         <td>
-          705
+          367
         </td>
         <td>
           11624
@@ -3367,20 +3361,20 @@
           11628
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           383
         </td>
         <td>
-          706
+          196
         </td>
         <td>
           12754
@@ -3388,41 +3382,20 @@
           12781
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          scala.concurrent.Promise.apply
+          
         </td>
         <td style="background: #AEF1AE">
-          scala.concurrent.Promise.apply[com.eiipii.etcd.client.model.EtcdGetKeyResponse]()
+          
         </td>
       </tr><tr>
         <td>
           389
         </td>
         <td>
-          708
-        </td>
-        <td>
-          13032
-          -
-          13032
-        </td>
-        <td>
-          Literal
-        </td>
-        <td>
-          &lt;nosymbol&gt;
-        </td>
-        <td style="background: #AEF1AE">
-          ()
-        </td>
-      </tr><tr>
-        <td>
-          389
-        </td>
-        <td>
-          707
+          699
         </td>
         <td>
           13023
@@ -3430,20 +3403,41 @@
           13042
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          scala.concurrent.Promise.success
+          
         </td>
         <td style="background: #AEF1AE">
-          FutureBasedEtcdWaitCallback.this.p.success(response)
+          
+        </td>
+      </tr><tr>
+        <td>
+          389
+        </td>
+        <td>
+          264
+        </td>
+        <td>
+          13032
+          -
+          13032
+        </td>
+        <td>
+          
+        </td>
+        <td>
+          
+        </td>
+        <td style="background: #AEF1AE">
+          
         </td>
       </tr><tr>
         <td>
           395
         </td>
         <td>
-          710
+          168
         </td>
         <td>
           13241
@@ -3451,20 +3445,20 @@
           13241
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          ()
+          
         </td>
       </tr><tr>
         <td>
           395
         </td>
         <td>
-          709
+          631
         </td>
         <td>
           13232
@@ -3472,20 +3466,20 @@
           13244
         </td>
         <td>
-          Apply
+          
         </td>
         <td>
-          scala.concurrent.Promise.failure
+          
         </td>
         <td style="background: #AEF1AE">
-          FutureBasedEtcdWaitCallback.this.p.failure(t)
+          
         </td>
       </tr><tr>
         <td>
           401
         </td>
         <td>
-          711
+          472
         </td>
         <td>
           13463
@@ -3493,20 +3487,20 @@
           13471
         </td>
         <td>
-          Select
+          
         </td>
         <td>
-          scala.concurrent.Promise.future
+          
         </td>
         <td style="background: #AEF1AE">
-          FutureBasedEtcdWaitCallback.this.p.future
+          
         </td>
       </tr><tr>
         <td>
           407
         </td>
         <td>
-          712
+          449
         </td>
         <td>
           13590
@@ -3514,20 +3508,20 @@
           13603
         </td>
         <td>
-          Select
+          
         </td>
         <td>
-          scala.concurrent.Promise.isCompleted
+          
         </td>
         <td style="background: #AEF1AE">
-          FutureBasedEtcdWaitCallback.this.p.isCompleted
+          
         </td>
       </tr><tr>
         <td>
           421
         </td>
         <td>
-          713
+          445
         </td>
         <td>
           13870
@@ -3535,20 +3529,20 @@
           13874
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           450
         </td>
         <td>
-          714
+          397
         </td>
         <td>
           14428
@@ -3556,20 +3550,20 @@
           14432
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           470
         </td>
         <td>
-          715
+          502
         </td>
         <td>
           14789
@@ -3577,20 +3571,20 @@
           14793
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           510
         </td>
         <td>
-          716
+          150
         </td>
         <td>
           15598
@@ -3598,20 +3592,20 @@
           15602
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           520
         </td>
         <td>
-          717
+          400
         </td>
         <td>
           15788
@@ -3619,20 +3613,20 @@
           15792
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           535
         </td>
         <td>
-          718
+          199
         </td>
         <td>
           16069
@@ -3640,20 +3634,20 @@
           16073
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           576
         </td>
         <td>
-          719
+          702
         </td>
         <td>
           16807
@@ -3661,20 +3655,20 @@
           16811
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           609
         </td>
         <td>
-          720
+          665
         </td>
         <td>
           17430
@@ -3682,20 +3676,20 @@
           17434
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           706
         </td>
         <td>
-          721
+          704
         </td>
         <td>
           20415
@@ -3703,20 +3697,20 @@
           20419
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           721
         </td>
         <td>
-          722
+          187
         </td>
         <td>
           20704
@@ -3724,20 +3718,20 @@
           20708
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           742
         </td>
         <td>
-          723
+          555
         </td>
         <td>
           21067
@@ -3745,20 +3739,20 @@
           21071
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           761
         </td>
         <td>
-          724
+          645
         </td>
         <td>
           21390
@@ -3766,20 +3760,20 @@
           21394
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           776
         </td>
         <td>
-          725
+          653
         </td>
         <td>
           21656
@@ -3787,20 +3781,20 @@
           21660
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           791
         </td>
         <td>
-          726
+          500
         </td>
         <td>
           21908
@@ -3808,20 +3802,20 @@
           21912
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           810
         </td>
         <td>
-          727
+          627
         </td>
         <td>
           22231
@@ -3829,20 +3823,20 @@
           22235
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           842
         </td>
         <td>
-          728
+          138
         </td>
         <td>
           23064
@@ -3850,20 +3844,20 @@
           23068
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           861
         </td>
         <td>
-          729
+          633
         </td>
         <td>
           23375
@@ -3871,20 +3865,20 @@
           23379
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          true
+          
         </td>
       </tr><tr>
         <td>
           900
         </td>
         <td>
-          730
+          456
         </td>
         <td>
           24522
@@ -3892,20 +3886,20 @@
           24527
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          false
+          
         </td>
       </tr><tr>
         <td>
           920
         </td>
         <td>
-          731
+          688
         </td>
         <td>
           25179
@@ -3913,13 +3907,13 @@
           25184
         </td>
         <td>
-          Literal
+          
         </td>
         <td>
-          &lt;nosymbol&gt;
+          
         </td>
         <td style="background: #AEF1AE">
-          false
+          
         </td>
       </tr>
     </table>
